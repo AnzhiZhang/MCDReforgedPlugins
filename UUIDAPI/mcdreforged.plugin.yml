@@ -1,0 +1,14 @@
+id: uuid_api
+name: UUIDAPI
+author: zhang_anzhi
+describe:
+    en_us: Get player UUID
+    zh_cn: 获取玩家UUID
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/UUIDAPI
+version:
+    0.0.1:
+        files:
+            UUIDAPI.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/UUIDAPI0.0.1/UUIDAPI/UUIDAPI.py
+        dependencies:
+            python:
+                requests: '*'

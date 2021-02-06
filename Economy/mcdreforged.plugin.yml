@@ -1,0 +1,15 @@
+id: economy
+name: Economy
+author: zhang_anzhi
+describe:
+    en_us: Economic plugin
+    zh_cn: 经济插件
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Economy
+version:
+    0.0.1:
+        files:
+            Economy.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/Economy0.0.1/Economy/Economy.py
+        dependencies:
+            plugin:
+                vault: '*'
+                config_api: '*'

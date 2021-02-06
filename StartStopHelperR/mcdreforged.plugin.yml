@@ -1,0 +1,13 @@
+id: start_stop_helper_r
+name: StartStopHelperR
+author:
+    - Fallen_Breath
+    - zhang_anzhi
+describe:
+    en_us: Start and stop server helper
+    zh_cn: 服务器管理小助手
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/StartStopHelperR
+version:
+    0.0.1:
+        files:
+            StartStopHelperR.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/StartStopHelperR0.0.1/StartStopHelperR/StartStopHelperR.py

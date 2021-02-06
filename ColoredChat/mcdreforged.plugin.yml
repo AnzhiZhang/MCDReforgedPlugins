@@ -1,0 +1,11 @@
+id: colored_chat
+name: ColoredChat
+author: zhang_anzhi
+describe:
+    en_us: Support display Formatting codes in vanilla serve
+    zh_cn: 支持原版显示Minecraft样式代码的插件
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/ColoredChat
+version:
+    0.0.1:
+        files:
+            ColoredChat.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/ColoredChat0.0.1/ColoredChat/ColoredChat.py
