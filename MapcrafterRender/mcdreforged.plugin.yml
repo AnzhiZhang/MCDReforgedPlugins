@@ -1,0 +1,11 @@
+id: mapcrafter_render
+name: MapcrafterRender
+author: zhang_anzhi
+describe:
+    en_us: Automatic render the Mapcrafter map
+    zh_cn: 自动渲染 Mapcrafter 地图
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/MapcrafterRender
+version:
+    0.0.1:
+        files:
+            MapcrafterRender.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/MapcrafterRender0.0.1/MapcrafterRender/MapcrafterRender.py

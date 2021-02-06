@@ -1,0 +1,14 @@
+id: info
+name: Info
+author: zhang_anzhi
+describe:
+    en_us: Get useful server info(CPU/memory/world size...)
+    zh_cn: 获取有用的服务器信息(CPU/内存/存档大小等)
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Info
+version:
+    0.0.1:
+        files:
+            Info.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/Info0.0.1/Info/Info.py
+        dependencies:
+            python:
+                psutil: '*'

@@ -1,0 +1,14 @@
+id: quick_answer
+name: QuickAnswer
+author: zhang_anzhi
+describe:
+    en_us: Ask online player some arithmetic problems
+    zh_cn: 问在线玩家一些算术题
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/QuickAnswer
+version:
+    0.0.1:
+        files:
+            QuickAnswer.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/QuickAnswer0.0.1/QuickAnswer/QuickAnswer.py
+        dependencies:
+            plugin:
+                vault: '*'

@@ -1,0 +1,16 @@
+id: gamemode
+name: Gamemode
+author: zhang_anzhi
+describe:
+    en_us: Change to spectator mode for observe, teleport to origin position when change back to survival mode
+    zh_cn: 切换模式为旁观者模式，当改变为生存模式时传送到原位置
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Gamemode
+version:
+    0.0.1:
+        files:
+            Gamemode.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/Gamemode0.0.1/Gamemode/Gamemode.py
+        dependencies:
+            plugin:
+                config_api: '*'
+                json_data_api: '*'
+                minecraft_data_api: '*'

@@ -1,0 +1,14 @@
+id: vault
+name: vault
+author: zhang_anzhi
+describe:
+    en_us: Economic Preposition
+    zh_cn: 经济前置
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/vault
+version:
+    0.0.1:
+        files:
+            vault.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/vault0.0.1/vault/vault.py
+        dependencies:
+            plugin:
+                database_api: '*'

@@ -1,0 +1,14 @@
+id: advanced_calculator
+name: AdvancedCalculator
+author: zhang_anzhi
+describe:
+    en_us: Provides multiple convenient calculate in game
+    zh_cn: 提供游戏内多种便捷计算
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/AdvancedCalculator
+version:
+    0.0.1:
+        files:
+            AdvancedCalculator.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/AdvancedCalculator0.0.1/AdvancedCalculator/AdvancedCalculator.py
+        dependencies:
+            plugin:
+                json_data_api: '*'

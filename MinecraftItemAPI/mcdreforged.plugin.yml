@@ -1,0 +1,11 @@
+id: minecraft_item_api
+name: MinecraftItemAPI
+author: zhang_anzhi
+describe:
+    en_us: A Minecraft item API
+    zh_cn: 一个Minecraft物品API
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/MinecraftItemAPI
+version:
+    0.0.1:
+        files:
+            MinecraftItemAPI.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/MinecraftItemAPI0.0.1/MinecraftItemAPI/MinecraftItemAPI.py

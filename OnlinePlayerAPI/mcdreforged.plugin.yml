@@ -1,0 +1,11 @@
+id: online_player_api
+name: OnlinePlayerAPI
+author: zhang_anzhi
+describe:
+    en_us: Online player api
+    zh_cn: 在线玩家API
+link: https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/OnlinePlayerAPI
+version:
+    0.0.1:
+        files:
+            OnlinePlayerAPI.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/OnlinePlayerAPI.0.1/OnlinePlayerAPI/OnlinePlayerAPI.py
