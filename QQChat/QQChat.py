@@ -8,7 +8,7 @@ from mcdreforged.api.command import *
 
 PLUGIN_METADATA = {
     'id': 'qq_chat',
-    'version': '0.0.1',
+    'version': '0.0.2',
     'name': 'QQChat',
     'description': 'Connect Minecraft and QQ',
     'author': 'zhang_anzhi',
@@ -73,6 +73,10 @@ def on_load(server: ServerInterface, old):
             GreedyText('message').runs(qq)
         )
     )
+    server.register_event_listener('cool_q_api.on_qq_load', on_qq_load)
+    server.register_event_listener('cool_q_api.on_qq_info', on_qq_info)
+    server.register_event_listener('cool_q_api.on_qq_command', on_qq_command)
+    server.register_event_listener('cool_q_api.on_qq_notice', on_qq_notice)
 
 
 def on_server_startup(server):
@@ -89,21 +93,6 @@ def on_user_info(server, info):
 def on_qq_load(server, bot):
     data = Json(PLUGIN_METADATA['name'])
     data.save()
-
-
-def on_qq_notice(server, info, bot):
-    if info.source_id not in config['group_id']:
-        return
-    notice_type = (info.notice_type == 'group_decrease')
-    if notice_type and config['whitelist_remove_with_leave']:
-        data = Json(PLUGIN_METADATA['name'])
-        user_id = str(info.user_id)
-        if user_id in data.keys():
-            command = f'whitelist remove {data[user_id]}'
-            server.execute(command)
-            bot.reply(info, f'{data[user_id]} 已退群，移除他的白名单')
-            del data[user_id]
-            data.save()
 
 
 def on_qq_info(server, info, bot):
@@ -142,6 +131,21 @@ def on_qq_command(server, info, bot):
         private_command(server, info, bot, command, data)
     elif info.source_type == 'group':
         group_command(server, info, bot, command, data)
+
+
+def on_qq_notice(server, info, bot):
+    if info.source_id not in config['group_id']:
+        return
+    notice_type = (info.notice_type == 'group_decrease')
+    if notice_type and config['whitelist_remove_with_leave']:
+        data = Json(PLUGIN_METADATA['name'])
+        user_id = str(info.user_id)
+        if user_id in data.keys():
+            command = f'whitelist remove {data[user_id]}'
+            server.execute(command)
+            bot.reply(info, f'{data[user_id]} 已退群，移除他的白名单')
+            del data[user_id]
+            data.save()
 
 
 def private_command(server, info, bot, command, data):
