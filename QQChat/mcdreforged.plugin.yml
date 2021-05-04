@@ -17,3 +17,14 @@ version:
                 json_data_api: '*'
             python:
                 requests: '*'
+    0.0.2:
+        files:
+            QQChat.py: https://raw.githubusercontent.com/zhang-anzhi/MCDReforgedPlugins/QQChat0.0.2/QQChat/QQChat.py
+        dependencies:
+            plugin:
+                cool_q_api: '*'
+                online_player_api: '*'
+                config_api: '*'
+                json_data_api: '*'
+            python:
+                requests: '*'
