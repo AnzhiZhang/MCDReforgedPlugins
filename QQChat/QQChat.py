@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from ConfigAPI import Config
-from JsonDataAPI import Json
 from mcdreforged.plugin.server_interface import ServerInterface
 from mcdreforged.api.command import *
 
 PLUGIN_METADATA = {
     'id': 'qq_chat',
-    'version': '0.0.2',
+    'version': '0.0.3',
     'name': 'QQChat',
     'description': 'Connect Minecraft and QQ',
     'author': 'zhang_anzhi',
@@ -28,9 +26,13 @@ DEFAULT_CONFIG = {
     'forward': {
         'mc_to_qq': False,
         'qq_to_mc': False
+    },
+    'command': {
+        'list': True,
+        'mc': True,
+        'qq': True,
     }
 }
-config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
 group_help_msg = '''命令帮助如下:
 /list 获取在线玩家列表
 /bound <ID> 绑定你的游戏ID
@@ -57,14 +59,19 @@ whitelist_help = '''/whitelist add <target> 添加白名单成员
 
 
 def on_load(server: ServerInterface, old):
-    global host, port
+    global config, data, host, port
+    from ConfigAPI import Config
+    from JsonDataAPI import Json
+    config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
+    data = Json(PLUGIN_METADATA['name'])
     host = server.get_plugin_instance('cool_q_api').get_config()['api_host']
     port = server.get_plugin_instance('cool_q_api').get_config()['api_port']
 
     def qq(src, ctx):
-        player = src.player if src.is_player else 'Console'
-        for i in config['group_id']:
-            send_group_msg(f'[{player}] {ctx["message"]}', i)
+        if config['command']['qq']:
+            player = src.player if src.is_player else 'Console'
+            for i in config['group_id']:
+                send_group_msg(f'[{player}] {ctx["message"]}', i)
 
     server.register_help_message('!!qq <msg>', '向QQ群发送消息')
     server.register_command(
@@ -73,7 +80,6 @@ def on_load(server: ServerInterface, old):
             GreedyText('message').runs(qq)
         )
     )
-    server.register_event_listener('cool_q_api.on_qq_load', on_qq_load)
     server.register_event_listener('cool_q_api.on_qq_info', on_qq_info)
     server.register_event_listener('cool_q_api.on_qq_command', on_qq_command)
     server.register_event_listener('cool_q_api.on_qq_notice', on_qq_notice)
@@ -90,13 +96,7 @@ def on_user_info(server, info):
             send_group_msg(f'[{info.player}] {info.content}', i)
 
 
-def on_qq_load(server, bot):
-    data = Json(PLUGIN_METADATA['name'])
-    data.save()
-
-
 def on_qq_info(server, info, bot):
-    data = Json(PLUGIN_METADATA['name'])
     if config['forward']['qq_to_mc'] and info.source_id in config['group_id']:
         user_id = str(info.user_id)
         if user_id in data.keys():
@@ -114,14 +114,13 @@ def on_qq_command(server, info, bot):
         return
     command = info.content.split(' ')
     command[0] = command[0].replace('/', '')
-    data = Json(PLUGIN_METADATA['name'])
 
-    if command[0] == 'list':
+    if config['command']['list'] and command[0] == 'list':
         online_player_api = server.get_plugin_instance('online_player_api')
         bot.reply(info, '在线玩家共{}人，玩家列表: {}'.format(
             len(online_player_api.get_player_list()),
             ', '.join(online_player_api.get_player_list())))
-    elif command[0] == 'mc':
+    elif config['command']['mc'] and command[0] == 'mc':
         user_id = str(info.user_id)
         if user_id in data.keys():
             server.say(f'§7[QQ] [{data[user_id]}] {info.content[4:]}')
@@ -138,7 +137,6 @@ def on_qq_notice(server, info, bot):
         return
     notice_type = (info.notice_type == 'group_decrease')
     if notice_type and config['whitelist_remove_with_leave']:
-        data = Json(PLUGIN_METADATA['name'])
         user_id = str(info.user_id)
         if user_id in data.keys():
             command = f'whitelist remove {data[user_id]}'
@@ -217,8 +215,7 @@ def group_command(server, info, bot, command, data):
 
 
 def send_group_msg(msg, group):
-    data = {
+    requests.post(f'http://{host}:{port}/send_group_msg', json={
         'group_id': group,
         'message': msg
-    }
-    requests.post(f'http://{host}:{port}/send_group_msg', json=data)
+    })

@@ -45,9 +45,15 @@
 
 `forward`
 
-默认值: `'forward': {'mc_to_qq': False, 'qq_to_mc': False}`
+默认值: `{'mc_to_qq': False, 'qq_to_mc': False}`
 
 设置是否自动在 Minecraft 和 QQ 之间转发消息
+
+`command`
+
+默认值: `{'list': True, 'mc': True, 'qq': True,}`
+
+设置是否启用命令
 
 ## 功能
 
