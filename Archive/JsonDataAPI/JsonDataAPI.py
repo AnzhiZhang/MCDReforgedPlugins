@@ -4,7 +4,7 @@ import json
 
 PLUGIN_METADATA = {
     'id': 'json_data_api',
-    'version': '0.0.1',
+    'version': '0.1.0',
     'name': 'JsonDataAPI',
     'description': 'Json data API for plugin save data',
     'author': 'zhang_anzhi',
@@ -16,7 +16,7 @@ class Json(dict):
     """
     A inheritance class of dict, use save() to save data into file.
     """
-    def __init__(self, plugin_name: str, file_name: str = None):
+    def __init__(self, plugin_name: str, file_name: str = None, default: dict = {}):
         # Dir
         self.dir = os.path.join('config', plugin_name)
         if not os.path.isdir(self.dir):
@@ -29,7 +29,7 @@ class Json(dict):
             with open(self.path, encoding='utf-8') as f:
                 super().__init__(json.load(f))
         else:
-            super().__init__()
+            super().__init__(default)
             self.save()
 
     def save(self):
