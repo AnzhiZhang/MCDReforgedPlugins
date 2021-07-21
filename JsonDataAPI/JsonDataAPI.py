@@ -4,7 +4,7 @@ import json
 
 PLUGIN_METADATA = {
     'id': 'json_data_api',
-    'version': '0.0.1',
+    'version': '0.0.',
     'name': 'JsonDataAPI',
     'description': 'Json data API for plugin save data',
     'author': 'zhang_anzhi',
