@@ -9,14 +9,14 @@
 ### 初始化
 
 ```python
-def __init__(self, plugin_name: str, file_name: str = None， default_config: dict = {})
+def __init__(self, plugin_name: str, file_name: str = None， default: dict = {})
 ```
 
 plugin_name: 该插件的所有数据文件将存储在 `config\plugin_name` 目录下
 
 file_name: 该数据文件的名称, 无需包含扩展名
 
-default_config: 指定插件的默认配置文件
+default: 默认值
 
 例:
 
