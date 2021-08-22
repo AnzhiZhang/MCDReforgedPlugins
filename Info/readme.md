@@ -26,6 +26,6 @@
 
 ```json
 [
-  "world"
+    "world"
 ]
 ```
