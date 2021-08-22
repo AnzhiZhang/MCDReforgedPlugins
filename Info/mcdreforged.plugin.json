@@ -1,0 +1,14 @@
+{
+    "id": "info",
+    "version": "0.0.2",
+    "name": "Info",
+    "description": {
+        "en_us": "Get server info",
+        "zh_cn": "获取服务器信息"
+    },
+    "author": "zhang_anzhi",
+    "link": "https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Info",
+    "resources": [
+        "lang"
+    ]
+}
