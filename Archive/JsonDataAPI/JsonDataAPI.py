@@ -16,7 +16,10 @@ class Json(dict):
     """
     A inheritance class of dict, use save() to save data into file.
     """
-    def __init__(self, plugin_name: str, file_name: str = None, default: dict = {}):
+
+    def __init__(self, plugin_name: str, file_name: str = None, default=None):
+        if default is None:
+            default = {}
         # Dir
         self.dir = os.path.join('config', plugin_name)
         if not os.path.isdir(self.dir):
