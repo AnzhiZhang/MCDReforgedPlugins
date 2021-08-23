@@ -1,6 +1,10 @@
 # ColoredChat
 
-支持原版显示 [Minecraft样式代码](https://minecraft-zh.gamepedia.com/%E6%A0%B7%E5%BC%8F%E4%BB%A3%E7%A0%81) 的插件
+> 支持原版显示 [格式化代码](https://minecraft.fandom.com/zh/wiki/%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81)
+
+## 使用
+
+与正常聊天没有区别, 需要格式化时使用 `&` 符号
 
 ## 配置
 
@@ -10,10 +14,6 @@
 
 默认值: `True`
 
-## 使用
-
-正常聊天就好, 使用 `&` 替换 `§` 产生具有样式的文本
-
 ## API
 
-插件若担心自己的信息被淹没, 可以使用 `append_msg(msg)` 方法来添加信息
+可以使用 `append_msg(msg)` 方法来插件的广播消息
