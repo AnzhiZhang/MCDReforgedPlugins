@@ -1,0 +1,7 @@
+start_stop_helper_r.help: |
+  §6!!server §7Show help message
+  §6!!server start §7Start server
+  §6!!server stop §7Stop server
+  §6!!server stop_exit §7Stop server and exit MCDR
+  §6!!server restart §7Restart server
+  §6!!server exit §7Exit MCDR
