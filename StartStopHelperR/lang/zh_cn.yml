@@ -1,0 +1,7 @@
+start_stop_helper_r.help: |
+  §6!!server §7显示帮助信息
+  §6!!server start §7启动服务器
+  §6!!server stop §7关闭服务器
+  §6!!server stop_exit §7关闭服务器并退出 MCDR
+  §6!!server restart §7重启服务器
+  §6!!server exit §7退出 MCDR

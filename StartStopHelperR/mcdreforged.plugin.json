@@ -1,0 +1,17 @@
+{
+    "id": "start_stop_helper_r",
+    "version": "0.0.2",
+    "name": "StartStopHelperR",
+    "description": {
+        "en_us": "Start and stop server helper",
+        "zh_cn": "开关服助手"
+    },
+    "author": [
+        "Fallen_Breath",
+        "zhang_anzhi"
+    ],
+    "link": "https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/StartStopHelperR",
+    "resources": [
+        "lang"
+    ]
+}
