@@ -20,7 +20,7 @@ class Config(Serializable):
 config: Config
 
 
-def on_load(server: PluginServerInterface, old):
+def on_load(server: PluginServerInterface, prev_module):
     global config
     config = server.load_config_simple('config.json', target_class=Config)
     permissions = config.permissions
