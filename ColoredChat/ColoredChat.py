@@ -25,7 +25,7 @@ def on_load(server, old):
 
 def on_user_info(server, info):
     if info.is_player:
-        if re.match(r'&[0-9a-z]', info.content):
+        if re.search(r'&[0-9a-z]', info.content):
             append_msg(f'<{info.player}> {info.content.replace("&", "§")}')
             server.say(RTextList(*[f'\n{i}' for i in msg_list[:msg_length]]))
         else:
