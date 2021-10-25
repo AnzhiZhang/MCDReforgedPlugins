@@ -13,7 +13,7 @@
 - [CoolQAPI](https://github.com/zhang-anzhi/CoolQAPI)
 - [OnlinePlayerAPI](https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/OnlinePlayerAPI)
 - [ConfigAPI](https://github.com/hanbings/ConfigAPI)
-- [JsonDataAPI](https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/JsonDataAPI)
+- [JsonDataAPI](https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Archive/JsonDataAPI)
 
 ## 配置
 
