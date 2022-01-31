@@ -3,7 +3,7 @@ import re
 import time
 
 from JsonDataAPI import Json
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 
 PERMISSIONS = {
@@ -36,7 +36,7 @@ HELP_MESSAGE = '''------AdvancedBan 玩家管理插件------
 §6!!banlist §7封禁列表'''
 
 
-def register_command(server: ServerInterface):
+def register_command(server: PluginServerInterface):
     """Register commands"""
     # ab
     server.register_command(
@@ -173,7 +173,7 @@ def register_command(server: ServerInterface):
     )
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!ab', 'AdvancedBan帮助信息',
                                  permission=min(PERMISSIONS.values()))
     register_command(server)

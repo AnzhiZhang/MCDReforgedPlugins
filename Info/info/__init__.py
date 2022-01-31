@@ -5,7 +5,7 @@ from typing import List
 
 import psutil
 
-from mcdreforged.plugin.server_interface import ServerInterface, \
+from mcdreforged.api.types import PluginServerInterface, \
     PluginServerInterface
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
