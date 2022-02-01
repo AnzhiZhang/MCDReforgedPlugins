@@ -4,7 +4,7 @@ import json
 import time
 from threading import Thread
 
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 
 PLUGIN_METADATA = {
@@ -87,7 +87,7 @@ class MinedRanking(Thread):
             self.update()
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     global mined_ranking
     from ConfigAPI import Config
     config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)

@@ -2,7 +2,7 @@
 import time
 from math import ceil
 
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 
@@ -46,7 +46,7 @@ HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 §6!!back §7返回上个地点'''
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     from ConfigAPI import Config
     from JsonDataAPI import Json
     global api, data
