@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 
-from mcdreforged.plugin.server_interface import PluginServerInterface
-from mcdreforged.info import Info
+from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.types import Info
 from mcdreforged.api.rtext import *
 from mcdreforged.api.utils import Serializable
 
