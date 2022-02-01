@@ -2,7 +2,7 @@
 from decimal import Decimal
 
 from ConfigAPI import Config
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 
 PLUGIN_METADATA = {
@@ -41,7 +41,7 @@ REMINDER = True
 PERMISSIONS = {}
 
 
-def register_command(server: ServerInterface):
+def register_command(server: PluginServerInterface):
     def check_my(src):
         if src.is_player:
             src.reply(f'§a您的余额为: §e{vault.get_balance(src.player)}')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Dict
 
-from mcdreforged.plugin.server_interface import PluginServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.utils import Serializable
 

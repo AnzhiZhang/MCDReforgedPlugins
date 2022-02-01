@@ -6,7 +6,7 @@ from ConfigAPI import Config
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 
 PLUGIN_METADATA = {
     'id': 'single_player_sleep',
@@ -48,7 +48,7 @@ def on_info(server, info):
         parse_time_info(info.content)
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     global single
 
     @new_thread('SinglePlayerSleep')
