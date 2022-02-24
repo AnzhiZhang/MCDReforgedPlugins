@@ -6,19 +6,6 @@ from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 
-PLUGIN_METADATA = {
-    'id': 'gamemode',
-    'version': '0.0.1',
-    'name': 'Gamemode',
-    'description': 'Change to spectator mode for observe, teleport to origin position when change back to survival mode',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/Gamemode',
-    'dependencies': {
-        'config_api': '*',
-        'json_data_api': '*',
-        'minecraft_data_api': '*'
-    }
-}
 DIMENSIONS = {
     '0': 'minecraft:overworld',
     '-1': 'minecraft:the_nether',
@@ -47,12 +34,12 @@ HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 
 
 def on_load(server: PluginServerInterface, old):
-    from ConfigAPI import Config
-    from JsonDataAPI import Json
+    from gamemode.config import Config
+    from gamemode.json import Json
     global api, data
     api = server.get_plugin_instance('minecraft_data_api')
-    config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
-    data = Json(PLUGIN_METADATA['name'])
+    config = Config("gamemode", DEFAULT_CONFIG)
+    data = Json("gamemode")
     permissions = config['permissions']
     server.register_help_message('!!spec help', 'Gamemode插件帮助')
 
