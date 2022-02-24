@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
-from math import ceil
+from math import ceil, floor
 
 from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
@@ -19,6 +19,13 @@ DIMENSIONS = {
     'minecraft:the_nether': 'minecraft:the_nether',
     'minecraft:the_end': 'minecraft:the_end'
 }
+
+HUMDIMS = {
+    'minecraft:overworld': '主世界',
+    'minecraft:the_nether': '下界',
+    'minecraft:the_end': '末地'
+}
+
 DEFAULT_CONFIG = {
     'permissions': {
         'spec': 1,
@@ -27,11 +34,17 @@ DEFAULT_CONFIG = {
         'back': 1
     }
 }
+
 HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 §6!!spec <player> §7切换他人模式
-§6!!tp <dimension> [position] §7传送至指定地点
+§6!!tp [dimension] [position] §7传送至指定地点
 §6!!back §7返回上个地点'''
 
+def nether_to_overworld(x, z):
+    return int(float(x)) * 8, int(float(z)) * 8
+
+def overworld_to_nether(x, z):
+    return floor(float(x) / 8 + 0.5), floor(float(z) / 8 + 0.5)
 
 def on_load(server: PluginServerInterface, old):
     from gamemode.config import Config
@@ -57,27 +70,86 @@ def on_load(server: PluginServerInterface, old):
             spec_to_sur(server, player)
 
     @new_thread('Gamemode tp')
+
     def tp(src, ctx):
+
+        def coordValid(a):
+            if a.count('-') > 1 or a.count('.') > 1 or  a.startswith('.') or  a.endswith('.'):
+                return False
+            a = a.replace('-', '')
+            a = a.replace('.', '')
+            if a.isdigit():
+                return True
+            return False
+
         if src.is_console:
             return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
-        elif ctx['dimension'] not in DIMENSIONS.keys():
-            src.reply('§c没有此维度')
-        else:
-            pos = ' '.join((
-                str(ctx.get('x', '0')),
-                str(ctx.get('y', '80')),
-                str(ctx.get('z', '0'))
-            ))
-            dim = DIMENSIONS[ctx['dimension']]
+
+        params = []
+
+        if ctx.get('a', '') != '':
+            params.append(ctx['a'])
+            if ctx.get('b', '') != '':
+                params.append(ctx['b'])
+                if ctx.get('c', '') != '':
+                    params.append(ctx['c'])
+                    if ctx.get('d', '') != '':
+                        params.append(ctx['d'])
+
+        dim = ''
+        pos = ''
+        humpos = ''
+
+        if len(params) == 1: # only dimension
+            if params[0] not in DIMENSIONS.keys():
+                src.reply('§c没有此维度')
+            elif DIMENSIONS[params[0]] == DIMENSIONS[api.get_player_info(src.player, 'Dimension')]:
+                src.reply('§c您正在此维度！')
+            elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (DIMENSIONS[api.get_player_info(src.player, 'Dimension')] == 'minecraft:overworld'):
+                dim = DIMENSIONS[params[0]]
+                orgpos = [str(x) for x in api.get_player_info(src.player, 'Pos')]
+                newposx, newposz = overworld_to_nether(orgpos[0], orgpos[2])
+                pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
+                humpos = ' '.join((str(newposx), str(int(float(orgpos[1]))), str(newposz)))
+            elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (DIMENSIONS[api.get_player_info(src.player, 'Dimension')] == 'minecraft:the_nether'):
+                dim = DIMENSIONS[params[0]]
+                orgpos = [str(x) for x in api.get_player_info(src.player, 'Pos')]
+                newposx, newposz = nether_to_overworld(orgpos[0], orgpos[2])
+                pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
+                humpos = ' '.join((str(newposx), str(int(float(orgpos[1]))), str(newposz)))
+            else:
+                dim = DIMENSIONS[params[0]]
+                pos = '0 80 0'
+                humpos = '0 80 0'
+
+        elif len(params) == 3: # only position
+            if not coordValid(params[0]):
+                src.reply('§c坐标不合法')
+            else:
+                dim = DIMENSIONS[api.get_player_info(src.player, 'Dimension')]
+                pos = ' '.join((str(float(params[0])), str(params[1]), str(params[2])))
+                humpos = ' '.join((str(int(float(params[0]))), str(int(params[1])), str(int(params[2]))))
+
+        elif len(params) == 4: # dimension + position
+            if params[0] not in DIMENSIONS.keys():
+                src.reply('§c没有此维度')
+            else:
+                dim = DIMENSIONS[params[0]]
+
+            pos = ' '.join((str(params[1]), str(params[2]), str(params[3])))
+            humpos = ' '.join((str(int(params[1])), str(int(params[2])), str(int(params[3]))))
+
+        if dim != '' and pos != '' and params != '':
             data[src.player]['back'] = {
                 'dim': DIMENSIONS[api.get_player_info(src.player, 'Dimension')],
                 'pos': api.get_player_info(src.player, 'Pos')
             }
             data.save()
             server.execute(f'execute in {dim} run tp {src.player} {pos}')
-            src.reply(f'§a传送至§e{dim}§a, 坐标§e{dim}')
+            humdim = HUMDIMS[dim]
+            src.reply(f'§a传送至§e{humdim}§a, 坐标§e{humpos}')
 
     @new_thread('Gamemode back')
     def back(src):
@@ -117,14 +189,15 @@ def on_load(server: PluginServerInterface, old):
         Literal('!!tp').
             requires(lambda src: src.has_permission(permissions['tp'])).
             then(
-            Text('dimension').
+            Text('a').
                 runs(tp).
                 then(
-                Float('x').
+                Float('b').
                     then(
-                    Float('y').
+                    Float('c').
+                        runs(tp).
                         then(
-                        Float('z').runs(tp)
+                        Float('d').runs(tp)
                     )
                 )
             )
