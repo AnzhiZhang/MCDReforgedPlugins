@@ -5,6 +5,8 @@ from math import ceil, floor
 from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
+from mcdreforged.api.utils import Serializable
+from gamemode.json import Json
 
 DIMENSIONS = {
     '0': 'minecraft:overworld',
@@ -27,18 +29,24 @@ HUMDIMS = {
 }
 
 DEFAULT_CONFIG = {
-    'permissions': {
-        'spec': 1,
-        'spec_other': 2,
-        'tp': 1,
-        'back': 1
-    }
+    'spec': 1,
+    'spec_other': 2,
+    'tp': 1,
+    'back': 1
 }
 
 HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 §6!!spec <player> §7切换他人模式
 §6!!tp [dimension] [position] §7传送至指定地点
 §6!!back §7返回上个地点'''
+
+class Config(Serializable):
+    spec: int = 1
+    spec_other: int = 2
+    tp: int = 1
+    back: int = 1
+
+config: Config
 
 def nether_to_overworld(x, z):
     return int(float(x)) * 8, int(float(z)) * 8
@@ -47,13 +55,11 @@ def overworld_to_nether(x, z):
     return floor(float(x) / 8 + 0.5), floor(float(z) / 8 + 0.5)
 
 def on_load(server: PluginServerInterface, old):
-    from gamemode.config import Config
-    from gamemode.json import Json
     global api, data
     api = server.get_plugin_instance('minecraft_data_api')
-    config = Config("gamemode", DEFAULT_CONFIG)
+    permissions = server.load_config_simple('config.json', default_config=DEFAULT_CONFIG,  target_class=Config)
     data = Json("gamemode")
-    permissions = config['permissions']
+
     server.register_help_message('!!spec help', 'Gamemode插件帮助')
 
     @new_thread('Gamemode switch mode')
@@ -89,14 +95,14 @@ def on_load(server: PluginServerInterface, old):
 
         params = []
 
-        if ctx.get('a', '') != '':
-            params.append(ctx['a'])
-            if ctx.get('b', '') != '':
-                params.append(ctx['b'])
-                if ctx.get('c', '') != '':
-                    params.append(ctx['c'])
-                    if ctx.get('d', '') != '':
-                        params.append(ctx['d'])
+        if ctx.get('param1', '') != '':
+            params.append(ctx['param1'])
+            if ctx.get('param2', '') != '':
+                params.append(ctx['param2'])
+                if ctx.get('param3', '') != '':
+                    params.append(ctx['param3'])
+                    if ctx.get('param4', '') != '':
+                        params.append(ctx['param4'])
 
         dim = ''
         pos = ''
@@ -171,7 +177,7 @@ def on_load(server: PluginServerInterface, old):
 
     server.register_command(
         Literal('!!spec').
-            requires(lambda src: src.has_permission(permissions['spec'])).
+            requires(lambda src: src.has_permission(permissions.spec)).
             runs(change_mode).
             then(
             Literal('help').
@@ -180,24 +186,24 @@ def on_load(server: PluginServerInterface, old):
             then(
             Text('player').
                 requires(
-                lambda src: src.has_permission(permissions['spec_other'])
+                lambda src: src.has_permission(permissions.spec_other)
             ).
                 runs(change_mode)
         )
     )
     server.register_command(
         Literal('!!tp').
-            requires(lambda src: src.has_permission(permissions['tp'])).
+            requires(lambda src: src.has_permission(permissions.tp)).
             then(
-            Text('a').
-                runs(tp).
+            Text('param1').
+                runs(tp). # !!tp <dimension> -- param1 = dimension
                 then(
-                Float('b').
+                Float('param2').
                     then(
-                    Float('c').
-                        runs(tp).
+                    Float('param3').
+                        runs(tp). # !!tp <x> <y> <z> -- param1 = x, param2 = y, param3 = z
                         then(
-                        Float('d').runs(tp)
+                        Float('param4').runs(tp) # !!tp <dimension> <x> <y> <z> -- param1 = dimension, param2 = x, param3 = y, param4 = z
                     )
                 )
             )
@@ -205,7 +211,7 @@ def on_load(server: PluginServerInterface, old):
     )
     server.register_command(
         Literal('!!back').
-            requires(lambda src: src.has_permission(permissions['back'])).
+            requires(lambda src: src.has_permission(permissions.back)).
             runs(back)
     )
 
