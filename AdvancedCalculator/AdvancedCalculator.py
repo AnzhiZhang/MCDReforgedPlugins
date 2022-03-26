@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
@@ -25,7 +25,7 @@ class Stack:
         self.single = single
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!calc', '查看计算插件使用帮助')
     server.register_command(
         Literal('!!calc').

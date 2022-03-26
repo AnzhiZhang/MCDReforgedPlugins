@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 
 PLUGIN_METADATA = {
@@ -58,7 +58,7 @@ whitelist_help = '''/whitelist add <target> 添加白名单成员
 '''
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     global config, data, host, port
     from ConfigAPI import Config
     from JsonDataAPI import Json

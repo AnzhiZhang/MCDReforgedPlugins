@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
@@ -45,7 +45,7 @@ HELP_MESSAGE = '''§6!!bot §7显示机器人列表
 §6!!bot remove <name> §7从机器人列表移除机器人'''
 
 
-def on_load(server: ServerInterface, old):
+def on_load(server: PluginServerInterface, old):
     from ConfigAPI import Config
     from JsonDataAPI import Json
     config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
