@@ -1,6 +1,6 @@
 # MCDReforged 插件仓库
 
-[![license](https://shields.io/github/license/AnzhiZhang/MCDReforgedPlugins)](https://github.com/AnzhiZhang/MCDReforgedPlugins)
+[![license](https://shields.io/github/license/AnzhiZhang/MCDReforgedPlugins)](https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/LICENSE)
 ![downloads](https://shields.io/github/downloads/AnzhiZhang/MCDReforgedPlugins/total)
 
 这里是我开发的 [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 插件收集仓库
