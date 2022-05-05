@@ -6,7 +6,7 @@
 
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
 
-- [ConfigAPI](https://github.com/hanbings/ConfigAPI)
+- [ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
 
 ## 配置
 

@@ -6,7 +6,7 @@
 
 ## 前置插件
 
-[JsonDataAPI](https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/JsonDataAPI)
+[JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/JsonDataAPI)
 
 ## 使用方法
 

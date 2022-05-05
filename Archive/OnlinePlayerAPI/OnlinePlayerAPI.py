@@ -8,7 +8,7 @@ PLUGIN_METADATA = {
     'name': 'OnlinePlayerAPI',
     'description': 'Online Player API',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/OnlinePlayerAPI'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/OnlinePlayerAPI'
 }
 
 

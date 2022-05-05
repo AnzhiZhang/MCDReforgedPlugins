@@ -8,7 +8,7 @@ PLUGIN_METADATA = {
     'name': 'MinecraftItemAPI',
     'description': 'Minecraft Item API',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/MinecraftItemAPI'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/MinecraftItemAPI'
 }
 
 # TODO LIST

@@ -8,7 +8,7 @@ PLUGIN_METADATA = {
     'name': 'JsonDataAPI',
     'description': 'Json data API for plugin save data',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/JsonDataAPI'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/JsonDataAPI'
 }
 
 

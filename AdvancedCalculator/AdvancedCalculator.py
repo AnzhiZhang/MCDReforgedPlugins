@@ -9,7 +9,7 @@ PLUGIN_METADATA = {
     'name': 'AdvancedCalculator',
     'description': 'In game multiple calculator',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/AdvancedCalculator'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/AdvancedCalculator'
 }
 HELP_MSG = '''§7!!calc <expression> §6计算表达式
 §7!!calc item <count> §6物品数转换堆叠数

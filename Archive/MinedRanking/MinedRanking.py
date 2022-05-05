@@ -13,7 +13,7 @@ PLUGIN_METADATA = {
     'name': 'MinedRanking',
     'description': 'Set mined ranking on scoreboard',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/MinedRanking',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/MinedRanking',
     'dependencies': {
         'config_api': '*'
     }
