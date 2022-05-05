@@ -21,7 +21,7 @@ PLUGIN_METADATA = {
     'name': 'AdvancedBan',
     'description': 'A player manage plugin',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/AdvancedBan',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/AdvancedBan',
     'dependencies': {
         'json_data_api': '*'
     }

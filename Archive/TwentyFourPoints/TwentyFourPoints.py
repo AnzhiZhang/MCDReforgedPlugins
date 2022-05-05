@@ -12,7 +12,7 @@ PLUGIN_METADATA = {
     'name': 'TwentyFourPoints',
     'description': 'Twenty-four points game',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/TwentyFourPoints',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/TwentyFourPoints',
     'dependencies': {
         'vault': '*'
     }

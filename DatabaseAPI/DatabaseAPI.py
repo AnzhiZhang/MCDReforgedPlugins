@@ -13,7 +13,7 @@ PLUGIN_METADATA = {
     'name': 'DatabaseAPI',
     'description': 'Database API to access database',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/DataBaseAPI'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/DataBaseAPI'
 }
 
 

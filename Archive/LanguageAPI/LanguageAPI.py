@@ -7,7 +7,7 @@ PLUGIN_METADATA = {
     'name': 'LanguageAPI',
     'description': 'Language API',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/LanguageAPI'
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/LanguageAPI'
 }
 
 

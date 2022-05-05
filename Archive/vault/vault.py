@@ -15,7 +15,7 @@ PLUGIN_METADATA = {
     'name': 'vault',
     'description': 'vault',
     'author': 'zhang_anzhi',
-    'link': 'https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/vault',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/vault',
     'dependencies': {
         'database_api': '*'
     }
