@@ -2,6 +2,8 @@
 
 > 地毯端机器人管理与放置
 
+建议使用 [CarpetBotManager](https://github.com/FAS-Server/CarpetBotManager)
+
 ## 前置插件
 
 [ConfigAPI](https://github.com/zhang-anzhi/MCDReforgedPlugins/tree/master/ConfigAPI)
