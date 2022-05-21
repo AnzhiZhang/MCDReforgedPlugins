@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.types import PluginServerInterface, Info
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
-PLUGIN_METADATA = {
-    'id': 'advanced_calculator',
-    'version': '0.0.1',
-    'name': 'AdvancedCalculator',
-    'description': 'In game multiple calculator',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/AdvancedCalculator'
-}
 HELP_MSG = '''§7!!calc <expression> §6计算表达式
-§7!!calc item <count> §6物品数转换堆叠数
+§7!!calc item <count/expression> §6物品数转换堆叠数
 §7!!calc item <box> <stack> <single> §6堆叠数转换物品数
 §7!!calc color <red> <green> <blue> §610进制RGB转16进制
 §7!!calc color <#HEX> §616十进制RGB转10进制'''
@@ -27,6 +19,7 @@ class Stack:
 
 def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!calc', '查看计算插件使用帮助')
+    server.register_help_message('=<expression>', '计算表达式')
     server.register_command(
         Literal('!!calc').
             requires(lambda src: src.is_player).
@@ -34,7 +27,7 @@ def on_load(server: PluginServerInterface, old):
             then(
             Literal('item').
                 then(
-                Integer('box/count').
+                Text('box/count').
                     runs(calc_item).
                     then(
                     Integer('stack').
@@ -63,37 +56,60 @@ def on_load(server: PluginServerInterface, old):
     )
 
 
+def on_user_info(server: PluginServerInterface, info: Info):
+    if info.content.startswith('='):
+        calc_expression(
+            info.get_command_source(),
+            {'expression': info.content[1:]}
+        )
+
+
+def say_error_info(src, exp, error):
+    return src.get_server().say(
+        RText(f'§c计算 §6{exp} §c出错: §6{type(e).__name__}').h(error)
+    )
+
+
 def calc_expression(src, ctx):
     exp = ctx['expression']
     try:
-        message = f'§7{exp}=§6{eval(exp)}'
+        src.get_server().say(f'§7{exp}=§6{eval(exp)}')
     except (NameError, SyntaxError, ZeroDivisionError) as e:
-        message = RText(f'§c计算 §6{exp} §c出错: §6{type(e).__name__}').h(e)
-    src.get_server().say(message)
+        say_error_info(src, exp, e)
 
 
 def calc_item(src, ctx):
     if len(ctx) == 1:
-        count = ctx['box/count']
-        s = Stack()
-        s.single = count % 64
-        s.box = count // (64 * 27)
-        s.stack = (count - s.box * 64 * 27) // 64
-        src.get_server().say(RTextList(
-            f'§6{count}§7个物品为',
-            RText(f'{s.box}盒', color=RColor.yellow),
-            RText(f'{s.stack}组', color=RColor.green),
-            RText(f'{s.single}个', color=RColor.aqua)
-        ))
+        exp = ctx['box/count']
+        try:
+            count = eval(exp)
+            s = Stack()
+            s.single = count % 64
+            s.box = count // (64 * 27)
+            s.stack = (count - s.box * 64 * 27) // 64
+            src.get_server().say(
+                RTextList(
+                    f'§6{count}§7个物品为',
+                    RText(f'{s.box}盒', color=RColor.yellow),
+                    RText(f'{s.stack}组', color=RColor.green),
+                    RText(f'{s.single}个', color=RColor.aqua)
+                )
+            )
+        except (NameError, SyntaxError, ZeroDivisionError) as e:
+            say_error_info(src, exp, e)
     else:
-        s = Stack(ctx['box/count'], ctx['stack'], ctx['single'])
-        count = (s.box * 64 * 27) + (s.stack * 64) + s.single
-        src.get_server().say(RTextList(
-            RText(f'{s.box}盒', color=RColor.yellow),
-            RText(f'{s.stack}组', color=RColor.green),
-            RText(f'{s.single}个', color=RColor.aqua),
-            f'§7为§6{count}§7个物品',
-        ))
+        try:
+            ctx['box/count'] = int(ctx['box/count'])
+            s = Stack(ctx['box/count'], ctx['stack'], ctx['single'])
+            count = (s.box * 64 * 27) + (s.stack * 64) + s.single
+            src.get_server().say(RTextList(
+                RText(f'{s.box}盒', color=RColor.yellow),
+                RText(f'{s.stack}组', color=RColor.green),
+                RText(f'{s.single}个', color=RColor.aqua),
+                f'§7为§6{count}§7个物品',
+            ))
+        except ValueError:
+            src.get_server().say(RText('无效的整数', color=RColor.red))
 
 
 def calc_color(src, ctx):

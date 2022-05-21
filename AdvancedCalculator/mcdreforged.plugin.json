@@ -1,0 +1,11 @@
+{
+    "id": "advanced_calculator",
+    "version": "0.1.0",
+    "name": "AdvancedCalculator",
+    "description": {
+        "en_us": "Provides multiple convenient in-game calculations",
+        "zh_cn": "提供游戏内多种便捷计算"
+    },
+    "author": "Andy Zhang",
+    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/AdvancedCalculator"
+}
