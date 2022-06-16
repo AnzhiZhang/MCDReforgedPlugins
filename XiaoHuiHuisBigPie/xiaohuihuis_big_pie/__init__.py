@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from mcdreforged.api.types import PluginServerInterface, Info
-from mcdreforged.api.command import *
-from mcdreforged.api.rtext import *
 
 writing_mode = False
 player_name = None
