@@ -6,7 +6,7 @@ from mcdreforged.api.types import PluginServerInterface, CommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
-TEAM_NAME = ['§cRed', '§9Blue', '§aGreen', '§eYellow']
+TEAM_NAME = ['§cRed', '§eYellow', '§aGreen', '§3Blue']
 HELP_MSG = '''§7!!bingo team <num> §6按在线玩家随机分组
 §7!!bingo end §6结束游戏'''
 
@@ -49,4 +49,4 @@ def team(src: CommandSource, ctx):
     # Show result
     src.get_server().say(RText('§6§l分组结果如下：'))
     for i, players in enumerate(result):
-        src.get_server().say(f'§l{TEAM_NAME[i]}: {", ".join(players)}')
+        src.get_server().say(f'{TEAM_NAME[i]}: §r{", ".join(players)}')
