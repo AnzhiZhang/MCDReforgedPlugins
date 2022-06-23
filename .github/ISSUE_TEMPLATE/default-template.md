@@ -1,11 +1,11 @@
 ---
 name: Default Template
 about: Create a issue for a plugin
-title: "[Plugin name]: Title"
+title: '[Plugin name]: Title'
 labels: ''
 assignees: ''
-
 ---
+<!-- markdownlint-disable MD022 -->
 
 ## Describe
 A clear and concise description of your issue.
