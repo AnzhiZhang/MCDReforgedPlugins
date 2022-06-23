@@ -1,0 +1,99 @@
+name: Release Please
+on: push
+
+jobs:
+  change-finder:
+    runs-on: ubuntu-latest
+    name: Change Finder
+
+    outputs:
+      changed: ${{ steps.find.outputs.changed }}
+      plugins: ${{ steps.find.outputs.plugins }}
+
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Find
+        id: find
+        run: node changeFinder.js
+
+  release-please-pr:
+    runs-on: ubuntu-latest
+    name: Release Please PR
+    needs:
+      - change-finder
+      - release-please-release
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJson(needs.change-finder.outputs.plugins) }}
+
+    steps:
+      - name: Release Please PR
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: simple
+          package-name: ${{ matrix.plugin }}
+          path: ${{ matrix.plugin }}
+          monorepo-tags: true
+          command: release-pr
+          pull-request-title-pattern: 'chore${scope}: 🔖 release${component} ${version}'
+
+  release-please-release:
+    runs-on: ubuntu-latest
+    name: Release Please Release
+    needs: change-finder
+    if: ${{ needs.change-finder.outputs.changed == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJson(needs.change-finder.outputs.plugins) }}
+
+    steps:
+      - name: Release Please Release
+        uses: google-github-actions/release-please-action@v3
+        id: release_please_release
+        with:
+          release-type: simple
+          package-name: ${{ matrix.plugin }}
+          path: ${{ matrix.plugin }}
+          monorepo-tags: true
+          command: github-release
+          pull-request-title-pattern: 'chore${scope}: 🔖 release${component} ${version}'
+
+      - name: Check Out
+        uses: actions/checkout@v3
+        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install mcdreforged
+
+      - name: Pack
+        id: pack
+        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        run: |
+          python -m mcdreforged pack -i ${{ matrix.plugin }}
+          echo ::set-output name=name::$(ls *.mcdr)
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release_please_release.outputs[format('{0}--upload_url', matrix.plugin)] }}
+          asset_path: ${{ steps.pack.outputs.name }}
+          asset_name: ${{ steps.pack.outputs.name }}
+          asset_content_type: application/zip
