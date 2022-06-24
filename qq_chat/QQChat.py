@@ -9,8 +9,8 @@ PLUGIN_METADATA = {
     'version': '0.0.3',
     'name': 'QQChat',
     'description': 'Connect Minecraft and QQ',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/QQChat',
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_chat',
     'dependencies': {
         'cool_q_api': '*',
         'online_player_api': '*',

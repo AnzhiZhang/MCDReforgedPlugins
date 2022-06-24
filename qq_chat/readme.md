@@ -11,9 +11,9 @@
 ### 前置插件
 
 - [CoolQAPI](https://github.com/AnzhiZhang/CoolQAPI)
-- [OnlinePlayerAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/OnlinePlayerAPI)
+- [OnlinePlayerAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/OnlinePlayerAPI)
 - [ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
-- [JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/JsonDataAPI)
+- [JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/JsonDataAPI)
 
 ## 配置
 

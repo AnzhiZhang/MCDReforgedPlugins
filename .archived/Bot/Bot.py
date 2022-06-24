@@ -8,8 +8,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'Bot',
     'description': 'Carpet bot easy manage and set',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/Bot',
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/Bot',
     'dependencies': {
         'config_api': '*',
         'json_data_api': '*'

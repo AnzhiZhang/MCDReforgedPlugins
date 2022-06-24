@@ -7,7 +7,7 @@
 
 ### 前置插件
 
-- [vault](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/vault)
+- [vault](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/vault)
 - [ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
 
 ## 使用方法

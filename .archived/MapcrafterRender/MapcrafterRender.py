@@ -9,8 +9,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'MapcrafterRender',
     'description': 'User command to make new Mapcrafter.',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/MapcrafterRender'
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/MapcrafterRender'
 }
 mapcrafter_path = 'mapcrafter'
 output_path = ''

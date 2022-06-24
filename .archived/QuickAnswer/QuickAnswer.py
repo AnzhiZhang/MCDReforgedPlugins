@@ -9,8 +9,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'QuickAnswer',
     'description': 'Quick answerr some math questions',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/QuickAnswer',
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/QuickAnswer',
     'dependencies': {
         'vault': '*'
     }

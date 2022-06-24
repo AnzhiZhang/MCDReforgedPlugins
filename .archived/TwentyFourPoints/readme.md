@@ -4,7 +4,7 @@
 
 ## 环境要求
 
-- [vault](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/vault)
+- [vault](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/vault)
 
 ## 使用
 

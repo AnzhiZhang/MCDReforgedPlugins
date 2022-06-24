@@ -10,8 +10,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'Economy',
     'description': 'Economy plugin',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/Economy',
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/Economy',
     'dependencies': {
         'vault': '*',
         'config_api': '*'

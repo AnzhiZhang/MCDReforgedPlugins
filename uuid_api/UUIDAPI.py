@@ -10,8 +10,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'UUIDAPI',
     'description': 'UUID API',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/UUIDAPI'
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/uuid_api'
 }
 
 # Do not change these

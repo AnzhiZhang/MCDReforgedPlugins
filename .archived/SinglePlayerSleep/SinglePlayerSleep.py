@@ -13,8 +13,8 @@ PLUGIN_METADATA = {
     'version': '0.0.1',
     'name': 'SinglePlayerSleep',
     'description': 'Allowed single sleep in server to skip night',
-    'author': 'zhang_anzhi',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/Archive/SinglePlayerSleep',
+    'author': 'Andy Zhang',
+    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/SinglePlayerSleep',
     'dependencies': {
         'minecraft_data_api': '*',
         'config_api': '*'
