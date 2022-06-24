@@ -1,5 +1,13 @@
 {
     "conventionalCommits.scopes": [
-        "bingo"
+        "advanced_calculator",
+        "bingo",
+        "database_api",
+        "gamemode",
+        "info",
+        "qq_chat",
+        "start_stop_helper_r",
+        "uuid_api",
+        "xiaohuihuis_big_pie"
     ]
 }
