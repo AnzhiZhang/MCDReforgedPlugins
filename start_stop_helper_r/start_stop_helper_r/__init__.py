@@ -35,7 +35,7 @@ def on_load(server: PluginServerInterface, prev_module):
         Literal('!!server').
             requires(lambda src: src.has_permission(permissions['help'])).
             runs(
-            lambda src: src.reply(server.tr('start_stop_helper_r.help'))
+            lambda src: src.reply(server.rtr('start_stop_helper_r.help'))
         ).
             then(
             Literal('start').

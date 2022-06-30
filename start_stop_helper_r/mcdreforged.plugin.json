@@ -1,6 +1,6 @@
 {
     "id": "start_stop_helper_r",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "name": "StartStopHelperR",
     "description": {
         "en_us": "Start and stop server helper",
