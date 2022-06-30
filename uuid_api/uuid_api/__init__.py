@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-import requests
 import os
+import requests
 
-# Set manual_mode as a bool if you uuid is not concerned server.properties
+# Set manual_mode as a bool if online mode is not set server.properties
 # Example: BungeeCord server turned on the online mode
 MANUAL_MODE = None
-PLUGIN_METADATA = {
-    'id': 'uuid_api',
-    'version': '0.0.1',
-    'name': 'UUIDAPI',
-    'description': 'UUID API',
-    'author': 'Andy Zhang',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/uuid_api'
-}
 
 # Do not change these
 properties_path = os.path.join('server', 'server.properties')
@@ -26,28 +18,33 @@ def on_load(server, old):
 
 
 def get_online_mode(server):
-    if MANUAL_MODE is not None:
-        server.logger.info(f'使用手动设置的在线模式: {manual_mode}')
+    # 手动设置覆盖
+    if MANUAL_MODE is not None and isinstance(MANUAL_MODE, bool):
+        server.logger.info(f'使用手动设置的在线模式: {MANUAL_MODE}')
         return MANUAL_MODE
+
+    # 读取服务器配置
     if not os.path.isfile(properties_path):
-        return server.logger.error('未找到服务器配置文件')
-    with open(properties_path) as f:
-        for i in f.readlines():
-            if 'online-mode' in i:
-                break
-        server.logger.debug(f'查找到配置项: {i}')
-        i = i.split('=')[1].replace('\n', '')
-    if i == 'true':
+        server.logger.error('未找到服务器配置文件，使用默认配置 True')
         return True
-    elif i == 'false':
-        return False
     else:
-        server.logger.error('服务器配置项错误，使用默认配置True')
-        return True
+        with open(properties_path) as f:
+            for i in f.readlines():
+                if 'online-mode' in i:
+                    server.logger.debug(f'查找到配置项: {i}')
+                    server_properties_config = i.split('=')[1].replace('\n', '')
+                    break
+        if server_properties_config == 'true':
+            return True
+        elif server_properties_config == 'false':
+            return False
+        else:
+            server.logger.error('服务器配置项错误，使用默认配置 True')
+            return True
 
 
 def online_uuid(name):
-    url = f'http://api.mojang.com/users/profiles/minecraft/{name}'
+    url = f'https://api.mojang.com/users/profiles/minecraft/{name}'
     r = get_try(url)
     if r is None:
         return None
@@ -67,8 +64,7 @@ def offline_uuid(name):
 def get_try(url):
     for i in range(0, 5):
         try:
-            r = requests.get(url).json()
-            return r
+            return requests.get(url).json()
         except:
             pass
     return None
