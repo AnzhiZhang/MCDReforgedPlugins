@@ -1,27 +1,38 @@
 # -*- coding: utf-8 -*-
 import os
 import requests
+from typing import Union
 
-# Set manual_mode as a bool if online mode is not set server.properties
-# Example: BungeeCord server turned on the online mode
-MANUAL_MODE = None
+from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.utils.serializer import Serializable
 
-# Do not change these
+
+class Config(Serializable):
+    online_mode: Union[bool, None] = None
+
+
 properties_path = os.path.join('server', 'server.properties')
 online_mode = True
+config: Config
 
 
-def on_load(server, old):
-    global online_mode
+def on_load(server: PluginServerInterface, old):
+    global config, online_mode
+    config = server.load_config_simple(
+        'config.json',
+        target_class=Config
+    )
     online_mode = get_online_mode(server)
     server.logger.debug(f'服务器在线模式为: {online_mode}')
 
 
 def get_online_mode(server):
+    global config
     # 手动设置覆盖
-    if MANUAL_MODE is not None and isinstance(MANUAL_MODE, bool):
-        server.logger.info(f'使用手动设置的在线模式: {MANUAL_MODE}')
-        return MANUAL_MODE
+    server.logger.info(config.online_mode)
+    if config.online_mode is not None and isinstance(config.online_mode, bool):
+        server.logger.info(f'使用手动设置的在线模式: {config.online_mode}')
+        return config.online_mode
 
     # 读取服务器配置
     if not os.path.isfile(properties_path):
