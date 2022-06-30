@@ -1,20 +1,11 @@
 # -*- coding: utf-8 -*-
+from typing import Dict
+
 from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
+from mcdreforged.api.utils.serializer import Serializable
 
-PLUGIN_METADATA = {
-    'id': 'bot',
-    'version': '0.0.1',
-    'name': 'Bot',
-    'description': 'Carpet bot easy manage and set',
-    'author': 'Andy Zhang',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/Bot',
-    'dependencies': {
-        'config_api': '*',
-        'json_data_api': '*'
-    }
-}
 DIMENSIONS = {
     '0': 'minecraft:overworld',
     '-1': 'minecraft:the_nether',
@@ -28,16 +19,6 @@ DIMENSIONS = {
     'minecraft:the_nether': 'minecraft:the_nether',
     'minecraft:the_end': 'minecraft:the_end'
 }
-DEFAULT_CONFIG = {
-    'gamemode': 'survival',
-    'permissions': {
-        'list': 1,
-        'spawn': 2,
-        'kill': 2,
-        'add': 3,
-        'remove': 3
-    }
-}
 HELP_MESSAGE = '''§6!!bot §7显示机器人列表
 §6!!bot spawn <name> §7生成机器人
 §6!!bot kill <name> §7移除机器人
@@ -45,13 +26,22 @@ HELP_MESSAGE = '''§6!!bot §7显示机器人列表
 §6!!bot remove <name> §7从机器人列表移除机器人'''
 
 
+class Config(Serializable):
+    gamemode: str = 'survival'
+    permissions: Dict[str,int] = {
+        'list': 1,
+        'spawn': 2,
+        'kill': 2,
+        'add': 3,
+        'remove': 3
+    }
+
+
 def on_load(server: PluginServerInterface, old):
-    from ConfigAPI import Config
-    from JsonDataAPI import Json
-    config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
-    data = Json(PLUGIN_METADATA['name'])
-    permissions = config['permissions']
-    server.register_help_message('!!bot help', '显示Bot插件帮助')
+    config = server.load_config_simple('config.json', target_class=Config)
+    data = server.load_config_simple('data.json', default_config={})
+    permissions = config.permissions
+    server.register_help_message('!!bot help', '显示 Bot 插件帮助')
     server.register_help_message(
         '!!bot',
         RText('显示机器人列表').c(RAction.run_command, '!!bot').h('点击显示机器人列表')
