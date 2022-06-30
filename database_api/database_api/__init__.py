@@ -7,14 +7,6 @@ __all__ = [
     'TableBase',
     'DataManager',
 ]
-PLUGIN_METADATA = {
-    'id': 'database_api',
-    'version': '0.0.1',
-    'name': 'DatabaseAPI',
-    'description': 'Database API to access database',
-    'author': 'Andy Zhang',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/database_api'
-}
 
 
 def repr_(self):
