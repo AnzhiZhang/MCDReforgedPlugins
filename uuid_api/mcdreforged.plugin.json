@@ -1,6 +1,6 @@
 {
     "id": "uuid_api",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "name": "UUIDAPI",
     "description": {
         "en_us": "UUID API",

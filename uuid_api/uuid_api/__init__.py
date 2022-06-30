@@ -4,7 +4,7 @@ import requests
 from typing import Union
 
 from mcdreforged.api.types import PluginServerInterface
-from mcdreforged.api.utils.serializer import Serializable
+from mcdreforged.api.utils import Serializable
 
 
 class Config(Serializable):
