@@ -5,8 +5,7 @@ from typing import List
 
 import psutil
 
-from mcdreforged.api.types import ServerInterface, \
-    PluginServerInterface
+from mcdreforged.api.types import ServerInterface, PluginServerInterface
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
 from mcdreforged.api.utils import Serializable
@@ -65,11 +64,11 @@ def get_server_info(server: ServerInterface) -> RTextList:
 
     return RTextList(
         f'§7============ §6{server.tr("info.title")} §7============\n',
-        f'§7{server.tr("info.systemVersion")}:§6 {platform.platform()}\n',
-        f'§7{server.tr("info.pythonVersion")}:§6 {platform.python_version()}\n',
-        f'§7{server.tr("info.cpuUsed")}:§6 {get_cpu_use()}\n',
-        f'§7{server.tr("info.memoryUsed")}:§6 {get_memory_use()}\n',
-        f'§7{server.tr("info.worldSize")}:§6 {get_world_size()}'
+        f'§7{server.rtr("info.systemVersion")}:§6 {platform.platform()}\n',
+        f'§7{server.rtr("info.pythonVersion")}:§6 {platform.python_version()}\n',
+        f'§7{server.rtr("info.cpuUsed")}:§6 {get_cpu_use()}\n',
+        f'§7{server.rtr("info.memoryUsed")}:§6 {get_memory_use()}\n',
+        f'§7{server.rtr("info.worldSize")}:§6 {get_world_size()}'
     )
 
 
