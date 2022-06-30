@@ -1,27 +1,20 @@
 # Bot
 
-> 地毯端机器人管理与放置
-
-建议使用 [CarpetBotManager](https://github.com/FAS-Server/CarpetBotManager)
-
-## 前置插件
-
-[ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
-[JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/JsonDataAPI)
+> 地毯模组假人管理与放置
 
 ## 使用方法
 
-`!!bot` 显示机器人列表
+`!!bot` 显示假人列表
 
 `!!bot help` 显示帮助
 
-`!!bot spawn <name>` 生成机器人
+`!!bot spawn <name>` 生成假人
 
-`!!bot kill <name>` 移除机器人
+`!!bot kill <name>` 移除假人
 
-`!!bot add <name> <dim> <pos> <facing>` 添加机器人到机器人列表
+`!!bot add <name> <dim> <pos> <facing>` 添加假人到假人列表
 
-`!!bot remove <name>` 从机器人列表移除机器人
+`!!bot remove <name>` 从假人列表移除假人
 
 ## 配置
 
@@ -29,7 +22,7 @@
 
 默认值: `survival`
 
-生成机器人的游戏模式
+生成假人的游戏模式
 
 ### permissions
 
