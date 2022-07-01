@@ -1,6 +1,6 @@
 {
     "id": "bot",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "name": "Bot",
     "description": {
         "en_us": "Manage carpet bots",
