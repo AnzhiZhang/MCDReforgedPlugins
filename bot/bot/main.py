@@ -71,7 +71,7 @@ class Main:
                 command = f'player {name} spawn at {pos} facing {facing} in {dim}'
                 src.get_server().execute(command)
                 src.get_server().execute(
-                    f'gamemode {config["gamemode"]} {name}')
+                    f'gamemode {config.gamemode} {name}')
             else:
                 src.reply('§c机器人名称不正确')
 
