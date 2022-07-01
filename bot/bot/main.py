@@ -27,18 +27,20 @@ HELP_MESSAGE = '''§6!!bot §7显示机器人列表
 class Main:
     def __init__(self, server: PluginServerInterface):
         self.__server = server
+        self.__config = None
+        self.__data = None
 
     def init(self):
-        config = self.__server.load_config_simple(
+        self.__config = self.__server.load_config_simple(
             'config.json',
             target_class=Config
         )
-        data = self.__server.load_config_simple(
+        self.__data = self.__server.load_config_simple(
             'data.json',
             default_config={},
             echo_in_console=False
         )
-        permissions = config.permissions
+        permissions = self.__config.permissions
         self.__server.register_help_message('!!bot help', '显示 Bot 插件帮助')
         self.__server.register_help_message(
             '!!bot',
@@ -47,7 +49,7 @@ class Main:
 
         def show_list(src):
             c = []
-            for a, b in data.items():
+            for a, b in self.__data.items():
                 bot_info = RTextList(
                     '\n'
                     f'§7----------- §6{a}§7 -----------\n',
@@ -64,20 +66,20 @@ class Main:
 
         def spawn(src, ctx):
             name = ctx['name']
-            if name in data.keys():
-                dim = data[name]['dim']
-                pos = ' '.join([str(i) for i in data[name]['pos']])
-                facing = data[name]['facing']
+            if name in self.__data.keys():
+                dim = self.__data[name]['dim']
+                pos = ' '.join([str(i) for i in self.__data[name]['pos']])
+                facing = self.__data[name]['facing']
                 command = f'player {name} spawn at {pos} facing {facing} in {dim}'
                 src.get_server().execute(command)
                 src.get_server().execute(
-                    f'gamemode {config.gamemode} {name}')
+                    f'gamemode {self.__config.gamemode} {name}')
             else:
                 src.reply('§c机器人名称不正确')
 
         def kill(src, ctx):
             name = ctx['name']
-            if name in data.keys():
+            if name in self.__data.keys():
                 self.__server.execute(f'player {name} kill')
             else:
                 src.reply('§c机器人名称不正确')
@@ -87,21 +89,21 @@ class Main:
                 dim = DIMENSIONS[ctx['dim']]
                 pos = [ctx['x'], ctx['y'], ctx['z']]
                 facing = f'{ctx["facing_level"]} {ctx["facing_pitch"]}'
-                data[ctx['name']] = {
+                self.__data[ctx['name']] = {
                     'dim': dim,
                     'pos': pos,
                     'facing': facing
                 }
-                data.save()
+                self.__save_data()
                 src.reply(f'§a已添加机器人{ctx["name"]}')
             else:
                 src.reply('§c无法识别的维度')
 
         def remove(src, ctx):
             name = ctx['name']
-            if name in data.keys():
-                del data[name]
-                data.save()
+            if name in self.__data.keys():
+                del self.__data[name]
+                self.__save_data()
                 src.reply(f'§a已删除机器人{name}')
             else:
                 src.reply('§c机器人名称不正确')
@@ -156,3 +158,6 @@ class Main:
                 )
             )
         )
+
+    def __save_data(self):
+        self.__server.save_config_simple(self.__data, 'data.json')
