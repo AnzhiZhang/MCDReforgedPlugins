@@ -3,20 +3,8 @@ from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
 from bot.config import Config
+from bot.constants import CONFIG_FILE_NAME, DATA_FILE_NAME, DIMENSIONS
 
-DIMENSIONS = {
-    '0': 'minecraft:overworld',
-    '-1': 'minecraft:the_nether',
-    '1': 'minecraft:the_end',
-    'overworld': 'minecraft:overworld',
-    'the_nether': 'minecraft:the_nether',
-    'the_end': 'minecraft:the_end',
-    'nether': 'minecraft:the_nether',
-    'end': 'minecraft:the_end',
-    'minecraft:overworld': 'minecraft:overworld',
-    'minecraft:the_nether': 'minecraft:the_nether',
-    'minecraft:the_end': 'minecraft:the_end'
-}
 HELP_MESSAGE = '''§6!!bot §7显示机器人列表
 §6!!bot spawn <name> §7生成机器人
 §6!!bot kill <name> §7移除机器人
@@ -32,11 +20,11 @@ class Main:
 
     def init(self):
         self.__config = self.__server.load_config_simple(
-            'config.json',
+            CONFIG_FILE_NAME,
             target_class=Config
         )
         self.__data = self.__server.load_config_simple(
-            'data.json',
+            DATA_FILE_NAME,
             default_config={},
             echo_in_console=False
         )
@@ -160,4 +148,4 @@ class Main:
         )
 
     def __save_data(self):
-        self.__server.save_config_simple(self.__data, 'data.json')
+        self.__server.save_config_simple(self.__data, DATA_FILE_NAME)
