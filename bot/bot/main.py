@@ -33,7 +33,11 @@ class Main:
             'config.json',
             target_class=Config
         )
-        data = self.__server.load_config_simple('data.json', default_config={})
+        data = self.__server.load_config_simple(
+            'data.json',
+            default_config={},
+            echo_in_console=False
+        )
         permissions = config.permissions
         self.__server.register_help_message('!!bot help', '显示 Bot 插件帮助')
         self.__server.register_help_message(
