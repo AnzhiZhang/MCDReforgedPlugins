@@ -13,13 +13,13 @@ __all__ = [
 
 
 class IllegalFloat(CommandSyntaxError):
-    def __init__(self, char_read: int):
-        super().__init__('Invalid Point', char_read)
+    def __init__(self, char_read: str):
+        super().__init__('Invalid Float', char_read)
 
 
 class IncompleteFloat(CommandSyntaxError):
-    def __init__(self, char_read: int):
-        super().__init__('Incomplete Point', char_read)
+    def __init__(self, char_read: str):
+        super().__init__('Incomplete Float', char_read)
 
 
 class FloatsArgument(ArgumentNode):
@@ -32,17 +32,15 @@ class FloatsArgument(ArgumentNode):
         self.__number = number
 
     def parse(self, text: str) -> ParseResult:
-        total_read = 0
-        coords = []
-        for i in range(self.__number):
-            value, read = command_builder_util.get_float(text[total_read:])
-            if read == 0:
-                raise IncompleteFloat(total_read)
-            total_read += read
-            if value is None:
-                raise IllegalFloat(total_read)
-            coords.append(value)
-        return ParseResult(coords, total_read)
+        try:
+            texts = text.split()[:self.__number]
+            coords = list(map(float, texts))
+            if len(coords) < self.__number:
+                raise IncompleteFloat(text)
+        except ValueError:
+            raise IllegalFloat(text)
+        else:
+            return ParseResult(coords, len(' '.join(texts)))
 
 
 class Position(FloatsArgument):
