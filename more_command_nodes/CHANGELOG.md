@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.1...more_command_nodes-v1.0.2) (2022-07-08)
+
+
+### Bug Fixes
+
+* **more_command_nodes:** 🐛 fix parse of FloatsArgument ([dc65f2c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/dc65f2c81943235eb0e4c2dc4965f75a57fb2844))
+
 ## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.0...more_command_nodes-v1.0.1) (2022-07-08)
 
 
