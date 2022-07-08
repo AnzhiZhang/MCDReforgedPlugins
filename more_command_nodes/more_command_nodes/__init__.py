@@ -34,7 +34,7 @@ class FloatsArgument(ArgumentNode):
     def parse(self, text: str) -> ParseResult:
         total_read = 0
         coords = []
-        for i in range(3):
+        for i in range(self.__number):
             value, read = command_builder_util.get_float(text[total_read:])
             if read == 0:
                 raise IllegalFloat(total_read)
