@@ -37,7 +37,7 @@ class FloatsArgument(ArgumentNode):
         for i in range(self.__number):
             value, read = command_builder_util.get_float(text[total_read:])
             if read == 0:
-                raise IllegalFloat(total_read)
+                raise IncompleteFloat(total_read)
             total_read += read
             if value is None:
                 raise IllegalFloat(total_read)
