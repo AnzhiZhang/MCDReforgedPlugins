@@ -3,6 +3,10 @@ from mcdreforged.api.types import PluginServerInterface, Info
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 
+EXPRESSION_WHITELIST = [
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ' ', '.', '+', '-', '*', '/', '(', ')', '<', '>', '='
+]
 HELP_MSG = '''§7!!calc <expression> §6计算表达式
 §7!!calc item <count/expression> §6物品数转换堆叠数
 §7!!calc item <box> <stack> <single> §6堆叠数转换物品数
@@ -72,6 +76,13 @@ def say_error_info(src, exp, error):
 
 def calc_expression(src, ctx):
     exp = ctx['expression']
+
+    # Check input
+    for i in exp:
+        if i not in EXPRESSION_WHITELIST:
+            return src.get_server().say(f'§c非法的符号：{i}')
+
+    # Calculate
     try:
         src.get_server().say(f'§7{exp}=§6{eval(exp)}')
     except (NameError, SyntaxError, ZeroDivisionError) as e:
