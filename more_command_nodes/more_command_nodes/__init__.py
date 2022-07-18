@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 from typing import Type, Union, Iterable
 
@@ -33,14 +34,28 @@ class FloatsArgument(ArgumentNode):
 
     def parse(self, text: str) -> ParseResult:
         try:
-            texts = text.split()[:self.__number]
-            coords = list(map(float, texts))
-            if len(coords) < self.__number:
+            # Parse arguments
+            split_text = re.split(' ', text)
+            char_read = -1
+            args = []
+            for i in split_text:
+                if i == '':
+                    char_read += 1
+                else:
+                    args.append(i)
+                    char_read += len(i) + 1
+                    if len(args) == self.__number:
+                        break
+
+            # Convert to float
+            if len(args) < self.__number:
                 raise IncompleteFloat(text)
+            else:
+                coords = list(map(float, args))
         except ValueError:
             raise IllegalFloat(text)
         else:
-            return ParseResult(coords, len(' '.join(texts)))
+            return ParseResult(coords, char_read)
 
 
 class Position(FloatsArgument):
