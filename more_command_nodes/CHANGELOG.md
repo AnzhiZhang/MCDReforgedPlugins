@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.2...more_command_nodes-v1.0.3) (2022-07-18)
+
+
+### Bug Fixes
+
+* **more_command_nodes:** 🐛 fix FloatsArgument extra spaces issue ([97c12d5](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/97c12d568379959d527c7bc3d96e91e167854f47))
+
 ## [1.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.1...more_command_nodes-v1.0.2) (2022-07-08)
 
 
