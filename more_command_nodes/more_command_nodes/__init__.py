@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Type, Union, Iterable
+from typing import Type, Iterable
 
 from mcdreforged.api.command import *
 from mcdreforged.command.builder import command_builder_util
@@ -76,19 +76,14 @@ class Facing(FloatsArgument):
         super().__init__(name, 2)
 
 
-class InvalidEnumeratedText(IllegalArgument):
-    def __init__(self, char_read: Union[int, str]):
-        super().__init__('Invalid enumerated text', char_read)
-
-
-class EnumeratedText(ArgumentNode):
+class EnumeratedText(Enumeration):
     """
     Same as MCDR's Enumeration,
     but it uses Enum's value as argument text instead of key.
     """
 
     def __init__(self, name: str, enum_class: Type[Enum]):
-        super().__init__(name)
+        super().__init__(name, enum_class)
         self.__enum_class: Type[Enum] = enum_class
 
     def _get_suggestions(self, context: CommandContext) -> Iterable[str]:
@@ -99,6 +94,6 @@ class EnumeratedText(ArgumentNode):
         try:
             enum = self.__enum_class(arg)
         except ValueError:
-            raise InvalidEnumeratedText(arg) from None
+            raise InvalidEnumeration(arg) from None
         else:
             return ParseResult(enum, len(arg))

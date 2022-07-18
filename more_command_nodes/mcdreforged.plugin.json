@@ -7,5 +7,8 @@
         "zh_cn": "更多的指令节点"
     },
     "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes"
+    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes",
+    "dependencies": {
+        "mcdreforged": "^2.5"
+    }
 }
