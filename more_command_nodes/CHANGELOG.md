@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.3...more_command_nodes-v1.1.0) (2022-07-18)
+
+
+### Features
+
+* **more_command_nodes:** ✨ set EnumeratedText to inherit Enumeration ([ce366a7](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/ce366a7bc14876e66dc2509720ce91f452c8c1d9))
+
 ## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.2...more_command_nodes-v1.0.3) (2022-07-18)
 
 
