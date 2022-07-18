@@ -66,7 +66,7 @@ def on_user_info(server: PluginServerInterface, info: Info):
 
 def say_error_info(src, exp, error):
     return src.get_server().say(
-        RText(f'§c计算 §6{exp} §c出错: §6{type(e).__name__}').h(error)
+        RText(f'§c计算 §6{exp} §c出错: §6{type(error).__name__}').h(error)
     )
 
 
