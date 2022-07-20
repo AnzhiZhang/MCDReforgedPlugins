@@ -108,7 +108,7 @@ class CommandHandler:
         config_literal = (
             Literal('config').
                 requires(
-                lambda src: src.has_permission(permissions['del'])
+                lambda src: src.has_permission(permissions['config'])
             ).
                 then(
                 Text('name').
