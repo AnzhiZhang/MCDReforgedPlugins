@@ -6,8 +6,6 @@
 
 ## 前置插件
 
-- [ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
-- [JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/JsonDataAPI)
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
 
 ## 使用
