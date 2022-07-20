@@ -3,14 +3,14 @@ bot.help.message.hover: 点击显示假人列表
 bot.help.content: |
   -----------------------------------
   §6!!bot §7查看帮助
-  §6!!bot list [index] [ --all | --online | --saved ]§7显示假人列表
+  §6!!bot list [index] [filter]§7显示假人列表
   §6!!bot spawn <name> §7上线假人
   §6!!bot kill <name> §7下线假人
-  §6!!bot action [index] §7执行假人动作
+  §6!!bot action <name> [index] §7执行假人动作
   §6!!bot info <name> §7查看假人信息
   §6!!bot save <name> [pos] [facing] [dim] §7保存假人
   §6!!bot del <name> §7删除保存的假人
-  §6!!bot config <name> option <value> §7配置假人
+  §6!!bot config <name> <option> <value> §7配置假人
 bot.error.illegalDimension: §c维度 §6{0} §c不合法！
 bot.error.illegalListIndex: §c错误的列表索引 §6{0}§c！
 bot.error.illegalActionIndex: §c错误的动作索引 §6{0}§c！
