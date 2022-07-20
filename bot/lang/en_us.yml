@@ -1,0 +1,58 @@
+bot.help.message: Manage Carpet mod bots
+bot.help.message.hover: Click to show bot list
+bot.help.content: |
+  -----------------------------------
+  §6!!bot §7View help
+  §6!!bot list [index] [ --all | --online | --saved ]§7Show bot list
+  §6!!bot spawn <name> §7Spawn a bot
+  §6!!bot kill <name> §7Kill a bot
+  §6!!bot action [index] §7Run actions of a bot
+  §6!!bot info <name> §7See info of a bot
+  §6!!bot save <name> [pos] [facing] [dim] §7Save bot
+  §6!!bot del <name> §7Delete saved bot
+  §6!!bot config <name> <option> §7Set config of a bot
+bot.error.illegalDimension: §cDimension §6{0} §cis illegal!
+bot.error.illegalListIndex: §cError list index §6{0}§c！
+bot.error.illegalActionIndex: §cError action index §6{0}§c！
+bot.error.botAlreadyExists: §cBot §6{0} §cis already exists!
+bot.error.botNotExists: §cBot §6{0} §cis not exists!
+bot.error.botOnline: §cBot §6{0} §cis already online!
+bot.error.botOffline: §cBot §6{0} §cis offline!
+bot.error.botAlreadySaved: §cBot §6{0} §cis already saved!
+bot.error.botNotSaved: §cBot §6{0} is not saved!
+bot.command.spawned: §aBot §6{0} §aspawned
+bot.command.killed: §aBot §6{0} §akilled
+bot.command.action: §aBot §6{0} §aactions run
+bot.command.info.buttonHover: §aClick to configure
+bot.command.info.name: '§7Name: §3{0}'
+bot.command.info.position: '§7Position: §3{0}'
+bot.command.info.position.voxelButton: '§bVoxelmap§r: Click to highlight, or Ctrl + click to add point'
+bot.command.info.position.xearosButton: '§6Xaeros Minimap§r: Click to add point'
+bot.command.info.facing: '§7Facing: §3{0}'
+bot.command.info.dimension: '§7Dimension: §3{0}'
+bot.command.info.comment: '§7Comment: §3{0}'
+bot.command.info.actions: '§7Actions: '
+bot.command.info.actions.actionButtonAll: §9Click to run all actions
+bot.command.info.actions.clearButton: §cClick to clear
+bot.command.info.actions.actionButtonIndex: §9Click to run action §6{0}
+bot.command.info.actions.deleteButton: §cClick to delete §6{0}
+bot.command.info.actions.appendButton: §aClick to append
+bot.command.info.autoLogin: '§7Auto Login: §3{0}'
+bot.command.info.autoRunActions: '§7Auto Run: §3{0}'
+bot.command.saved: §aBot §6{0} §asaved
+bot.command.deleted: §aBot §6{0} §adeleted
+bot.command.config: §aBot §6{0}'s §aconfiguration item §6{1} §ahas been set to §6{2}
+bot.list.spawnButton: §aClick to spawn
+bot.list.killButton: §eClick to kill
+bot.list.actionButton: §9Click to run actions
+bot.list.infoButton: |
+  §7Name: §3{0}
+  §7Position: §3{1}
+  §7Facing: §3{2}
+  §7Dimension: §3{3}
+  §7Comment: §3{4}
+  §7Actions: §3{5}
+  §7Auto Login: §3{6}
+  §7Auto Run Actions: §3{7}
+  §7Click to show info
+bot.list.deleteButton: §cClick to delete

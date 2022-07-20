@@ -1,0 +1,58 @@
+bot.help.message: 管理地毯模组假人
+bot.help.message.hover: 点击显示假人列表
+bot.help.content: |
+  -----------------------------------
+  §6!!bot §7查看帮助
+  §6!!bot list [index] [ --all | --online | --saved ]§7显示假人列表
+  §6!!bot spawn <name> §7上线假人
+  §6!!bot kill <name> §7下线假人
+  §6!!bot action [index] §7执行假人动作
+  §6!!bot info <name> §7查看假人信息
+  §6!!bot save <name> [pos] [facing] [dim] §7保存假人
+  §6!!bot del <name> §7删除保存的假人
+  §6!!bot config <name> option <value> §7配置假人
+bot.error.illegalDimension: §c维度 §6{0} §c不合法！
+bot.error.illegalListIndex: §c错误的列表索引 §6{0}§c！
+bot.error.illegalActionIndex: §c错误的动作索引 §6{0}§c！
+bot.error.botAlreadyExists: §c假人 §6{0} §c已存在！
+bot.error.botNotExists: §c假人 §6{0} §c不存在！
+bot.error.botOnline: §c假人 §6{0} §c已在线！
+bot.error.botOffline: §c假人 §6{0} §c不在线！
+bot.error.botAlreadySaved: §c假人 §6{0} §c已保存！
+bot.error.botNotSaved: §c假人 §6{0} §c未保存！
+bot.command.spawned: §a假人 §6{0} §a已上线
+bot.command.killed: §a假人 §6{0} §a已下线
+bot.command.action: §a假人 §6{0} §a已执行指令
+bot.command.info.buttonHover: §a点击配置
+bot.command.info.name: '§7名称：§3{0}'
+bot.command.info.position: '§7位置：§3{0}'
+bot.command.info.position.voxelButton: '§bVoxelmap§r：点此以高亮坐标点，或 Ctrl 点击添加路径点'
+bot.command.info.position.xearosButton: '§6Xaeros Minimap§r：点击添加路径点'
+bot.command.info.facing: '§7方向：§3{0}'
+bot.command.info.dimension: '§7维度：§3{0}'
+bot.command.info.comment: '§7注释：§3{0}'
+bot.command.info.actions: '§7动作：'
+bot.command.info.actions.actionButtonAll: §9点击运行所有动作
+bot.command.info.actions.clearButton: §c点击清除
+bot.command.info.actions.actionButtonIndex: §9点击运行 §6{0}
+bot.command.info.actions.deleteButton: §c点击删除 §6{0}
+bot.command.info.actions.appendButton: §a点击添加
+bot.command.info.autoLogin: '§7自动登录：§3{0}'
+bot.command.info.autoRunActions: '§7自动执行：§3{0}'
+bot.command.saved: §a假人 §6{0} §a已保存
+bot.command.deleted: §a假人 §6{0} §a已删除
+bot.command.config: §a假人 §6{0} §a的配置项 §6{1} §a已设为 §6{2}
+bot.list.spawnButton: §a点击上线
+bot.list.killButton: §e点击下线
+bot.list.actionButton: §9点击运行动作
+bot.list.infoButton: |
+  §7名称：§3{0}
+  §7位置：§3{1}
+  §7方向：§3{2}
+  §7维度：§3{3}
+  §7注释：§3{4}
+  §7动作：§3{5}
+  §7自动登录：§3{6}
+  §7自动执行动作：§3{7}
+  §7点击显示详情
+bot.list.deleteButton: §c点击删除

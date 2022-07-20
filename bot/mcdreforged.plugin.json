@@ -1,15 +1,17 @@
 {
     "id": "bot",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "name": "Bot",
     "description": {
-        "en_us": "Manage carpet bots",
-        "zh_cn": "管理地毯模组假人"
+        "en_us": "The best carpet bot manager!",
+        "zh_cn": "最好用的地毯模组假人管理器！"
     },
     "author": "Andy Zhang",
     "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/bot",
     "dependencies": {
-        "minecraft_data_api": ">=1.4"
+        "mcdreforged": "^2.5",
+        "minecraft_data_api": "^1.4",
+        "more_command_nodes": "^1.1.0"
     },
     "resources": [
         "lang"

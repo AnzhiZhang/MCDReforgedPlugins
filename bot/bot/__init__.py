@@ -1,8 +1,8 @@
-from bot.main import Main
+from bot.plugin import Plugin
 
-from mcdreforged.api.types import PluginServerInterface
+plugin: Plugin
 
 
-def on_load(server: PluginServerInterface, prev_module):
-    bot = Main(server)
-    bot.init()
+def on_load(server, prev_module):
+    global plugin
+    plugin = Plugin(server, prev_module)
