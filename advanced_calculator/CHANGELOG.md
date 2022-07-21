@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.2.0...advanced_calculator-v0.2.1) (2022-07-21)
+
+
+### Bug Fixes
+
+* **advanced_calculator:** 🔒️ add security eval check in !!calc item command (fix [#54](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/54)) ([444dd85](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/444dd859a7c8a9fc65c612027893689ae9d7e314))
+
 ## [0.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-0.1.0...advanced_calculator-v0.2.0) (2022-07-18)
 
 
