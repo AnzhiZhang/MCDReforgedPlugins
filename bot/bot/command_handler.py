@@ -88,8 +88,8 @@ class CommandHandler:
             ).
                 then(
                 Text('name').runs(self.__command_save).then(
-                    Position('position').then(
-                        Facing('facing').then(
+                    Position('position').runs(self.__command_save).then(
+                        Facing('facing').runs(self.__command_save).then(
                             Text('dimension').runs(self.__command_save)
                         )
                     )
@@ -556,8 +556,8 @@ class CommandHandler:
     def __command_save(self, src: Source, ctx: Dict[str, Any]):
         name = self.__parse_name(ctx['name'])
         position = ctx.get('position')
-        facing = ctx.get('facing')
-        dimension = ctx.get('dimension')
+        facing = ctx.get('facing', [0.0, 0.0])
+        dimension = ctx.get('dimension', '0')
         try:
             self.__plugin.bot_manager.save(
                 name,
