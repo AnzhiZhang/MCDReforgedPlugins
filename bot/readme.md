@@ -19,7 +19,7 @@
 
 `!!bot action [index]` 执行假人动作
 
-`!!bot info <name>` §7查看假人信息
+`!!bot info <name>` 查看假人信息
 
 `!!bot save <name> [pos] [facing] [dim]` 保存假人
 
