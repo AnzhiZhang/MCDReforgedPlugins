@@ -388,7 +388,9 @@ class CommandHandler:
             """
             return (
                 RText('[✐]', color=RColor.gray).
-                    h(RTextMCDRTranslation('bot.command.info.buttonHover')).
+                    h(
+                    RTextMCDRTranslation('bot.command.info.configButtonHover')
+                ).
                     c(
                     RAction.suggest_command,
                     f'!!bot config {name} {config} {default_value}'

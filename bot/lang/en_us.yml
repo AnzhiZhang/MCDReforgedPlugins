@@ -23,7 +23,7 @@ bot.error.botNotSaved: §cBot §6{0} is not saved!
 bot.command.spawned: §aBot §6{0} §aspawned
 bot.command.killed: §aBot §6{0} §akilled
 bot.command.action: §aBot §6{0} §aactions run
-bot.command.info.buttonHover: §aClick to configure
+bot.command.info.configButtonHover: §7Click to configure
 bot.command.info.name: '§7Name: §3{0}'
 bot.command.info.position: '§7Position: §3{0}'
 bot.command.info.position.voxelButton: '§bVoxelmap§r: Click to highlight, or Ctrl + click to add point'
