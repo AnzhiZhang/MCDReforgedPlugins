@@ -126,7 +126,7 @@ def calc_item(src, ctx):
                 SyntaxError,
                 ZeroDivisionError,
                 IllegalCharacterException
-            ) as e:
+        ) as e:
             say_error_info(src, expression, e)
     else:
         try:
