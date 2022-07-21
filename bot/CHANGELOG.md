@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.0...bot-v1.0.1) (2022-07-21)
+
+
+### Bug Fixes
+
+* **bot:** ✨ add config button for actions in info ([16fd490](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/16fd490b75374ce3b0e43c6a792bf5a5ff0d48d5))
+
 ## [1.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v0.1.0...bot-v1.0.0) (2022-07-21)
 
 
