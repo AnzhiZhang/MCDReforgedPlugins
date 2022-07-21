@@ -21,6 +21,23 @@ class Stack:
         self.single = single
 
 
+class IllegalCharacterException(Exception):
+    def __init__(self, character: str):
+        super().__init__(f'§cCharacter §6{character} §cis illegal')
+
+
+def security_eval(expression: str):
+    """
+    A security eval function.
+    :param expression: String expression.
+    :return: Eval result.
+    """
+    for i in expression:
+        if i not in EXPRESSION_WHITELIST:
+            raise IllegalCharacterException(i)
+    return eval(expression)
+
+
 def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!calc', '查看计算插件使用帮助')
     server.register_help_message('=<expression>', '计算表达式')
@@ -75,25 +92,23 @@ def say_error_info(src, exp, error):
 
 
 def calc_expression(src, ctx):
-    exp = ctx['expression']
-
-    # Check input
-    for i in exp:
-        if i not in EXPRESSION_WHITELIST:
-            return src.get_server().say(f'§c非法的符号：{i}')
-
-    # Calculate
+    expression = ctx['expression']
     try:
-        src.get_server().say(f'§7{exp}=§6{eval(exp)}')
-    except (NameError, SyntaxError, ZeroDivisionError) as e:
-        say_error_info(src, exp, e)
+        src.get_server().say(f'§7{expression}=§6{security_eval(expression)}')
+    except (
+            NameError,
+            SyntaxError,
+            ZeroDivisionError,
+            IllegalCharacterException
+    ) as e:
+        say_error_info(src, expression, e)
 
 
 def calc_item(src, ctx):
     if len(ctx) == 1:
-        exp = ctx['box/count']
+        expression = ctx['box/count']
         try:
-            count = eval(exp)
+            count = security_eval(expression)
             s = Stack()
             s.single = count % 64
             s.box = count // (64 * 27)
@@ -106,8 +121,13 @@ def calc_item(src, ctx):
                     RText(f'{s.single}个', color=RColor.aqua)
                 )
             )
-        except (NameError, SyntaxError, ZeroDivisionError) as e:
-            say_error_info(src, exp, e)
+        except (
+                NameError,
+                SyntaxError,
+                ZeroDivisionError,
+                IllegalCharacterException
+            ) as e:
+            say_error_info(src, expression, e)
     else:
         try:
             ctx['box/count'] = int(ctx['box/count'])
