@@ -533,6 +533,9 @@ class CommandHandler:
                     'bot.command.info.comment',
                     bot.comment
                 ), '\n',
+                get_config_button(
+                    bot.name, 'actions', ''
+                ), ' ',
                 actions_info, '\n',
                 get_config_button(
                     bot.name, 'autoLogin', bot.auto_login
