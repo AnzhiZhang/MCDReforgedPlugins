@@ -244,7 +244,7 @@ class BotManager:
         else:
             # Check dimension
             if location.dimension is None:
-                raise IllegalDimensionException
+                raise IllegalDimensionException(location.dimension)
 
             if self.is_in_list(name):
                 bot = self.get_bot(name)
