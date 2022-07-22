@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.1...bot-v1.0.2) (2022-07-22)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 pass arg for raise exception ([22c74d6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/22c74d6d08a49445e3f0cb8e9f4b7ebcd6ecda94))
+
 ## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.0...bot-v1.0.1) (2022-07-21)
 
 
