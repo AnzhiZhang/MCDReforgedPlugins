@@ -663,9 +663,9 @@ class CommandHandler:
             )
         except BotNotExistsException as e:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
-        except IllegalDimensionException:
+        except IllegalDimensionException as e:
             src.reply(
-                RTextMCDRTranslation('bot.error.illegalDimension', dimension)
+                RTextMCDRTranslation('bot.error.illegalDimension', e.dimension)
             )
 
     def __command_config_comment(self, src: Source, ctx: Dict[str, Any]):

@@ -12,7 +12,7 @@ __all__ = [
 
 
 class IllegalDimensionException(Exception):
-    def __init__(self, dimension: int):
+    def __init__(self, dimension: str):
         super().__init__(f'Dimension {dimension} is illegal')
         self.dimension = dimension
 
