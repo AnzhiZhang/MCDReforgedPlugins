@@ -25,14 +25,14 @@
 
 `!!bot del <name>` 删除保存的假人
 
-`!!bot config <nam0e> <option> <value>` 配置假人
+`!!bot config <name> <option> <value>` 配置假人
 
 ```mermaid
 sequenceDiagram
     participant Player/Console
     participant Online Bots
     participant Saved Bots
- 
+
     Player/Console-->>Online Bots: !!bot spawn (player)
     Saved Bots-->>Online Bots: !!bot spawn
     Online Bots-->>Online Bots: !!bot kill
