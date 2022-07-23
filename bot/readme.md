@@ -21,7 +21,7 @@
 
 `!!bot info <name>` 查看假人信息
 
-`!!bot save <name> [pos] [facing] [dim]` 保存假人
+`!!bot save <name> [position] [facing] [dimension]` 保存假人
 
 `!!bot del <name>` 删除保存的假人
 
