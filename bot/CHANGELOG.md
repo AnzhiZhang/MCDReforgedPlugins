@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.2...bot-v1.0.3) (2022-07-23)
+
+
+### Bug Fixes
+
+* **bot:** ✏️ fix help message arguments typo ([f4337ed](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f4337ed63f2ee5f8dcc5323d7d0bc9b6becdeed3))
+* **bot:** 🐛 correcting usages of IllegalDimensionException ([a89d530](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a89d5309041bdc25c3eddbe495f6069b785f8eaf))
+
 ## [1.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.1...bot-v1.0.2) (2022-07-22)
 
 
