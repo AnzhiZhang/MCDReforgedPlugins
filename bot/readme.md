@@ -17,7 +17,7 @@
 
 `!!bot kill <name>` 下线假人
 
-`!!bot action [index]` 执行假人动作
+`!!bot action <name> [index]` 执行假人动作
 
 `!!bot info <name>` 查看假人信息
 
