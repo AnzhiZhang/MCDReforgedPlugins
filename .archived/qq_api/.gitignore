@@ -1,0 +1,13 @@
+# IDEA
+/.idea
+
+# release
+/release
+
+# python
+__pycache__
+
+# QQBridge
+/QQBridge/.idea
+/QQBridge/config.yml
+/QQBridge/logs
