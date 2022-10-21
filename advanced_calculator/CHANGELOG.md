@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.2.1...advanced_calculator-v0.3.0) (2022-10-21)
+
+
+### Features
+
+* **advanced_calculator:** ✨ set `==` as `!!calc item` ([9f7e0da](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9f7e0da8e8a54b04a1afa0c85b668a9dbdaabedd))
+
 ## [0.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.2.0...advanced_calculator-v0.2.1) (2022-07-21)
 
 
