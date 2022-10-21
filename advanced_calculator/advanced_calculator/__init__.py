@@ -40,7 +40,8 @@ def security_eval(expression: str):
 
 def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!calc', '查看计算插件使用帮助')
-    server.register_help_message('=<expression>', '计算表达式')
+    server.register_help_message('=<expression>', '等同于 !!calc <expression>')
+    server.register_help_message('==<count>', '等同于 !!calc item <count>')
     server.register_command(
         Literal('!!calc').
             requires(lambda src: src.is_player).
@@ -78,7 +79,12 @@ def on_load(server: PluginServerInterface, old):
 
 
 def on_user_info(server: PluginServerInterface, info: Info):
-    if info.content.startswith('='):
+    if info.content.startswith('=='):
+        calc_item(
+            info.get_command_source(),
+            {'box/count': info.content[2:]}
+        )
+    elif info.content.startswith('='):
         calc_expression(
             info.get_command_source(),
             {'expression': info.content[1:]}
