@@ -21,7 +21,9 @@ jobs:
 
       - name: Find
         id: find
-        run: node changeFinder.js
+        run: |
+          npm i @actions/core
+          node changeFinder.js
 
   release-please-pr:
     runs-on: ubuntu-latest
@@ -88,7 +90,7 @@ jobs:
         if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         run: |
           python -m mcdreforged pack -i ${{ matrix.plugin }}
-          echo ::set-output name=name::$(ls *.mcdr)
+          echo "name=$(ls *.mcdr)" >> $GITHUB_OUTPUT
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1

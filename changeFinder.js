@@ -1,3 +1,4 @@
+const core = require('@actions/core');
 const execSync = require('child_process').execSync;
 const pluginList = require('./plugin_list.json');
 const tagList = execSync('git tag', {encoding: 'utf-8'}).trim().split('\n').reverse();
@@ -25,5 +26,5 @@ for (let pluginKey in pluginList) {
     }
 }
 
-console.log(`::set-output name=changed::${changedList.length > 0}`);
-console.log(`::set-output name=plugins::${JSON.stringify(changedList)}`);
+core.setOutput('changed', changedList.length > 0);
+core.setOutput('plugins', JSON.stringify(changedList));
