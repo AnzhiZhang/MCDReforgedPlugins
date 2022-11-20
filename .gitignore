@@ -2,7 +2,7 @@
 /.idea/
 
 # vscode
-.vscode
+/.vscode/
 
 # python
 __pycache__/
