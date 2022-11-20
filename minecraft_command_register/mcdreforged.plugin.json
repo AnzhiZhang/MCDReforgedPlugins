@@ -1,6 +1,6 @@
 {
     "id": "minecraft_command_register",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "name": "Minecraft Command Register",
     "description": {
         "en_us": "Register MCDReforged commands in Minecraft",

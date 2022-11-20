@@ -43,7 +43,7 @@ def register(server: PluginServerInterface):
         tree_data[key] = Node(plugin_command_holder.node).dict
 
     # execute register command
-    server.execute_command(f'mcdr register {json.dumps(tree_data)}')
+    server.execute(f'mcdr register {json.dumps(tree_data)}')
     return tree_data
 
 
