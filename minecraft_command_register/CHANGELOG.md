@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.1.0...minecraft_command_register-v1.1.1) (2022-11-20)
+
+
+### Bug Fixes
+
+* **minecraft_command_register:** 🐛 fix execute command ([87157ed](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/87157ed152095976acd7c7ac06491ce03e4724f2))
+
 ## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.0.0...minecraft_command_register-v1.1.0) (2022-11-20)
 
 
