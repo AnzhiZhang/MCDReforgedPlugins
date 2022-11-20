@@ -1,5 +1,8 @@
 # .idea
 /.idea/
 
+# vscode
+.vscode
+
 # python
 __pycache__/
