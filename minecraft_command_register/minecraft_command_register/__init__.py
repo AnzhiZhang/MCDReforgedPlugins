@@ -1,8 +1,6 @@
 import json
 
 from mcdreforged.api.types import PluginServerInterface
-from mcdreforged.api.event import MCDRPluginEvents
-from mcdreforged.api.decorator import event_listener
 from mcdreforged.mcdr_server import MCDReforgedServer
 from mcdreforged.plugin.plugin_registry import PluginCommandHolder
 
@@ -49,8 +47,7 @@ def register(server: PluginServerInterface):
     return tree_data
 
 
-@event_listener(MCDRPluginEvents.PLUGIN_LOADED, priority=0)
-def on_load_event(server: PluginServerInterface, prev_module):
+def on_load(server: PluginServerInterface, prev_module):
     global mcdr_server
     mcdr_server = server._mcdr_server
 
