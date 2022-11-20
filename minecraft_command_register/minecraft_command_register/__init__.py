@@ -31,6 +31,8 @@ class Node:
 
 
 def register(server: PluginServerInterface):
+    server.logger.debug('Register commands to minecraft')
+
     # return if server is not startup
     if not server.is_server_startup():
         return
@@ -43,7 +45,7 @@ def register(server: PluginServerInterface):
         tree_data[key] = Node(plugin_command_holder.node).dict
 
     # execute register command
-    server.execute_command(f'/mcdr register {json.dumps(tree_data)}')
+    server.execute_command(f'mcdr register {json.dumps(tree_data)}')
     return tree_data
 
 
@@ -56,6 +58,7 @@ def on_load_event(server: PluginServerInterface, prev_module):
     old_on_plugin_registry_changed = mcdr_server.on_plugin_registry_changed
 
     def new_on_plugin_registry_changed():
+        server.logger.debug('on_plugin_registry_changed')
         old_on_plugin_registry_changed()
         register(server)
 
