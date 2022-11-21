@@ -1,6 +1,7 @@
 import json
+from enum import Enum
 
-from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.all import *
 from mcdreforged.mcdr_server import MCDReforgedServer
 from mcdreforged.plugin.plugin_registry import PluginCommandHolder
 
@@ -8,24 +9,40 @@ mcdr_server: MCDReforgedServer
 
 
 class Node:
+    type: str = "GREEDY_STRING"
+    children = {}
+
     def __init__(self, node):
         self.children = {}
-
+        self.type = "LITERAL"
         # Argument children
         for argument_child in node._children:
-            child_name = f'<{argument_child._ArgumentNode__name}>'
+            child_name = f'Argument<{argument_child._ArgumentNode__name}>'
             self.children[child_name] = Node(argument_child)
 
         # Literal children
         for key, literal_children in node._children_literal.items():
             self.children[key] = Node(literal_children[0])
+        # has children
+        if not node._children:
+            match type(node).__name__:
+                case "Integer":
+                    self.type = "INTEGER"
+                case "Float":
+                    self.type = "DOUBLE"
+                case "QuotableText":
+                    self.type = "GREEDY_STRING"
+                case "Text":
+                    self.type = "WORD"
+                case _:
+                    self.type = "NOTHING"
 
     @property
     def dict(self):
         if self.children:
             return {key: value.dict for key, value in self.children.items()}
         else:
-            return None
+            return self.type
 
 
 def register(server: PluginServerInterface):
@@ -60,6 +77,10 @@ def on_load(server: PluginServerInterface, prev_module):
         register(server)
 
     mcdr_server.on_plugin_registry_changed = new_on_plugin_registry_changed
+
+    server.register_command(Literal("!!manual_update").runs(
+        lambda src, ctx: register(server)
+    ))
 
 
 def on_server_startup(server: PluginServerInterface):
