@@ -78,7 +78,7 @@ def on_load(server: PluginServerInterface, prev_module):
 
     mcdr_server.on_plugin_registry_changed = new_on_plugin_registry_changed
 
-    server.register_command(Literal("rua").runs(
+    server.register_command(Literal("!!manual_update").runs(
         lambda src, ctx: register(server)
     ))
 
