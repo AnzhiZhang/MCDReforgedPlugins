@@ -1,67 +1,79 @@
 import json
 from enum import Enum
 
-from mcdreforged.api.all import *
+from mcdreforged.api.command import *
+from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.mcdr_server import MCDReforgedServer
 from mcdreforged.plugin.plugin_registry import PluginCommandHolder
 
 mcdr_server: MCDReforgedServer
 
 
-class Node:
-    type: str = "GREEDY_STRING"
-    children = {}
+class NodeTypes(Enum):
+    LITERAL = Literal
+    NUMBER = Number
+    INTEGER = Integer
+    FLOAT = Float
+    TEXT = Text
+    QUOTABLE_TEXT = QuotableText
+    GREEDY_TEXT = GreedyText
+    BOOLEAN = Boolean
+    ENUMERATION = Enumeration
 
-    def __init__(self, node):
-        self.children = {}
-        self.type = "LITERAL"
-        # Argument children
-        for argument_child in node._children:
-            child_name = f'Argument<{argument_child._ArgumentNode__name}>'
-            self.children[child_name] = Node(argument_child)
+
+class Node:
+    def __init__(self, name: str, node: AbstractNode):
+        self.name = name
+        self.type = None
+        self.children = []
+
+        # get type
+        try:
+            self.type = NodeTypes(node.__class__)
+        except ValueError:
+            self.type = NodeTypes.TEXT
 
         # Literal children
-        for key, literal_children in node._children_literal.items():
-            self.children[key] = Node(literal_children[0])
-        # has children
-        if not node._children:
-            match type(node).__name__:
-                case "Integer":
-                    self.type = "INTEGER"
-                case "Float":
-                    self.type = "DOUBLE"
-                case "QuotableText":
-                    self.type = "GREEDY_STRING"
-                case "Text":
-                    self.type = "WORD"
-                case _:
-                    self.type = "NOTHING"
+        for literal, literal_children in node._children_literal.items():
+            self.children.append(Node(literal, literal_children[0]))
+
+        # Argument children
+        for argument_child in node._children:
+            self.children.append(
+                Node(
+                    argument_child._ArgumentNode__name,
+                    argument_child
+                )
+            )
 
     @property
     def dict(self):
-        if self.children:
-            return {key: value.dict for key, value in self.children.items()}
-        else:
-            return self.type
+        return {
+            'name': self.name,
+            'type': self.type.name,
+            'children': [i.dict for i in self.children]
+        }
 
 
 def register(server: PluginServerInterface):
-    server.logger.debug('Register commands to minecraft')
-
     # return if server is not startup
     if not server.is_server_startup():
         return
 
     # get tree data
     root_nodes = mcdr_server.command_manager.root_nodes
-    tree_data = {}
+    json_data = {'data': []}
     for key, value in root_nodes.items():
         plugin_command_holder: PluginCommandHolder = value[0]
-        tree_data[key] = Node(plugin_command_holder.node).dict
+        json_data['data'].append(Node(key, plugin_command_holder.node).dict)
 
-    # execute register command
-    server.execute(f'mcdr register {json.dumps(tree_data)}')
-    return tree_data
+    # register
+    server.logger.debug(
+        f'Register commands to minecraft, tree:'
+        f'\n{json.dumps(json_data, indent=4)}'
+    )
+    server.execute(f'mcdr register {json.dumps(json_data)}')
+    return json_data
 
 
 def on_load(server: PluginServerInterface, prev_module):
@@ -77,10 +89,6 @@ def on_load(server: PluginServerInterface, prev_module):
         register(server)
 
     mcdr_server.on_plugin_registry_changed = new_on_plugin_registry_changed
-
-    server.register_command(Literal("!!manual_update").runs(
-        lambda src, ctx: register(server)
-    ))
 
 
 def on_server_startup(server: PluginServerInterface):
