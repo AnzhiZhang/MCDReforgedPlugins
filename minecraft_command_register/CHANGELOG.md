@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.1.1...minecraft_command_register-v1.2.0) (2022-12-01)
+
+
+### Features
+
+* **minecraft_command_register:** ✨ optimize data format ([2f1f660](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2f1f660eb3c8e3be6faaed595a69e9f8036a6fdd))
+* **minecraft_command_register:** make minecraft_command_register fits the mod MCDRCommandFabric ([#66](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/66)) ([aa24c67](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/aa24c67d8947db258c72ff7f76f69b35965db192))
+
 ## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.1.0...minecraft_command_register-v1.1.1) (2022-11-20)
 
 
