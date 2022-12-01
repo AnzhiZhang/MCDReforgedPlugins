@@ -1,14 +1,17 @@
 {
-    "id": "minecraft_command_register",
-    "version": "1.1.1",
-    "name": "Minecraft Command Register",
-    "description": {
-        "en_us": "Register MCDReforged commands in Minecraft",
-        "zh_cn": "在 Minecraft 中注册 MCDReforged 指令"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/minecraft_command_register",
-    "dependencies": {
-        "mcdreforged": "2.6.0"
-    }
+  "id": "minecraft_command_register",
+  "version": "1.2.0",
+  "name": "Minecraft Command Register",
+  "description": {
+    "en_us": "Register MCDReforged commands in Minecraft",
+    "zh_cn": "在 Minecraft 中注册 MCDReforged 指令"
+  },
+  "author": [
+    "Andy Zhang",
+    "ZhuRuoLing"
+  ],
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/minecraft_command_register",
+  "dependencies": {
+    "mcdreforged": "2.6.0"
+  }
 }
