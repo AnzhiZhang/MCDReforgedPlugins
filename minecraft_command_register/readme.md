@@ -8,4 +8,4 @@
 
 ### Fabric
 
-需同时安装 [MCDRCommandFabric](https://github.com/AnzhiZhang/MCDRCommandFabric) 模组
+需同时安装 [MCDR Command Fabric](https://github.com/AnzhiZhang/MCDRCommandFabric) 模组。
