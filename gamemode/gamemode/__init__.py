@@ -88,7 +88,6 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx):
-
         def coordValid(a):
             if a.count('-') > 1 or a.count('.') > 1 or a.startswith(
                     '.') or a.endswith('.'):
@@ -168,7 +167,8 @@ def on_load(server: PluginServerInterface, old):
                 src.reply('§c坐标不合法')
             else:
                 dim = DIMENSIONS[
-                    minecraft_data_api.get_player_info(src.player, 'Dimension')]
+                    minecraft_data_api.get_player_info(src.player, 'Dimension')
+                ]
                 pos = ' '.join(
                     (
                         str(float(params[0])),
@@ -231,45 +231,46 @@ def on_load(server: PluginServerInterface, old):
             src.reply('§a已将您传送至上个地点')
 
     server.register_command(
-        Literal('!!spec').
-            requires(lambda src: src.has_permission(permissions.spec)).
-            runs(change_mode).
-            then(
-            Literal('help').
-                runs(lambda src: src.reply(HELP_MESSAGE))
-        ).
-            then(
-            Text('player').
-                requires(
+        Literal('!!spec')
+        .requires(lambda src: src.has_permission(permissions.spec))
+        .runs(change_mode)
+        .then(
+            Literal('help')
+            .runs(lambda src: src.reply(HELP_MESSAGE))
+        )
+        .then(
+            Text('player')
+            .requires(
                 lambda src: src.has_permission(permissions.spec_other)
-            ).
-                runs(change_mode)
+            )
+            .runs(change_mode)
         )
     )
     server.register_command(
-        Literal('!!tp').
-            requires(lambda src: src.has_permission(permissions.tp)).
+        Literal('!!tp')
+        .requires(lambda src: src.has_permission(permissions.tp))
+        .then(
+            Text('param1')
+            .runs(tp).  # !!tp <dimension> -- param1 = dimension
             then(
-            Text('param1').
-                runs(tp).  # !!tp <dimension> -- param1 = dimension
-                then(
-                Float('param2').
-                    then(
-                    Float('param3').
-                        runs(
-                        tp).  # !!tp <x> <y> <z> -- param1 = x, param2 = y, param3 = z
-                        then(
-                        Float('param4').runs(tp)
+                Float('param2')
+                .then(
+                    Float('param3')
+                    # !!tp <x> <y> <z> -- param1 = x, param2 = y, param3 = z
+                    .runs(tp)
+                    .then(
                         # !!tp <dimension> <x> <y> <z> -- param1 = dimension, param2 = x, param3 = y, param4 = z
+                        Float('param4')
+                        .runs(tp)
                     )
                 )
             )
         )
     )
     server.register_command(
-        Literal('!!back').
-            requires(lambda src: src.has_permission(permissions.back)).
-            runs(back)
+        Literal('!!back')
+        .requires(lambda src: src.has_permission(permissions.back))
+        .runs(back)
     )
 
 
