@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import time
 from math import ceil, floor
+from typing import Optional, Any
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 from mcdreforged.api.utils import Serializable
-
-import minecraft_data_api
 
 DIMENSIONS = {
     '0': 'minecraft:overworld',
@@ -51,6 +50,7 @@ class Config(Serializable):
 
 config: Config
 data: dict
+minecraft_data_api: Optional[Any]
 
 
 def nether_to_overworld(x, z):
@@ -62,13 +62,14 @@ def overworld_to_nether(x, z):
 
 
 def on_load(server: PluginServerInterface, old):
-    global data
+    global data, minecraft_data_api
     permissions = server.load_config_simple(
         'config.json',
         default_config=DEFAULT_CONFIG,
         target_class=Config
     )
-    data = server.load_config_simple('data.json', default_config={})
+    data = server.load_config_simple('data.json')
+    minecraft_data_api = server.get_plugin_instance('minecraft_data_api')
 
     server.register_help_message('!!spec help', 'Gamemode插件帮助')
 
