@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v0.1.0...gamemode-v1.0.0) (2022-12-02)
+
+
+### Bug Fixes
+
+* **gamemode:** 🐛 fix load_config_simple as MCDR api changed (fix [#68](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/68)) ([2dd500e](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2dd500edf5978cff513e2aa5c638276f7e2963cb))
+
+
+### Miscellaneous Chores
+
+* **gamemode:** 🔖 1.0.0 ([1369ad8](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/1369ad83260f3b5a99ab1a5ada387f5f7042e755))
+
 ## 0.1.0 (2022-06-30)
 
 
