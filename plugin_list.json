@@ -5,6 +5,7 @@
     "database_api",
     "gamemode",
     "info",
+    "lowercase_mcdr_command",
     "minecraft_command_register",
     "more_command_nodes",
     "start_stop_helper_r",
