@@ -16,15 +16,18 @@ def on_load(server: PluginServerInterface, prev_module):
             mcdr_plugin.on_mcdr_command_permission_denied,
             handled=True
         )
+        .on_error(
+            UnknownArgument,
+            mcdr_plugin.on_mcdr_command_unknown_argument
+        )
         .on_child_error(
             RequirementNotMet,
             mcdr_plugin.on_mcdr_command_permission_denied,
             handled=True
         )
-        .on_error(
+        .on_child_error(
             UnknownArgument,
-            mcdr_plugin.on_mcdr_command_unknown_argument,
-            handled=True
+            mcdr_plugin.on_mcdr_command_unknown_argument
         )
         .then(mcdr_plugin.command_status.get_command_node())
         .then(mcdr_plugin.command_reload.get_command_node())
