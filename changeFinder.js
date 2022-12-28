@@ -30,5 +30,9 @@ for (let pluginKey in pluginList) {
     }
 }
 
+function isAffectReleaseLog(log) {
+    return log.includes('fix') || log.includes('feat') || log.includes('!') || log.includes('Release-As: ');
+}
+
 core.setOutput('changed', changedList.length > 0);
 core.setOutput('plugins', JSON.stringify(changedList));
