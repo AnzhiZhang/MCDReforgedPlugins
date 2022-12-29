@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.4...bot-v1.0.5) (2022-12-29)
+
+
+### Build System
+
+* **bot:** ⬆️ set mcdreforged denpendcy as ^2.6.0 ([2fbcabf](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2fbcabf5ad021270b415af9a6c79b4598c725c3f))
+
 ## [1.0.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.3...bot-v1.0.4) (2022-12-29)
 
 
