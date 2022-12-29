@@ -3,6 +3,7 @@
     "bingo",
     "bot",
     "database_api",
+    "dict_command_registration",
     "gamemode",
     "info",
     "lowercase_mcdr_command",
