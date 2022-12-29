@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.3...bot-v1.0.4) (2022-12-29)
+
+
+### Reverts
+
+* **bot:** 💡 sort Union type order same as import order ([a5aca65](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a5aca65f7ae4abb19aed5a4958d7f61857334d90))
+
+
+### Build System
+
+* **bot:** 🔖 1.0.4 ([ee00c3b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/ee00c3b0f3e4588eb47fcdb51a275094fc14cf7a))
+
 ## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.2...bot-v1.0.3) (2022-07-23)
 
 
