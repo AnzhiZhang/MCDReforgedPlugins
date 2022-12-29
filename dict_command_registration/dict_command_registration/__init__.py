@@ -37,7 +37,8 @@ def register(
     """
     # parse dict
     root_node = Node(command)
-    root_node.to_mcdr_node().print_tree()
+    server.logger.debug("Registering command tree:")
+    root_node.to_mcdr_node().print_tree(server.logger.debug)
 
     # register command
     server.register_command(root_node.to_mcdr_node())
