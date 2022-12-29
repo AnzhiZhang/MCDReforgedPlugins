@@ -12,6 +12,18 @@
 
 * **bot:** ♻️ use dict_command_registration to register command ([9ea0042](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9ea00421fa1712d3157804254b645100cd1ea91f))
 
+## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.3...bot-v1.0.3) (2022-12-29)
+
+
+### Reverts
+
+* **bot:** 💡 sort Union type order same as import order ([a5aca65](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a5aca65f7ae4abb19aed5a4958d7f61857334d90))
+
+
+### Code Refactoring
+
+* **bot:** ♻️ use dict_command_registration to register command ([9ea0042](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9ea00421fa1712d3157804254b645100cd1ea91f))
+
 ## [1.0.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.2...bot-v1.0.3) (2022-07-23)
 
 
