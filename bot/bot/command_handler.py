@@ -259,29 +259,29 @@ class CommandHandler:
                 spawn_button = (
                     RText(
                         '[↑]', color=RColor.green
-                    ).
-                        h(RTextMCDRTranslation('bot.list.spawnButton')).
-                        c(RAction.run_command, f'!!bot spawn {bot.name}')
+                    )
+                    .h(RTextMCDRTranslation('bot.list.spawnButton'))
+                    .c(RAction.run_command, f'!!bot spawn {bot.name}')
                 )
                 kill_button = (
                     RText(
                         '[↓]', color=RColor.yellow
-                    ).
-                        h(RTextMCDRTranslation('bot.list.killButton')).
-                        c(RAction.run_command, f'!!bot kill {bot.name}')
+                    )
+                    .h(RTextMCDRTranslation('bot.list.killButton'))
+                    .c(RAction.run_command, f'!!bot kill {bot.name}')
                 )
                 action_button = (
                     RText(
                         '[▶]', color=RColor.blue
-                    ).
-                        h(RTextMCDRTranslation('bot.list.actionButton')).
-                        c(RAction.run_command, f'!!bot action {bot.name}')
+                    )
+                    .h(RTextMCDRTranslation('bot.list.actionButton'))
+                    .c(RAction.run_command, f'!!bot action {bot.name}')
                 )
                 info_button = (
                     RText(
                         '[?]', color=RColor.gray
-                    ).
-                        h(
+                    )
+                    .h(
                         RTextMCDRTranslation(
                             'bot.list.infoButton',
                             bot.name, bot.location.rounded_position,
@@ -290,15 +290,15 @@ class CommandHandler:
                             bot.comment, bot.actions, bot.auto_login,
                             bot.auto_run_actions
                         )
-                    ).
-                        c(RAction.run_command, f'!!bot info {bot.name}')
+                    )
+                    .c(RAction.run_command, f'!!bot info {bot.name}')
                 )
                 delete_button = (
                     RText(
                         '[×]', color=RColor.red
-                    ).
-                        h(RTextMCDRTranslation('bot.list.deleteButton')).
-                        c(RAction.run_command, f'!!bot del {bot.name}')
+                    )
+                    .h(RTextMCDRTranslation('bot.list.deleteButton'))
+                    .c(RAction.run_command, f'!!bot del {bot.name}')
                 )
                 name = RText(
                     bot.display_name,
@@ -311,27 +311,29 @@ class CommandHandler:
                 ))
 
             # Index footer
+            left_color = RColor.green if index != 0 else RColor.dark_gray
+            right_color = (
+                RColor.green
+                if index != max_index
+                else RColor.dark_gray
+            )
             message.append(RTextList(
                 '\n',
-                RText(
-                    '<<< ',
-                    color=(
-                        RColor.green if index != 0 else RColor.dark_gray
-                    )
-                ).c(RAction.run_command, f'!!bot list {index - 1}'),
+                RText('<<< ', color=left_color).c(
+                    RAction.run_command, f'!!bot list {index - 1}'
+                ),
                 index, ' / ', max_index,
-                RText(
-                    ' >>>',
-                    color=(
-                        RColor.green if index != max_index else RColor.dark_gray
-                    )
-                ).c(RAction.run_command, f'!!bot list {index + 1}')
+                RText(' >>>', color=right_color).c(
+                    RAction.run_command, f'!!bot list {index + 1}'
+                )
             ))
 
             # Reply
             src.reply(message)
         except IllegalListIndexException:
-            src.reply(RTextMCDRTranslation('bot.error.illegalListIndex', index))
+            src.reply(
+                RTextMCDRTranslation('bot.error.illegalListIndex', index)
+            )
 
     @new_thread('commandSpawn')
     def __command_spawn(self, src: Source, ctx: Dict[str, Any]):
@@ -387,11 +389,11 @@ class CommandHandler:
             :return: RText.
             """
             return (
-                RText('[✐]', color=RColor.gray).
-                    h(
+                RText('[✐]', color=RColor.gray)
+                .h(
                     RTextMCDRTranslation('bot.command.info.configButtonHover')
-                ).
-                    c(
+                )
+                .c(
                     RAction.suggest_command,
                     f'!!bot config {name} {config} {default_value}'
                 )
@@ -401,12 +403,12 @@ class CommandHandler:
             bot = self.__plugin.bot_manager.get_bot(ctx['name'])
             minimap_button = RTextList(
                 RText('[+V]', color=RColor.aqua)
-                    .h(
+                .h(
                     RTextMCDRTranslation(
                         'bot.command.info.position.voxelButton'
                     )
                 )
-                    .c(
+                .c(
                     RAction.run_command,
                     '/newWaypoint x:{}, y:{}, z:{}, dim:{}'.format(
                         int(bot.location.position[0]),
@@ -417,12 +419,12 @@ class CommandHandler:
                 ),
                 ' ',
                 RText('[+X]', color=RColor.gold)
-                    .h(
+                .h(
                     RTextMCDRTranslation(
                         'bot.command.info.position.xearosButton'
                     )
                 )
-                    .c(
+                .c(
                     RAction.run_command,
                     (
                         "xaero_waypoint_add:{}'s Location"
@@ -440,56 +442,61 @@ class CommandHandler:
             actions_info = RTextList(
                 RTextMCDRTranslation('bot.command.info.actions'), ' ',
                 RText('[▶]', color=RColor.blue)
-                    .h(
+                .h(
                     RTextMCDRTranslation(
                         'bot.command.info.actions.actionButtonAll'
                     )
                 )
-                    .c(RAction.run_command, f'!!bot action {bot.name}'), ' ',
-                RText('[×]', color=RColor.red).
-                    h(
+                .c(RAction.run_command, f'!!bot action {bot.name}'), ' ',
+                RText('[×]', color=RColor.red)
+                .h(
                     RTextMCDRTranslation(
                         'bot.command.info.actions.clearButton'
                     )
-                ).
-                    c(
+                )
+                .c(
                     RAction.run_command,
                     f'!!bot config {bot.name} actions clear'
                 ),
-                *[RTextList(
-                    '\n', '  ',
-                    get_config_button(
-                        bot.name, f'actions edit {index}', action
-                    ), ' ',
-                    RText('[▶]', color=RColor.blue)
+                *[
+                    RTextList(
+                        '\n', '  ',
+                        get_config_button(
+                            bot.name, f'actions edit {index}', action
+                        ), ' ',
+                        RText('[▶]', color=RColor.blue)
                         .h(
-                        RTextMCDRTranslation(
-                            'bot.command.info.actions.actionButtonIndex', index
+                            RTextMCDRTranslation(
+                                'bot.command.info.actions.actionButtonIndex',
+                                index
+                            )
                         )
-                    )
                         .c(
-                        RAction.run_command,
-                        f'!!bot action {bot.name} {index}'
-                    ), ' ',
-                    RText('[×]', color=RColor.red).
-                        h(
-                        RTextMCDRTranslation(
-                            'bot.command.info.actions.deleteButton', index
+                            RAction.run_command,
+                            f'!!bot action {bot.name} {index}'
+                        ), ' ',
+                        RText('[×]', color=RColor.red)
+                        .h(
+                            RTextMCDRTranslation(
+                                'bot.command.info.actions.deleteButton', index
+                            )
                         )
-                    ).
-                        c(
-                        RAction.run_command,
-                        f'!!bot config {bot.name} actions delete {index}'
-                    ), ' ',
-                    f'§3{index}. {action}',
-                ) for index, action in enumerate(bot.actions)], '\n',
-                '                ', RText('[+]', color=RColor.green).
-                    h(
+                        .c(
+                            RAction.run_command,
+                            f'!!bot config {bot.name} actions delete {index}'
+                        ), ' ',
+                        f'§3{index}. {action}',
+                    )
+                    for index, action
+                    in enumerate(bot.actions)
+                ], '\n', '                ',
+                RText('[+]', color=RColor.green)
+                .h(
                     RTextMCDRTranslation(
                         'bot.command.info.actions.appendButton'
                     )
-                ).
-                    c(
+                )
+                .c(
                     RAction.suggest_command,
                     f'!!bot config {bot.name} actions append '
                 )
@@ -578,7 +585,9 @@ class CommandHandler:
                 RTextMCDRTranslation('bot.error.illegalDimension', dimension)
             )
         except BotAlreadySavedException as e:
-            src.reply(RTextMCDRTranslation('bot.error.botAlreadySaved', e.name))
+            src.reply(
+                RTextMCDRTranslation('bot.error.botAlreadySaved', e.name)
+            )
 
     def __command_del(self, src: Source, ctx: Dict[str, Any]):
         name = ctx['name']
@@ -684,7 +693,9 @@ class CommandHandler:
         except BotNotExistsException as e:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
-    def __command_config_actions_append(self, src: Source, ctx: Dict[str, Any]):
+    def __command_config_actions_append(
+            self, src: Source, ctx: Dict[str, Any]
+    ):
         name = ctx['name']
         action = ctx['action']
         try:
@@ -701,7 +712,9 @@ class CommandHandler:
         except BotNotExistsException as e:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
-    def __command_config_actions_insert(self, src: Source, ctx: Dict[str, Any]):
+    def __command_config_actions_insert(
+            self, src: Source, ctx: Dict[str, Any]
+    ):
         name = ctx['name']
         index = ctx['index']
         action = ctx['action']
@@ -727,7 +740,9 @@ class CommandHandler:
                 'bot.error.illegalActionIndex', e.index
             ))
 
-    def __command_config_actions_delete(self, src: Source, ctx: Dict[str, Any]):
+    def __command_config_actions_delete(
+            self, src: Source, ctx: Dict[str, Any]
+    ):
         name = ctx['name']
         index = ctx['index']
         try:
