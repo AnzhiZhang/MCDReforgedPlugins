@@ -5,11 +5,11 @@ from mcdreforged.api.types import ConsoleCommandSource, PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 from mcdreforged.api.decorator import new_thread
+from more_command_nodes import Position, Facing, EnumeratedText
 
 from bot.exceptions import *
 from bot.constants import DIMENSION
 from bot.location import Location
-from more_command_nodes import Position, Facing, EnumeratedText
 
 if TYPE_CHECKING:
     from bot.plugin import Plugin
