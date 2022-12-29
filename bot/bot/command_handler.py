@@ -14,7 +14,7 @@ from more_command_nodes import Position, Facing, EnumeratedText
 if TYPE_CHECKING:
     from bot.plugin import Plugin
 
-Source = Union[PlayerCommandSource, ConsoleCommandSource]
+Source = Union[ConsoleCommandSource, PlayerCommandSource]
 
 
 class ListArguments(Enum):
