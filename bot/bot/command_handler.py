@@ -1,10 +1,12 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Dict, Any, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union
 
 from mcdreforged.api.types import ConsoleCommandSource, PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 from mcdreforged.api.decorator import new_thread
+from mcdreforged.api.utils.serializer import Serializable
+from dict_command_registration import NodeType, register
 from more_command_nodes import Position, Facing, EnumeratedText
 
 from bot.exceptions import *
@@ -17,6 +19,17 @@ if TYPE_CHECKING:
 Source = Union[ConsoleCommandSource, PlayerCommandSource]
 
 
+class PermissionsRequirements(Serializable):
+    LIST: Callable
+    SPAWN: Callable
+    KILL: Callable
+    ACTION: Callable
+    INFO: Callable
+    SAVE: Callable
+    DEL: Callable
+    CONFIG: Callable
+
+
 class ListArguments(Enum):
     ALL = '--all'
     ONLINE = '--online'
@@ -26,202 +39,299 @@ class ListArguments(Enum):
 class CommandHandler:
     def __init__(self, plugin: 'Plugin'):
         self.__plugin: 'Plugin' = plugin
-        permissions = self.__plugin.config.permissions
+        permissions = PermissionsRequirements(
+            **{
+                key.upper(): Requirements.has_permission(value)
+                for key, value
+                in self.__plugin.config.permissions.items()
+            }
+        )
 
-        list_literal = (
-            Literal('list').
-                requires(
-                lambda src: src.has_permission(permissions['list'])
-            ).
-                runs(self.__command_list).
-                then(
-                Integer('index').
-                    runs(self.__command_list).
-                    then(
-                    EnumeratedText('arg', ListArguments).
-                        runs(self.__command_list)
-                )
-            )
-        )
-        spawn_literal = (
-            Literal('spawn').
-                requires(
-                lambda src: src.has_permission(permissions['spawn'])
-            ).
-                then(
-                Text('name').runs(self.__command_spawn)
-            )
-        )
-        kill_literal = (
-            Literal('kill').
-                requires(
-                lambda src: src.has_permission(permissions['kill'])
-            ).
-                then(
-                Text('name').runs(self.__command_kill)
-            )
-        )
-        action_literal = (
-            Literal('action').
-                requires(
-                lambda src: src.has_permission(permissions['action'])
-            ).
-                then(
-                Text('name').runs(self.__command_action).
-                    then(
-                    Integer('index').runs(self.__command_action)
-                )
-            )
-        )
-        info_literal = (
-            Literal('info').
-                requires(
-                lambda src: src.has_permission(permissions['info'])
-            ).then(
-                Text('name').runs(self.__command_info)
-            )
-        )
-        save_literal = (
-            Literal('save').
-                requires(
-                lambda src: src.has_permission(permissions['save'])
-            ).
-                then(
-                Text('name').runs(self.__command_save).then(
-                    Position('position').runs(self.__command_save).then(
-                        Facing('facing').runs(self.__command_save).then(
-                            Text('dimension').runs(self.__command_save)
-                        )
-                    )
-                )
-            )
-        )
-        del_literal = (
-            Literal('del').
-                requires(
-                lambda src: src.has_permission(permissions['del'])
-            ).
-                then(
-                Text('name').runs(self.__command_del)
-            )
-        )
-        config_literal = (
-            Literal('config').
-                requires(
-                lambda src: src.has_permission(permissions['config'])
-            ).
-                then(
-                Text('name').
-                    then(
-                    Literal('name').
-                        then(
-                        Text('new_name').runs(self.__command_config_name)
-                    )
-                ).
-                    then(
-                    Literal('position').
-                        then(
-                        Position('position').runs(
-                            self.__command_config_position)
-                    )
-                ).
-                    then(
-                    Literal('facing').
-                        then(
-                        Facing('facing').runs(self.__command_config_facing)
-                    )
-                ).
-                    then(
-                    Literal('dimension').
-                        then(
-                        Text('dimension').runs(self.__command_config_dimension)
-                    )
-                ).
-                    then(
-                    Literal('comment').
-                        then(
-                        GreedyText('comment').runs(
-                            self.__command_config_comment)
-                    )
-                ).
-                    then(
-                    Literal('actions').
-                        then(
-                        Literal('append').
-                            then(
-                            GreedyText('action').
-                                runs(self.__command_config_actions_append)
-                        )
-                    ).
-                        then(
-                        Literal('insert').
-                            then(
-                            Integer('index').
-                                then(
-                                GreedyText('action').
-                                    runs(self.__command_config_actions_insert)
-                            )
-                        )
-                    ).
-                        then(
-                        Literal('delete').
-                            then(
-                            Integer('index').
-                                runs(self.__command_config_actions_delete)
-                        )
-                    ).
-                        then(
-                        Literal('edit').
-                            then(
-                            Integer('index').
-                                then(
-                                GreedyText('action').
-                                    runs(self.__command_config_actions_edit)
-                            )
-                        )
-                    ).
-                        then(
-                        Literal('clear').
-                            runs(self.__command_config_actions_clear)
-                    )
-                ).
-                    then(
-                    Literal('autoLogin').
-                        then(
-                        Boolean('autoLogin').
-                            runs(self.__command_config_auto_login)
-                    )
-                ).
-                    then(
-                    Literal('autoRunActions').
-                        then(
-                        Boolean('autoRunActions').
-                            runs(self.__command_config_auto_run_actions)
-                    )
-                )
-            )
-        )
-        self.__plugin.server.register_help_message(
-            '!!bot',
+        def bot_list(online: bool = None) -> Callable[[bool], List[str]]:
+            return lambda: [
+                name for name, bot in
+                self.__plugin.bot_manager.bots.items()
+                if online is None or bot.online == online
+            ]
+
+        # generate command tree
+        command_tree = {
+            'name': '!!bot',
+            'runs': lambda src: src.reply(
+                self.__plugin.server.rtr('bot.help.content')
+            ),
+            'children': [
+                {
+                    'name': 'list',
+                    'requires': permissions.LIST,
+                    'runs': self.__command_list,
+                    'children': [
+                        {
+                            'name': 'index',
+                            'type': NodeType.INTEGER,
+                            'runs': self.__command_list,
+                            'children': [
+                                {
+                                    'name': 'arg',
+                                    'type': EnumeratedText,
+                                    'runs': self.__command_list,
+                                    'args': [ListArguments]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    'name': 'spawn',
+                    'requires': permissions.SPAWN,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_spawn,
+                            'suggests': bot_list(False)
+                        }
+                    ]
+                },
+                {
+                    'name': 'kill',
+                    'requires': permissions.KILL,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_kill,
+                            'suggests': bot_list(True)
+                        }
+                    ]
+                },
+                {
+                    'name': 'action',
+                    'requires': permissions.ACTION,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_action,
+                            'suggests': bot_list(True),
+                            'children': [
+                                {
+                                    'name': 'index',
+                                    'type': NodeType.INTEGER,
+                                    'runs': self.__command_action
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    'name': 'info',
+                    'requires': permissions.INFO,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_info,
+                            'suggests': bot_list()
+                        }
+                    ]
+                },
+                {
+                    'name': 'save',
+                    'requires': permissions.SAVE,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_save,
+                            'children': [
+                                {
+                                    'name': 'position',
+                                    'type': Position,
+                                    'runs': self.__command_save,
+                                    'children': [
+                                        {
+                                            'name': 'facing',
+                                            'type': Facing,
+                                            'runs': self.__command_save,
+                                            'children': [
+                                                {
+                                                    'name': 'dimension',
+                                                    'type': NodeType.TEXT,
+                                                    'runs': self.__command_save
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    'name': 'del',
+                    'requires': permissions.DEL,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'runs': self.__command_del,
+                            'suggests': bot_list()
+                        }
+                    ]
+                },
+                {
+                    'name': 'config',
+                    'requires': permissions.CONFIG,
+                    'children': [
+                        {
+                            'name': 'name',
+                            'type': NodeType.TEXT,
+                            'suggests': bot_list(),
+                            'children': [
+                                {
+                                    'name': 'name',
+                                    'children': [
+                                        {
+                                            'name': 'new_name',
+                                            'type': NodeType.TEXT,
+                                            'runs': self.__command_config_name
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'position',
+                                    'children': [
+                                        {
+                                            'name': 'position',
+                                            'type': Position,
+                                            'runs': self.__command_config_position
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'facing',
+                                    'children': [
+                                        {
+                                            'name': 'facing',
+                                            'type': Facing,
+                                            'runs': self.__command_config_facing
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'dimension',
+                                    'children': [
+                                        {
+                                            'name': 'dimension',
+                                            'type': NodeType.TEXT,
+                                            'runs': self.__command_config_dimension
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'comment',
+                                    'children': [
+                                        {
+                                            'name': 'comment',
+                                            'type': NodeType.GREEDY_TEXT,
+                                            'runs': self.__command_config_comment
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'actions',
+                                    'children': [
+                                        {
+                                            'name': 'append',
+                                            'children': [
+                                                {
+                                                    'name': 'action',
+                                                    'type': NodeType.GREEDY_TEXT,
+                                                    'runs': self.__command_config_actions_append
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            'name': 'insert',
+                                            'children': [
+                                                {
+                                                    'name': 'index',
+                                                    'type': NodeType.INTEGER,
+                                                    'children': [
+                                                        {
+                                                            'name': 'action',
+                                                            'type': NodeType.GREEDY_TEXT,
+                                                            'runs': self.__command_config_actions_insert
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            'name': 'delete',
+                                            'children': [
+                                                {
+                                                    'name': 'index',
+                                                    'type': NodeType.INTEGER,
+                                                    'runs': self.__command_config_actions_delete
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            'name': 'edit',
+                                            'children': [
+                                                {
+                                                    'name': 'index',
+                                                    'type': NodeType.INTEGER,
+                                                    'children': [
+                                                        {
+                                                            'name': 'action',
+                                                            'type': NodeType.GREEDY_TEXT,
+                                                            'runs': self.__command_config_actions_edit
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            'name': 'clear',
+                                            'runs': self.__command_config_actions_clear
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'autoLogin',
+                                    'children': [
+                                        {
+                                            'name': 'autoLogin',
+                                            'type': NodeType.BOOLEAN,
+                                            'runs': self.__command_config_auto_login
+                                        }
+                                    ]
+                                },
+                                {
+                                    'name': 'autoRunActions',
+                                    'children': [
+                                        {
+                                            'name': 'autoRunActions',
+                                            'type': NodeType.BOOLEAN,
+                                            'runs': self.__command_config_auto_run_actions
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        register(
+            self.__plugin.server,
+            command_tree,
             RTextMCDRTranslation('bot.help.message')
-                .c(RAction.run_command, '!!bot list')
-                .h(RTextMCDRTranslation('bot.help.message.hover'))
-        )
-        self.__plugin.server.register_command(
-            Literal('!!bot').
-                runs(
-                lambda src: src.reply(
-                    self.__plugin.server.rtr('bot.help.content')
-                )
-            ).
-                then(list_literal).
-                then(spawn_literal).
-                then(kill_literal).
-                then(action_literal).
-                then(info_literal).
-                then(save_literal).
-                then(del_literal).
-                then(config_literal)
+            .c(RAction.run_command, '!!bot list')
+            .h(RTextMCDRTranslation('bot.help.message.hover'))
         )
 
     def __parse_name(self, name: str) -> str:
