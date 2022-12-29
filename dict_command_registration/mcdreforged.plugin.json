@@ -1,6 +1,6 @@
 {
   "id": "dict_command_registration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Dict Command Registration",
   "description": {
     "en_us": "Register your command by a python dict",

@@ -1,5 +1,6 @@
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
+from mcdreforged.api.rtext import RTextBase
 from mcdreforged.api.types import PluginServerInterface
 
 from .exceptions import MissingRequiredAttribute
@@ -17,7 +18,9 @@ __all__ = [
 def register(
         server: PluginServerInterface,
         command: Dict[str, Any],
-        help_message: str = None,
+        help_message: Union[
+            str, RTextBase, Dict[str, Union[str, RTextBase]]
+        ] = None,
         help_message_permission: int = 0
 ) -> None:
     """
