@@ -92,13 +92,9 @@ jobs:
           python -m mcdreforged pack -i ${{ matrix.plugin }}
           echo "name=$(ls *.mcdr)" >> $GITHUB_OUTPUT
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+      - name: Upload
         if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.release_please_release.outputs[format('{0}--upload_url', matrix.plugin)] }}
-          asset_path: ${{ steps.pack.outputs.name }}
-          asset_name: ${{ steps.pack.outputs.name }}
-          asset_content_type: application/zip
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ steps.release_please_release.outputs.tag_name }} ${{ steps.pack.outputs.name }}
