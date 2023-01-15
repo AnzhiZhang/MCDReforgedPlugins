@@ -189,7 +189,7 @@ See also: [AbstractNode.runs()](https://mcdreforged.readthedocs.io/en/latest/cod
 
 > Set the requirement tester callback of the node.
 
-- Type: `Callable`
+- Type: `Union[Callable, List[Callable]]`
 
 See also: [AbstractNode.requires()](https://mcdreforged.readthedocs.io/en/latest/code_references/command.html#mcdreforged.command.builder.nodes.basic.AbstractNode.requires).
 
