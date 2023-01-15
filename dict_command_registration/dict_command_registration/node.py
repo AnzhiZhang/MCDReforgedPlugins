@@ -44,7 +44,7 @@ class Node:
         self.__runs: Callable = data.get("runs")
 
         # requires
-        self.__requires: Callable = data.get("requires")
+        self.__requires: Union[Callable, List[Callable]] = data.get("requires")
 
         # redirects
         self.__redirects: AbstractNode = data.get("redirects")
@@ -94,7 +94,15 @@ class Node:
 
             # requires
             if self.__requires is not None:
-                mcdr_node.requires(self.__requires)
+                if isinstance(self.__requires, list):
+                    for i in self.__requires:
+                        mcdr_node.requires(i)
+                elif isinstance(self.__requires, Callable):
+                    mcdr_node.requires(self.__requires)
+                else:
+                    raise TypeError(
+                        f"Error requires type: {type(self.__requires)}"
+                    )
 
             # redirects
             if self.__redirects is not None:

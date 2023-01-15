@@ -1,6 +1,6 @@
 {
   "id": "dict_command_registration",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "name": "Dict Command Registration",
   "description": {
     "en_us": "Register your command by a python dict",
@@ -9,6 +9,6 @@
   "author": "Andy Zhang",
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/dict_command_registration",
   "dependencies": {
-    "mcdreforged": "^2.5.0"
+    "mcdreforged": "^2.7.0"
   }
 }
