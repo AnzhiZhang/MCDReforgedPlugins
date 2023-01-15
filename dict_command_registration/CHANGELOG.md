@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/dict_command_registration-v1.0.1...dict_command_registration-v1.1.0) (2023-01-15)
+
+
+### Features
+
+* **dict_command_registration:** ✨ support multiple requirements ([fe35f38](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/fe35f38118f61b7fe01a2b71555f788f47f6f19e))
+
+
+### Bug Fixes
+
+* **dict_command_registration:** 🔊 move mcdr node print tree to logger.debug ([08f8b25](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/08f8b255b22c79df706ceca550c19b8ce402acbf))
+
 ## [1.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/dict_command_registration-v1.0.1...dict_command_registration-v1.0.2) (2022-12-29)
 
 
