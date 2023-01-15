@@ -1,17 +1,17 @@
 {
-    "id": "start_stop_helper_r",
-    "version": "0.1.0",
-    "name": "StartStopHelperR",
-    "description": {
-        "en_us": "Start and stop server helper",
-        "zh_cn": "开关服助手"
-    },
-    "author": [
-        "Fallen_Breath",
-        "Andy Zhang"
-    ],
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/start_stop_helper_r",
-    "resources": [
-        "lang"
-    ]
+  "id": "start_stop_helper_r",
+  "version": "0.1.0",
+  "name": "StartStopHelperR",
+  "description": {
+    "en_us": "Start and stop server helper",
+    "zh_cn": "开关服助手"
+  },
+  "author": [
+    "Fallen_Breath",
+    "Andy Zhang"
+  ],
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/start_stop_helper_r",
+  "resources": [
+    "lang"
+  ]
 }

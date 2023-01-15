@@ -1,14 +1,14 @@
 {
-    "id": "gamemode",
-    "version": "1.0.0",
-    "name": "Gamemode",
-    "description": {
-        "en_us": "Change to spectator mode for observe, teleport to origin position when change back to survival mode",
-        "zh_cn": "旁观者模式以旁观，返回生存时传送回原坐标"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/gamemode",
-    "dependencies": {
-        "minecraft_data_api": ">=1.4"
-    }
+  "id": "gamemode",
+  "version": "1.0.0",
+  "name": "Gamemode",
+  "description": {
+    "en_us": "Change to spectator mode for observe, teleport to origin position when change back to survival mode",
+    "zh_cn": "旁观者模式以旁观，返回生存时传送回原坐标"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/gamemode",
+  "dependencies": {
+    "minecraft_data_api": ">=1.4"
+  }
 }

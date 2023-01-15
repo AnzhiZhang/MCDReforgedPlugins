@@ -1,14 +1,14 @@
 {
-    "id": "info",
-    "version": "0.1.0",
-    "name": "Info",
-    "description": {
-        "en_us": "Get server info",
-        "zh_cn": "获取服务器信息"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/info",
-    "resources": [
-        "lang"
-    ]
+  "id": "info",
+  "version": "0.1.0",
+  "name": "Info",
+  "description": {
+    "en_us": "Get server info",
+    "zh_cn": "获取服务器信息"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/info",
+  "resources": [
+    "lang"
+  ]
 }

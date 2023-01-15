@@ -1,14 +1,14 @@
 {
-    "id": "colored_chat",
-    "version": "0.0.2",
-    "name": "ColoredChat",
-    "description": {
-        "en_us": "Support formatting codes for vanilla",
-        "zh_cn": "支持原版显示格式化代码"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/ColoredChat",
-    "resources": [
-        "lang"
-    ]
+  "id": "colored_chat",
+  "version": "0.0.2",
+  "name": "ColoredChat",
+  "description": {
+    "en_us": "Support formatting codes for vanilla",
+    "zh_cn": "支持原版显示格式化代码"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/ColoredChat",
+  "resources": [
+    "lang"
+  ]
 }

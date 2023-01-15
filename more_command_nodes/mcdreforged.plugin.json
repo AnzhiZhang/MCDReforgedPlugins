@@ -1,14 +1,14 @@
 {
-    "id": "more_command_nodes",
-    "version": "1.1.0",
-    "name": "MoreCommandNodes",
-    "description": {
-        "en_us": "More command nodes",
-        "zh_cn": "更多的指令节点"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes",
-    "dependencies": {
-        "mcdreforged": "^2.5"
-    }
+  "id": "more_command_nodes",
+  "version": "1.1.0",
+  "name": "MoreCommandNodes",
+  "description": {
+    "en_us": "More command nodes",
+    "zh_cn": "更多的指令节点"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes",
+  "dependencies": {
+    "mcdreforged": "^2.5"
+  }
 }

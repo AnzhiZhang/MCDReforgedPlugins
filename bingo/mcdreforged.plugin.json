@@ -1,11 +1,11 @@
 {
-    "id": "bingo",
-    "version": "0.0.2",
-    "name": "Bingo",
-    "description": {
-        "en_us": "Useful tool for Bingo game",
-        "zh_cn": "Bingo 游戏实用工具"
-    },
-    "author": "Andy Zhang",
-    "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/bingo"
+  "id": "bingo",
+  "version": "0.0.2",
+  "name": "Bingo",
+  "description": {
+    "en_us": "Useful tool for Bingo game",
+    "zh_cn": "Bingo 游戏实用工具"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/bingo"
 }
