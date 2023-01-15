@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.1.1...lowercase_mcdr_command-v1.1.2) (2023-01-15)
+
+
+### Build System
+
+* **lowercase_mcdr_command:** ➕ v1.1.2 for MCDR v2.7.0 ([436c226](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/436c2263adb0c1c1c69b25a9cacc5164cd8bf12b))
+
 ## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.1.0...lowercase_mcdr_command-v1.1.1) (2022-12-28)
 
 
