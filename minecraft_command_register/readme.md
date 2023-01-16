@@ -20,4 +20,4 @@
 
 ### Fabric
 
-安装 [MCDR Command Fabric](https://github.com/AnzhiZhang/MCDRCommandFabric) 模组。
+安装 [MCDR Command Fabric](https://www.curseforge.com/minecraft/mc-mods/mcdr-command-fabric) 模组。
