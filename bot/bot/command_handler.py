@@ -348,6 +348,9 @@ class CommandHandler:
         if not name.endswith(self.__plugin.config.name_suffix):
             name = name + self.__plugin.config.name_suffix
 
+        # Lowercase
+        name = name.lower()
+
         # Return
         return name
 

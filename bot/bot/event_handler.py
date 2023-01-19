@@ -44,6 +44,11 @@ class EventHandler:
                 info.content
         ):
             server.logger.debug(f'Bot {player} joined')
+
+            # Lowercase
+            player = player.lower()
+
+            # To Bot instance
             if plugin.bot_manager.is_in_list(player):
                 plugin.bot_manager.get_bot(player).set_online(True)
             else:
@@ -55,6 +60,9 @@ class EventHandler:
     @staticmethod
     @event_listener(MCDRPluginEvents.PLAYER_LEFT)
     def on_player_left(server: PluginServerInterface, player: str):
+        # Lowercase
+        player = player.lower()
+
         if plugin.bot_manager.is_in_list(player):
             server.logger.debug(f'Bot {player} left')
             plugin.bot_manager.get_bot(player).set_online(False)
