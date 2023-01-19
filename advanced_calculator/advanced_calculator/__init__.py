@@ -43,36 +43,36 @@ def on_load(server: PluginServerInterface, old):
     server.register_help_message('=<expression>', '等同于 !!calc <expression>')
     server.register_help_message('==<count>', '等同于 !!calc item <count>')
     server.register_command(
-        Literal('!!calc').
-            requires(lambda src: src.is_player).
-            runs(lambda src: src.reply(HELP_MSG)).
-            then(
-            Literal('item').
-                then(
-                Text('box/count').
-                    runs(calc_item).
-                    then(
-                    Integer('stack').
-                        then(
+        Literal('!!calc')
+        .requires(lambda src: src.is_player)
+        .runs(lambda src: src.reply(HELP_MSG))
+        .then(
+            Literal('item')
+            .then(
+                Text('box/count')
+                .runs(calc_item)
+                .then(
+                    Integer('stack')
+                    .then(
                         Integer('single').runs(calc_item)
                     )
                 )
             )
-        ).
-            then(
-            Literal('color').
-                then(
-                Text('red/#HEX').
-                    runs(calc_color).
-                    then(
-                    Integer('green').
-                        then(
+        )
+        .then(
+            Literal('color')
+            .then(
+                Text('red/#HEX')
+                .runs(calc_color)
+                .then(
+                    Integer('green')
+                    .then(
                         Integer('blue').runs(calc_color)
                     )
                 )
             )
-        ).
-            then(
+        )
+        .then(
             GreedyText('expression').runs(calc_expression)
         )
     )
