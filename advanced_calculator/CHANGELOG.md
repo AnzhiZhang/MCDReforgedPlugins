@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.3.0...advanced_calculator-v0.3.1) (2023-01-19)
+
+
+### Bug Fixes
+
+* **advanced_calculator:** 🐛 fix double "*" too expensive to eval ([ceec10e](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/ceec10ea57e1887f998f3e3f6abdb0634d2f8e60))
+
 ## [0.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.2.1...advanced_calculator-v0.3.0) (2022-10-21)
 
 
