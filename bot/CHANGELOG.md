@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.5...bot-v1.0.6) (2023-01-19)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot name uppercase issue ([0ea1824](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0ea1824469e28244398fd9eb115793e4ec7be32f))
+
 ## [1.0.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.4...bot-v1.0.5) (2022-12-29)
 
 
