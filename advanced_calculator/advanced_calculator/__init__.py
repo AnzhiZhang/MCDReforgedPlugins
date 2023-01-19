@@ -32,9 +32,16 @@ def security_eval(expression: str):
     :param expression: String expression.
     :return: Eval result.
     """
+    # Double *
+    if "**" in expression:
+        raise IllegalCharacterException("**")
+
+    # Character whitelist
     for i in expression:
         if i not in EXPRESSION_WHITELIST:
             raise IllegalCharacterException(i)
+
+    # return eval result
     return eval(expression)
 
 
