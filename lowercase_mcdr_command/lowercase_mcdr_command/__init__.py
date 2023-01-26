@@ -1,12 +1,10 @@
 from mcdreforged.api.command import *
 from mcdreforged.api.types import PluginServerInterface
-from mcdreforged.permission.permission_level import PermissionLevel
 
 
 def on_load(server: PluginServerInterface, prev_module):
     server.register_command(
         Literal('!!mcdr')
-        .requires(lambda src: src.has_permission(PermissionLevel.USER))
         .runs(handler)
         .then(
             GreedyText('content')

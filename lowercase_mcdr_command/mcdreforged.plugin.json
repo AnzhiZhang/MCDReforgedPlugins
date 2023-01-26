@@ -1,6 +1,6 @@
 {
   "id": "lowercase_mcdr_command",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "name": "Lowercase MCDR command",
   "description": {
     "en_us": "Lowercase `!!MCDR` command",
