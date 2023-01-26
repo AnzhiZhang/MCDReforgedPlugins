@@ -1,14 +1,11 @@
 {
   "id": "lowercase_mcdr_command",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "name": "Lowercase MCDR command",
   "description": {
     "en_us": "Lowercase `!!MCDR` command",
     "zh_cn": "小写的 `!!MCDR` 指令"
   },
   "author": "Andy Zhang",
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/lowercase_mcdr_command",
-  "dependencies": {
-    "mcdreforged": "2.7.0"
-  }
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/lowercase_mcdr_command"
 }
