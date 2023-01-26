@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.2.2...minecraft_command_register-v1.2.3) (2023-01-26)
+
+
+### Miscellaneous Chores
+
+* **minecraft_command_register:** ⬆️ 1.2.3 for mcdr 2.7.1 ([adf10d6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/adf10d6d77e59359bfcf4c2eae1ddd521c05ba8a))
+
 ## [1.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.2.1...minecraft_command_register-v1.2.2) (2023-01-15)
 
 
