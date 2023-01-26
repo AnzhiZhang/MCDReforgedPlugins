@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.2.0...lowercase_mcdr_command-v1.2.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* **lowercase_mcdr_command:** 🐛 fix requires response ([da3977e](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/da3977e7b76e9a4c5b8d0e44be38002e284708e0))
+
 ## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.1.2...lowercase_mcdr_command-v1.2.0) (2023-01-26)
 
 
