@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.2.1...lowercase_mcdr_command-v1.2.2) (2023-01-30)
+
+
+### Bug Fixes
+
+* **lowercase_mcdr_command:** ✏️ fix name typo ([5103095](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/51030958472d375221ab7d5df94195215b2dd877))
+
 ## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/lowercase_mcdr_command-v1.2.0...lowercase_mcdr_command-v1.2.1) (2023-01-26)
 
 
