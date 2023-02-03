@@ -1,23 +1,8 @@
-# -*- coding: utf-8 -*-
 import requests
 
 from mcdreforged.api.types import PluginServerInterface
 from mcdreforged.api.command import *
 
-PLUGIN_METADATA = {
-    'id': 'qq_chat',
-    'version': '0.0.3',
-    'name': 'QQChat',
-    'description': 'Connect Minecraft and QQ',
-    'author': 'Andy Zhang',
-    'link': 'https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_chat',
-    'dependencies': {
-        'cool_q_api': '*',
-        'online_player_api': '*',
-        'config_api': '*',
-        'json_data_api': '*'
-    }
-}
 DEFAULT_CONFIG = {
     'group_id': [1234561, 1234562],
     'admin_id': [1234563, 1234564],

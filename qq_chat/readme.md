@@ -2,22 +2,7 @@
 
 > 用于连接 `Minecraft` 和 `QQ` 的插件
 
-## 依赖
-
-### Python包
-
-- requests
-
-### 前置插件
-
-- [CoolQAPI](https://github.com/AnzhiZhang/CoolQAPI)
-- [OnlinePlayerAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/OnlinePlayerAPI)
-- [ConfigAPI](https://github.com/MCDReforged/ConfigAPI)
-- [JsonDataAPI](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/JsonDataAPI)
-
 ## 配置
-
-配置文件位于 `config\QQChat\QQChat.yml`
 
 `group_id`
 
