@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.1.0...qq_api-v1.1.1) (2023-02-03)
+
+
+### Bug Fixes
+
+* **qq_api:** 🐛 fix server not completely exit ([e836fe8](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/e836fe81f6eb8077faa6622f7dd483d2c9fe0665))
+
 ## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.0.0...qq_api-v1.1.0) (2023-02-03)
 
 
