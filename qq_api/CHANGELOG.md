@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.0.0...qq_api-v1.1.0) (2023-02-03)
+
+
+### Features
+
+* **qq_api:** ✨ add MessageEvent ([c6f37b7](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/c6f37b79d9c988cec7e6fead2479abdca3beebb7))
+
 ## 1.0.0 (2023-02-03)
 
 
