@@ -18,7 +18,6 @@ debug thread 查看线程列表
 
 
 class Console(threading.Thread):
-
     def __init__(self, logger, config):
         super().__init__(name='Console')
         self.p = psutil.Process()
