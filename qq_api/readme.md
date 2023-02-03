@@ -1,95 +1,32 @@
-# CoolQAPI
+# QQAPI
 
-## This plugin has been archived. Accept pull requests for maintenance or upgrade
+> QQ bot development API.
 
-## 此插件已归档，接受 PR 以维护更新
+## Usage
 
-> [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 的QQ开发API
->
-> 事件功能参考了 [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 的插件加载
+### QQ Bot Configuration
 
-## 环境要求
+It is recommended to use [go-cqhttp](https://github.com/Mrs4s/go-cqhttp).
 
-### 依赖的Python模块
-
-已存储在 [requirements.txt](requirements.txt) 中, 可以使用 `pip install -r requirements.txt` 安装
-
-## 使用
-
-前往 [release](https://github.com/zhang-anzhi/CoolQAPI/releases) 页面下载最新的release并解压
-
-### 配置QQ机器人
-
-机器人建议使用 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
-
-如有问题可以在 MCDR 群内讨论或发 Issue
-
-示例配置(请修改QQ号和密码)：
+Set qq account and password in `account` field:
 
 ```yaml
-{
-    uin: 123123123
-    password: "password"
-    encrypt_password: false
-    password_encrypted: ""
-    enable_db: true
-    access_token: ""
-    relogin: {
-        enabled: true
-        relogin_delay: 3
-        max_relogin_times: 0
-    }
-    _rate_limit: {
-        enabled: false
-        frequency: 1
-        bucket_size: 1
-    }
-    ignore_invalid_cqcode: false
-    force_fragmented: false
-    heartbeat_interval: 0
-    http_config: {
-        enabled: true
-        host: 127.0.0.1
-        port: 5700
-        timeout: 0
-        post_urls: {
-            "127.0.0.1:5701/post": ""
-        }
-    }
-    ws_config: {
-        enabled: false
-        host: 0.0.0.0
-        port: 6700
-    }
-    ws_reverse_servers: []
-    post_message_format: array
-    use_sso_address: false
-    debug: false
-    log_level: "info"
-    web_ui: {
-        enabled: false
-        host: 127.0.0.1
-        web_ui_port: 9999
-        web_input: false
-    }
-}
+account:
+  uin: 1233456
+  password: ''
 ```
 
-### 配置MCDR
+Add http server in `servers` field:
 
-将 `CoolQAPI-MCDR.py` 和 `CoolQAPI` 文件夹放入MCDR的plugins文件夹
-
-重载MCDR
-
-### 关于多服使用
-
-`QQBridge` 可以将一个机器人接受的信息分发给多个服务器进行处理
-
-这里是进行多个服务器配置的方法 [QQBridge使用文档](docs/QQBridge.md)
+```yaml
+servers:
+  - http:
+      address: 0.0.0.0:5700
+      post:
+      - url: http://127.0.0.1:5701/
+```
 
 ## 配置文件
-
-配置文件位于 `CoolQAPI\config.yml`
 
 `post_host`
 
@@ -103,12 +40,6 @@
 
 接收转发消息的端口
 
-`post_path`
-
-默认值: `post`
-
-接收转发消息的路径
-
 `api_host`
 
 默认值: `127.0.0.1`
@@ -121,18 +52,89 @@ api的ip地址
 
 api的端口
 
-`command_prefix`
+### 关于多服使用
 
-默认值: `/`
+`QQBridge` 是一个可以将机器人上报消息分发给多个服务器进行处理的应用。
 
-触发命令事件的消息前缀
+直接运行 `QQBridge.py` 即可。
 
-## 指令
+#### 指令
 
-| Command | Function |
-| -| -|
-| !!cq update | 检查并自动更新 |
+| 指令 | 功能 |
+| - | - |
+| stop | 关闭QQBridge |
+| help | 获取帮助 |
+| reload config | 重载配置文件 |
+| debug thread | 查看线程列表 |
+
+#### 配置
+
+`post_host`
+
+接收上报信息的地址
+
+默认值: `127.0.0.1`
+
+`post_port`
+
+接收上报信息的端口
+
+默认值: `5701`
+
+`post_utl`
+
+接收上报信息的url
+
+默认值: `/post`
+
+以上接收上报消息的配置与 [readme.md](../readme.md) 对应
+
+`server_list`
+
+需要转发的服务器列表, 参照以下格式填写
+
+```yaml
+example:
+  host: 127.0.0.1
+  port: 5702
+  url: ''
+```
+
+默认值: 上文的例子
+
+`debug_mode`
+
+调试模式
+
+默认值: `flase`
+
+> 你还需要修改 QQAPI 配置文件的 `post_host`, `post_port` 使其与 `server_list` 的内容对应
+>
+> 建议从 `5702` 向上增加，如第一个服为 `5702` 第二个服为 `5703`
 
 ## 开发
 
-请阅读 [开发文档](docs/plugin.md) 了解开发相关内容
+[示例模范插件 QQChat](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_chat)
+
+### 事件
+
+当从QQ接收到消息, 会触发以下各类事件
+
+每个事件监听器需要使用 `register_event_listener` API 注册, 事件ID为 `qq_api.事件名`
+
+- `server`：[PluginServerInterface](https://mcdreforged.readthedocs.io/zh_CN/latest/code_references/PluginServerInterface.html)
+- `bot`：[CQHttp](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.CQHttp)。
+- `event`：[Event](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.Event)
+
+| 事件 | 参考 |
+| - | - |
+| on_message(server, bot, event) | [on_message](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.CQHttp.on_message) |
+| on_notice(server, bot, event) | [on_notice](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.CQHttp.on_notice) |
+| on_request(server, bot, event) | [on_request](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.CQHttp.on_request) |
+| on_meta_event(server, bot, event) | [on_meta_event](https://aiocqhttp.nonebot.dev/module/aiocqhttp/index.html#aiocqhttp.CQHttp.on_meta_event) |
+
+### API
+
+#### get_bot()
+
+用于获取 `bot` 对象
