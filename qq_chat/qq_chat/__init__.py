@@ -1,23 +1,33 @@
-import requests
+import asyncio
+from typing import List, Dict
 
-from mcdreforged.api.types import PluginServerInterface
+from qq_api import MessageEvent
+from aiocqhttp import CQHttp, Event
 from mcdreforged.api.command import *
+from mcdreforged.api.utils import Serializable
+from mcdreforged.api.types import PluginServerInterface
 
-DEFAULT_CONFIG = {
-    'group_id': [1234561, 1234562],
-    'admin_id': [1234563, 1234564],
-    'whitelist_add_with_bound': False,
-    'whitelist_remove_with_leave': True,
-    'forward': {
+
+class Config(Serializable):
+    groups: List[int] = [1234561, 1234562]
+    admins: List[int] = [1234563, 1234564]
+    whitelist_add_with_bound: bool = False
+    whitelist_remove_with_leave: bool = True
+    forwards: Dict[str, bool] = {
         'mc_to_qq': False,
         'qq_to_mc': False
-    },
-    'command': {
+    }
+    commands: Dict[str, bool] = {
         'list': True,
         'mc': True,
         'qq': True,
     }
-}
+
+
+config: Config
+data: dict
+final_bot: CQHttp
+event_loop: asyncio.AbstractEventLoop
 group_help_msg = '''命令帮助如下:
 /list 获取在线玩家列表
 /bound <ID> 绑定你的游戏ID
@@ -43,164 +53,220 @@ whitelist_help = '''/whitelist add <target> 添加白名单成员
 '''
 
 
+# -------------------------
+# MCDR event listener
+# -------------------------
+
 def on_load(server: PluginServerInterface, old):
-    global config, data, host, port
-    from ConfigAPI import Config
-    from JsonDataAPI import Json
-    config = Config(PLUGIN_METADATA['name'], DEFAULT_CONFIG)
-    data = Json(PLUGIN_METADATA['name'])
-    host = server.get_plugin_instance('cool_q_api').get_config()['api_host']
-    port = server.get_plugin_instance('cool_q_api').get_config()['api_port']
+    global config, data, final_bot, event_loop
+    config = server.load_config_simple(target_class=Config)
+    data = server.load_config_simple(
+        'data.json',
+        default_config={'data': {}},
+        echo_in_console=False
+    )['data']
+    final_bot = server.get_plugin_instance('qq_api').get_bot()
+    event_loop = asyncio.new_event_loop()
 
     def qq(src, ctx):
-        if config['command']['qq']:
+        if config.commands['qq']:
             player = src.player if src.is_player else 'Console'
-            for i in config['group_id']:
-                send_group_msg(f'[{player}] {ctx["message"]}', i)
+            send_msg_to_all_groups(f'[{player}] {ctx["message"]}')
 
     server.register_help_message('!!qq <msg>', '向QQ群发送消息')
     server.register_command(
-        Literal('!!qq').
-            then(
+        Literal('!!qq')
+        .then(
             GreedyText('message').runs(qq)
         )
     )
-    server.register_event_listener('cool_q_api.on_qq_info', on_qq_info)
-    server.register_event_listener('cool_q_api.on_qq_command', on_qq_command)
-    server.register_event_listener('cool_q_api.on_qq_notice', on_qq_notice)
+    server.register_event_listener('qq_api.on_message', on_message)
+    server.register_event_listener('qq_api.on_notice', on_notice)
 
 
-def on_server_startup(server):
-    for i in config['group_id']:
-        send_group_msg('Server is started up', i)
+def on_server_startup(server: PluginServerInterface):
+    send_msg_to_all_groups('Server is started up')
 
 
-def on_user_info(server, info):
-    if info.is_player and config['forward']['mc_to_qq']:
-        for i in config['group_id']:
-            send_group_msg(f'[{info.player}] {info.content}', i)
+def on_user_info(server: PluginServerInterface, info):
+    if info.is_player and config.forwards['mc_to_qq']:
+        send_msg_to_all_groups(f'[{info.player}] {info.content}')
 
 
-def on_qq_info(server, info, bot):
-    if config['forward']['qq_to_mc'] and info.source_id in config['group_id']:
-        user_id = str(info.user_id)
+def on_unload(server: PluginServerInterface):
+    event_loop.close()
+
+
+# -------------------------
+# qq_api event listener
+# -------------------------
+
+def on_message(server: PluginServerInterface, bot: CQHttp,
+               event: MessageEvent):
+    # command
+    if event.content.startswith('/'):
+        return on_qq_command(server, bot, event)
+
+    # forward
+    if config.forwards['qq_to_mc'] and event.group_id in config.groups:
+        user_id = str(event.user_id)
         if user_id in data.keys():
-            server.say(f'§7[QQ] [{data[user_id]}] {info.content}')
+            server.say(f'§7[QQ] [{data[user_id]}] {event.content}')
         else:
-            bot.reply(
-                info,
-                f'[CQ:at,qq={user_id}] 您未绑定游戏ID, 无法转发您的消息到游戏内, 请绑定您的游戏ID'
+            bot.sync.send_group_msg(
+                group_id=event.group_id,
+                message=f'[CQ:at,qq={user_id}] 无法转发您的消息, 请绑定游戏ID'
             )
 
 
-def on_qq_command(server, info, bot):
-    if not (info.source_id in config['group_id'] or
-            info.source_id in config['admin_id']):
+def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
+    # group only
+    if event.group_id not in config.groups:
         return
-    command = info.content.split(' ')
-    command[0] = command[0].replace('/', '')
 
-    if config['command']['list'] and command[0] == 'list':
-        online_player_api = server.get_plugin_instance('online_player_api')
-        bot.reply(info, '在线玩家共{}人，玩家列表: {}'.format(
-            len(online_player_api.get_player_list()),
-            ', '.join(online_player_api.get_player_list())))
-    elif config['command']['mc'] and command[0] == 'mc':
-        user_id = str(info.user_id)
-        if user_id in data.keys():
-            server.say(f'§7[QQ] [{data[user_id]}] {info.content[4:]}')
-        else:
-            bot.reply(info, f'[CQ:at,qq={user_id}] 请使用/bound <ID>绑定游戏ID')
-    if info.source_type == 'private':
-        private_command(server, info, bot, command, data)
-    elif info.source_type == 'group':
-        group_command(server, info, bot, command, data)
-
-
-def on_qq_notice(server, info, bot):
-    if info.source_id not in config['group_id']:
-        return
-    notice_type = (info.notice_type == 'group_decrease')
-    if notice_type and config['whitelist_remove_with_leave']:
-        user_id = str(info.user_id)
+    is_group_decrease = (event.detail_type == 'group_decrease')
+    if is_group_decrease and config.whitelist_remove_with_leave:
+        user_id = str(event.user_id)
         if user_id in data.keys():
             command = f'whitelist remove {data[user_id]}'
             server.execute(command)
-            bot.reply(info, f'{data[user_id]} 已退群，移除他的白名单')
+            reply(event, f'{data[user_id]} 已退群，移除他的白名单')
             del data[user_id]
-            data.save()
+            save_data(server)
 
 
-def private_command(server, info, bot, command, data):
-    if info.content == '/help':
-        bot.reply(info, admin_help_msg)
+# -------------------------
+# listener functions
+# -------------------------
+
+def on_qq_command(server: PluginServerInterface, bot: CQHttp,
+                  event: MessageEvent):
+    # not in config list
+    if not (event.group_id in config.groups or event.user_id in config.admins):
+        return
+
+    # parse command
+    command = event.content.split(' ')
+    command[0] = command[0].replace('/', '')
+
+    # common commands
+    if config.commands['list'] and command[0] == 'list':
+        online_player_api = server.get_plugin_instance('online_player_api')
+        reply(
+            event,
+            '在线玩家共{}人，玩家列表: {}'.format(
+                len(online_player_api.get_player_list()),
+                ', '.join(online_player_api.get_player_list())
+            )
+        )
+    elif config.commands['mc'] and command[0] == 'mc':
+        user_id = str(event.user_id)
+        if user_id in data.keys():
+            server.say(f'§7[QQ] [{data[user_id]}] {event.content[4:]}')
+        else:
+            reply(
+                event,
+                f'[CQ:at,qq={user_id}] 请使用 /bound <ID> 绑定游戏 ID'
+            )
+    # other commands
+    else:
+        if event.detail_type == 'private':
+            private_command(server, bot, event, command)
+        elif event.detail_type == 'group':
+            group_command(server, bot, event, command)
+
+
+def private_command(server: PluginServerInterface, bot: CQHttp,
+                    event: MessageEvent, command: List[str]):
+    if event.content == '/help':
+        reply(event, admin_help_msg)
     # bound
-    elif info.content.startswith('/bound'):
-        if info.content == '/bound':
-            bot.reply(info, bound_help)
+    elif event.content.startswith('/bound'):
+        if event.content == '/bound':
+            reply(event, bound_help)
         elif len(command) == 2 and command[1] == 'list':
             bound_list = [f'{a} - {b}' for a, b in data.items()]
             reply_msg = ''
             for i in range(0, len(bound_list)):
                 reply_msg += f'{i + 1}. {bound_list[i]}\n'
             reply_msg = '还没有人绑定' if reply_msg == '' else reply_msg
-            bot.reply(info, reply_msg)
+            reply(event, reply_msg)
         elif len(command) == 3 and command[1] == 'check':
             if command[2] in data:
-                bot.reply(info,
-                          f'{command[2]} 绑定的ID是{data[command[2]]}')
+                reply(event, f'{command[2]} 绑定的ID是{data[command[2]]}')
             else:
-                bot.reply(info, f'{command[2]} 未绑定')
+                reply(event, f'{command[2]} 未绑定')
         elif len(command) == 3 and command[1] == 'unbound':
             if command[2] in data:
                 del data[command[2]]
-                data.save()
-                bot.reply(info, f'已解除 {command[2]} 绑定的ID')
+                save_data(server)
+                reply(event, f'已解除 {command[2]} 绑定的ID')
             else:
-                bot.reply(info, f'{command[2]} 未绑定')
+                reply(event, f'{command[2]} 未绑定')
         elif len(command) == 3 and command[1].isdigit():
             data[command[1]] = command[2]
-            data.save()
-            bot.reply(info, '已成功绑定')
+            save_data(server)
+            reply(event, '已成功绑定')
     # whitelist
-    elif info.content.startswith('/whitelist'):
-        if info.content == '/whitelist':
-            bot.reply(info, whitelist_help)
+    elif event.content.startswith('/whitelist'):
+        if event.content == '/whitelist':
+            reply(event, whitelist_help)
         elif command[1] in ['add', 'remove', 'list', 'on', 'off', 'reload']:
-            if server.is_rcon_running():
-                bot.reply(info, server.rcon_query(info.content))
-            else:
-                server.execute(info.content)
+            execute(server, event, event.content)
     # command
-    elif info.content.startswith('/command '):
-        c = info.content[9:]
-        c = c.replace('&#91;', '[').replace('&#93;', ']')
-        if server.is_rcon_running():
-            bot.reply(info, server.rcon_query(c))
-        else:
-            server.execute(c)
+    elif event.content.startswith('/command '):
+        command = event.content[9:]
+        command = command.replace('&#91;', '[').replace('&#93;', ']')
+        execute(server, event, command)
 
 
-def group_command(server, info, bot, command, data):
-    if info.content == '/help':
-        bot.reply(info, group_help_msg)
+def group_command(server: PluginServerInterface, bot: CQHttp,
+                  event: MessageEvent, command: List[str]):
+    if event.content == '/help':
+        reply(event, group_help_msg)
     # bound
     elif len(command) == 2 and command[0] == 'bound':
-        user_id = str(info.user_id)
+        user_id = str(event.user_id)
         if user_id in data.keys():
             _id = data[user_id]
-            bot.reply(info, f'[CQ:at,qq={user_id}] 您已绑定ID: {_id}, 请联系管理员修改')
+            reply(
+                event,
+                f'[CQ:at,qq={user_id}] 您已绑定ID: {_id}, 请联系管理员修改'
+            )
         else:
             data[user_id] = command[1]
-            data.save()
-            bot.reply(info, f'[CQ:at,qq={user_id}] 已成功绑定')
-            if config['whitelist_add_with_bound']:
+            save_data(server)
+            reply(event, f'[CQ:at,qq={user_id}] 已成功绑定')
+            if config.whitelist_add_with_bound:
                 server.execute(f'whitelist add {command[1]}')
-                bot.reply(info, f'[CQ:at,qq={user_id}] 已将您添加到服务器白名单')
+                reply(event, f'[CQ:at,qq={user_id}] 已将您添加到服务器白名单')
 
 
-def send_group_msg(msg, group):
-    requests.post(f'http://{host}:{port}/send_group_msg', json={
-        'group_id': group,
-        'message': msg
-    })
+# -------------------------
+# utils
+# -------------------------
+
+def save_data(server: PluginServerInterface):
+    server.save_config_simple({'data': data}, 'data.json')
+
+
+def execute(server: PluginServerInterface, event: Event, command: str):
+    if server.is_rcon_running():
+        result = server.rcon_query(command)
+        if result == '':
+            result = '该指令没有返回值'
+    else:
+        server.execute(command)
+        result = '由于未启用 RCON，没有返回结果'
+    reply(event, result)
+
+
+def reply(event: Event, message: str):
+    event_loop.run_until_complete(final_bot.send(event, message))
+
+
+def send_msg_to_all_groups(message: str):
+    for i in config.groups:
+        event_loop.run_until_complete(
+            final_bot.send_group_msg(group_id=i, message=message)
+        )

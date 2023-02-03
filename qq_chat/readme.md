@@ -4,13 +4,13 @@
 
 ## 配置
 
-`group_id`
+`groups`
 
 默认值: `[1234561, 1234562]`
 
-允许交互的群组列表
+交互的群组列表
 
-`admin_id`
+`admins`
 
 默认值: `[1234563, 1234564]`
 
@@ -28,13 +28,13 @@
 
 玩家退群时移除白名单
 
-`forward`
+`forwards`
 
 默认值: `{'mc_to_qq': False, 'qq_to_mc': False}`
 
 设置是否自动在 Minecraft 和 QQ 之间转发消息
 
-`command`
+`commands`
 
 默认值: `{'list': True, 'mc': True, 'qq': True,}`
 
