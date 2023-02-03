@@ -1,4 +1,5 @@
 import re
+import time
 import logging
 from threading import Thread
 
@@ -94,6 +95,7 @@ def on_load(server: PluginServerInterface, old):
 def on_unload(server: PluginServerInterface):
     __mcdr_server.logger.info("Exiting bot listener server.")
     __uvicorn_server.should_exit = True
+    time.sleep(0.1)
 
 
 def get_bot() -> CQHttp:
