@@ -1,3 +1,4 @@
+import re
 import logging
 from threading import Thread
 
@@ -8,12 +9,17 @@ from mcdreforged.api.event import LiteralEvent
 from mcdreforged.api.types import PluginServerInterface
 
 __all__ = [
-    "get_bot"
+    "MessageEvent",
+    "get_bot",
 ]
 
 __bot: CQHttp
 __uvicorn_server: Server
 __mcdr_server: PluginServerInterface
+
+
+class MessageEvent(Event):
+    content: str
 
 
 class PluginConfig(Serializable):
@@ -41,6 +47,16 @@ def on_load(server: PluginServerInterface, old):
 
     @__bot.on_message
     async def on_message(event: Event):
+        # parse content
+        event.content = event.raw_message
+        event.content = re.sub(r'\[CQ:image,file=.*?]', '[图片]', event.content)
+        event.content = re.sub(r'\[CQ:share,file=.*?]', '[链接]', event.content)
+        event.content = re.sub(r'\[CQ:face,id=.*?]', '[表情]', event.content)
+        event.content = re.sub(r'\[CQ:record,file=.*?]', '[语音]', event.content)
+        event.content = event.content.replace('CQ:at,qq=', '@')
+        event: MessageEvent
+
+        # dispatch event
         server.logger.debug(f"on message: {event}")
         server.dispatch_event(
             LiteralEvent("qq_api.on_message"),
