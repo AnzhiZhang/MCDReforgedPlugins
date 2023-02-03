@@ -9,6 +9,7 @@
     "lowercase_mcdr_command",
     "minecraft_command_register",
     "more_command_nodes",
+    "online_player_api",
     "qq_api",
     "qq_chat",
     "start_stop_helper_r",
