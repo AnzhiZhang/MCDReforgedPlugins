@@ -1,11 +1,11 @@
 {
   "id": "qq_api",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "name": "QQAPI",
   "description": {
     "en_us": "Connect Minecraft and QQ",
-    "zh_cn": "连接MC与QQ"
+    "zh_cn": "连接 MC 与 QQ"
   },
   "author": "Andy Zhang",
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/qq_api"
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_api"
 }
