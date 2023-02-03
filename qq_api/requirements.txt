@@ -1,4 +1,2 @@
-requests
-flask
-PyYAML
-psutil
+aiocqhttp
+uvicorn
