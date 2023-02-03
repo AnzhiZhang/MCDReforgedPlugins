@@ -1,23 +1,19 @@
 ---
-name: Default Template
-about: Create a issue for a plugin
-title: '[Plugin name]: Title'
+name: Bug/Feature
+about: Report a bug or feature for a plugin
+title: '[Plugin]: Title'
 labels: ''
 assignees: ''
 ---
-<!-- markdownlint-disable MD022 -->
+**Please go to [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions) to ask for help!**
 
-## Describe
+**需要帮助请前往 [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions)！**
+
+## Description丨描述
 A clear and concise description of your issue.
 
-## Details
-Some details for your issue.
-
-## Expected behavior
-A clear and concise description of what you expected to happen.
-
-## Screenshots
+## Screenshots丨截图
 If applicable, add screenshots to help explain your problem.
 
-## Additional context
+## Additional context丨附加信息
 Add any other context about the problem here.
