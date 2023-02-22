@@ -4,7 +4,7 @@ import platform
 from typing import List
 
 import psutil
-
+import cpuinfo
 from mcdreforged.api.types import ServerInterface, PluginServerInterface
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
@@ -40,6 +40,9 @@ def get_server_info(server: ServerInterface) -> RTextList:
     def get_cpu_use():
         return f'{average(*psutil.cpu_percent(percpu=True))}%'
 
+    def get_cpu_brand():
+        return cpuinfo.get_cpu_info()['brand_raw']
+
     def get_memory_use():
         used = psutil.virtual_memory().used
         total = psutil.virtual_memory().total
@@ -66,6 +69,7 @@ def get_server_info(server: ServerInterface) -> RTextList:
         f'§7============ §6{server.tr("info.title")} §7============\n',
         f'§7{server.rtr("info.systemVersion")}:§6 {platform.platform()}\n',
         f'§7{server.rtr("info.pythonVersion")}:§6 {platform.python_version()}\n',
+        f'§7{server.rtr("info.cpuBrand")}:§6 {get_cpu_brand()}\n',
         f'§7{server.rtr("info.cpuUsed")}:§6 {get_cpu_use()}\n',
         f'§7{server.rtr("info.memoryUsed")}:§6 {get_memory_use()}\n',
         f'§7{server.rtr("info.worldSize")}:§6 {get_world_size()}'

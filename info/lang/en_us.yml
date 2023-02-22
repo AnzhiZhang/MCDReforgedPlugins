@@ -1,6 +1,7 @@
 info.title: 'Server Info'
 info.systemVersion: 'System Version'
 info.pythonVersion: 'Python Version'
+info.cpuBrand: 'CPU Info'
 info.cpuUsed: 'CPU Used'
 info.memoryUsed: 'Memory Used'
 info.worldSize: 'World Size'
