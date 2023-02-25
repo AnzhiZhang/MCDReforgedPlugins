@@ -1,0 +1,10 @@
+let_me_click_and_send.message.main: "To send any message by clicking in 1.19\nPlease install "
+let_me_click_and_send.message.main.name: "LetMeClickAndSend"
+let_me_click_and_send.message.dismiss: '[Dismiss]'
+let_me_click_and_send.message.dismiss.hover: '!!letmeclickandsend dismiss'
+let_me_click_and_send.message.dismiss.success: 'Successfully dismissed'
+let_me_click_and_send.message.dismiss.failed: 'You have already dismissed'
+let_me_click_and_send.download.github: '[GitHub]'
+let_me_click_and_send.download.curseforge: '[CurseForge]'
+let_me_click_and_send.download.modrinth: '[Modrinth]'
+let_me_click_and_send.download.hover: 'Click to download'

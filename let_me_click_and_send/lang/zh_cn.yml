@@ -1,0 +1,10 @@
+let_me_click_and_send.message.main: "为了能在 1.19 中点击发送任意信息\n请安装 "
+let_me_click_and_send.message.main.name: "LetMeClickAndSend"
+let_me_click_and_send.message.dismiss: '[不再提示]'
+let_me_click_and_send.message.dismiss.hover: '!!letmeclickandsend dismiss'
+let_me_click_and_send.message.dismiss.success: '不再显示消息'
+let_me_click_and_send.message.dismiss.failed: '您已忽略过了'
+let_me_click_and_send.download.github: '[GitHub]'
+let_me_click_and_send.download.curseforge: '[CurseForge]'
+let_me_click_and_send.download.modrinth: '[Modrinth]'
+let_me_click_and_send.download.hover: '点击下载'
