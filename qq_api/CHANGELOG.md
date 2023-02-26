@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.1.1...qq_api-v1.2.0) (2023-02-26)
+
+
+### Features
+
+* **qq_api:** ✨ add get_event_loop api ([d466651](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/d466651c0525af64f4270d8a56028e3e680f5298))
+
+
+### Bug Fixes
+
+* **qq_api:** 🐛 fix asyncio compatibility in python 3.9 ([2f6e11a](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2f6e11a8c53bf3cba3068c373dd045308ec60e9e))
+
 ## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.1.0...qq_api-v1.1.1) (2023-02-03)
 
 
