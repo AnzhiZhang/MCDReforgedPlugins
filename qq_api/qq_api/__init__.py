@@ -12,6 +12,7 @@ from mcdreforged.api.types import PluginServerInterface
 
 __all__ = [
     "MessageEvent",
+    "get_event_loop",
     "get_bot",
 ]
 
@@ -131,6 +132,14 @@ def on_unload(server: PluginServerInterface):
     __mcdr_server.logger.info("Exiting bot listener server.")
     __uvicorn_server.should_exit = True
     time.sleep(0.1)
+
+
+def get_event_loop() -> AbstractEventLoop:
+    """
+    Get asyncio event loop
+    :return: AbstractEventLoop.
+    """
+    return __event_loop
 
 
 def get_bot() -> CQHttp:
