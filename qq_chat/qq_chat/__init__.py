@@ -1,5 +1,5 @@
-import asyncio
 from typing import List, Dict
+from asyncio import AbstractEventLoop
 
 from qq_api import MessageEvent
 from aiocqhttp import CQHttp, Event
@@ -27,7 +27,7 @@ class Config(Serializable):
 config: Config
 data: dict
 final_bot: CQHttp
-event_loop: asyncio.AbstractEventLoop
+event_loop: AbstractEventLoop
 group_help_msg = '''命令帮助如下:
 /list 获取在线玩家列表
 /bound <ID> 绑定你的游戏ID
@@ -65,8 +65,9 @@ def on_load(server: PluginServerInterface, old):
         default_config={'data': {}},
         echo_in_console=False
     )['data']
-    final_bot = server.get_plugin_instance('qq_api').get_bot()
-    event_loop = asyncio.new_event_loop()
+    qq_api = server.get_plugin_instance('qq_api')
+    final_bot = qq_api.get_bot()
+    event_loop = qq_api.get_event_loop()
 
     def qq(src, ctx):
         if config.commands['qq']:
@@ -91,10 +92,6 @@ def on_server_startup(server: PluginServerInterface):
 def on_user_info(server: PluginServerInterface, info):
     if info.is_player and config.forwards['mc_to_qq']:
         send_msg_to_all_groups(f'[{info.player}] {info.content}')
-
-
-def on_unload(server: PluginServerInterface):
-    event_loop.close()
 
 
 # -------------------------
@@ -262,11 +259,11 @@ def execute(server: PluginServerInterface, event: Event, command: str):
 
 
 def reply(event: Event, message: str):
-    event_loop.run_until_complete(final_bot.send(event, message))
+    event_loop.create_task(final_bot.send(event, message))
 
 
 def send_msg_to_all_groups(message: str):
     for i in config.groups:
-        event_loop.run_until_complete(
+        event_loop.create_task(
             final_bot.send_group_msg(group_id=i, message=message)
         )
