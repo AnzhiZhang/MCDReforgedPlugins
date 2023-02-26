@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v1.0.0...qq_chat-v1.0.1) (2023-02-26)
+
+
+### Bug Fixes
+
+* **qq_api:** 🐛 use event loop from qq_api ([c9ba896](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/c9ba8966bb2bc9105b3c0fe8b7802b5378e50509))
+
 ## 1.0.0 (2023-02-03)
 
 
