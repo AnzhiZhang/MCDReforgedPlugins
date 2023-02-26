@@ -135,6 +135,10 @@ example:
 
 ### API
 
+#### get_event_loop()
+
+用于获取 `asyncio` 的 `event_loop`。
+
 #### get_bot()
 
-用于获取 `bot` 对象
+用于获取 `CQHttp` 的实例。
