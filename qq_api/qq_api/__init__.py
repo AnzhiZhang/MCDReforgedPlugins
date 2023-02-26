@@ -1,7 +1,8 @@
 import re
 import time
 import logging
-from threading import Thread
+import threading
+from asyncio import AbstractEventLoop, new_event_loop
 
 from uvicorn import Config, Server
 from aiocqhttp import CQHttp, Event
@@ -14,9 +15,10 @@ __all__ = [
     "get_bot",
 ]
 
+__mcdr_server: PluginServerInterface
+__event_loop: AbstractEventLoop
 __bot: CQHttp
 __uvicorn_server: Server
-__mcdr_server: PluginServerInterface
 
 
 class MessageEvent(Event):
@@ -31,64 +33,97 @@ class PluginConfig(Serializable):
 
 
 def on_load(server: PluginServerInterface, old):
-    global __bot, __uvicorn_server, __mcdr_server
+    global __mcdr_server
 
     # mcdr init
     __mcdr_server = server
     config = server.load_config_simple(target_class=PluginConfig)
 
     # cqhttp init
-    __bot = CQHttp(api_root=f"http://{config.api_host}:{config.api_port}")
-    __uvicorn_server = Server(Config(
-        __bot.server_app,
-        host=config.post_host,
-        port=config.post_port,
-        log_level=logging.CRITICAL
-    ))
+    cqhttp_init_event = threading.Event()
 
-    @__bot.on_message
-    async def on_message(event: Event):
-        # parse content
-        event.content = event.raw_message
-        event.content = re.sub(r'\[CQ:image,file=.*?]', '[图片]', event.content)
-        event.content = re.sub(r'\[CQ:share,file=.*?]', '[链接]', event.content)
-        event.content = re.sub(r'\[CQ:face,id=.*?]', '[表情]', event.content)
-        event.content = re.sub(r'\[CQ:record,file=.*?]', '[语音]', event.content)
-        event.content = event.content.replace('CQ:at,qq=', '@')
-        event: MessageEvent
+    def cqhttp_init():
+        global __event_loop
+        __event_loop = new_event_loop()
 
-        # dispatch event
-        server.logger.debug(f"on message: {event}")
-        server.dispatch_event(
-            LiteralEvent("qq_api.on_message"),
-            (__bot, event)
-        )
+        async def cqhttp_main():
+            global __bot, __uvicorn_server
+            __bot = CQHttp(
+                api_root=f"http://{config.api_host}:{config.api_port}"
+            )
+            __uvicorn_server = Server(Config(
+                __bot.server_app,
+                host=config.post_host,
+                port=config.post_port,
+                loop="none",
+                log_level=logging.CRITICAL
+            ))
 
-    @__bot.on_notice
-    async def on_notice(event: Event):
-        server.logger.debug(f"on notice: {event}")
-        server.dispatch_event(
-            LiteralEvent("qq_api.on_notice"),
-            (__bot, event)
-        )
+            @__bot.on_message
+            async def on_message(event: Event):
+                # parse content
+                event.content = event.raw_message
+                event.content = re.sub(
+                    r'\[CQ:image,file=.*?]',
+                    '[图片]',
+                    event.content
+                )
+                event.content = re.sub(
+                    r'\[CQ:share,file=.*?]',
+                    '[链接]',
+                    event.content
+                )
+                event.content = re.sub(
+                    r'\[CQ:face,id=.*?]',
+                    '[表情]',
+                    event.content
+                )
+                event.content = re.sub(
+                    r'\[CQ:record,file=.*?]',
+                    '[语音]',
+                    event.content
+                )
+                event.content = event.content.replace('CQ:at,qq=', '@')
+                event: MessageEvent
 
-    @__bot.on_request
-    async def on_request(event: Event):
-        server.logger.debug(f"on request: {event}")
-        server.dispatch_event(
-            LiteralEvent("qq_api.on_request"),
-            (__bot, event)
-        )
+                # dispatch event
+                server.logger.debug(f"on message: {event}")
+                server.dispatch_event(
+                    LiteralEvent("qq_api.on_message"),
+                    (__bot, event)
+                )
 
-    @__bot.on_meta_event
-    async def on_meta_event(event: Event):
-        server.logger.debug(f"on meta event: {event}")
-        server.dispatch_event(
-            LiteralEvent("qq_api.on_meta_event"),
-            (__bot, event)
-        )
+            @__bot.on_notice
+            async def on_notice(event: Event):
+                server.logger.debug(f"on notice: {event}")
+                server.dispatch_event(
+                    LiteralEvent("qq_api.on_notice"),
+                    (__bot, event)
+                )
 
-    Thread(target=__uvicorn_server.run, name="QQ API Server").start()
+            @__bot.on_request
+            async def on_request(event: Event):
+                server.logger.debug(f"on request: {event}")
+                server.dispatch_event(
+                    LiteralEvent("qq_api.on_request"),
+                    (__bot, event)
+                )
+
+            @__bot.on_meta_event
+            async def on_meta_event(event: Event):
+                server.logger.debug(f"on meta event: {event}")
+                server.dispatch_event(
+                    LiteralEvent("qq_api.on_meta_event"),
+                    (__bot, event)
+                )
+
+            cqhttp_init_event.set()
+            await __uvicorn_server.serve()
+
+        __event_loop.run_until_complete(cqhttp_main())
+
+    threading.Thread(target=cqhttp_init, name="QQ API Server").start()
+    cqhttp_init_event.wait()
     server.logger.info("Bot listener server started.")
 
 
