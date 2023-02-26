@@ -1,6 +1,6 @@
 {
   "id": "qq_chat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "QQChat",
   "description": {
     "en_us": "Useful Functions with QQ",
@@ -9,7 +9,7 @@
   "author": "Andy Zhang",
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_api",
   "dependencies": {
-    "qq_api": "^1.0.0",
+    "qq_api": "^1.2.0",
     "online_player_api": "^1.0.0"
   }
 }
