@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.2.3...minecraft_command_register-v1.2.4) (2023-03-14)
+
+
+### Bug Fixes
+
+* **minecraft_command_register:** ⬆️ update to MCDR 2.7.2 ([ab8750d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/ab8750d1a518636eda690e0d970627ac16912f48))
+
 ## [1.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.2.2...minecraft_command_register-v1.2.3) (2023-01-26)
 
 
