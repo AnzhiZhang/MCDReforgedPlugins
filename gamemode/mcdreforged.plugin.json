@@ -1,6 +1,6 @@
 {
   "id": "gamemode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Gamemode",
   "description": {
     "en_us": "Change to spectator mode for observe, teleport to origin position when change back to survival mode",
