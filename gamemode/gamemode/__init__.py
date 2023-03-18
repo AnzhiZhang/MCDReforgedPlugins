@@ -68,7 +68,11 @@ def on_load(server: PluginServerInterface, old):
         default_config=DEFAULT_CONFIG,
         target_class=Config
     )
-    data = server.load_config_simple('data.json')
+    data = server.load_config_simple(
+        'data.json',
+        default_config={'data': {}},
+        echo_in_console=False
+    )['data']
     minecraft_data_api = server.get_plugin_instance('minecraft_data_api')
 
     server.register_help_message('!!spec help', 'Gamemode插件帮助')
@@ -202,7 +206,7 @@ def on_load(server: PluginServerInterface, old):
                 ],
                 'pos': minecraft_data_api.get_player_info(src.player, 'Pos')
             }
-            server.save_config_simple(data, 'data.json')
+            save_data(server)
             server.execute(f'execute in {dim} run tp {src.player} {pos}')
             humdim = HUMDIMS[dim]
             src.reply(f'§a传送至§e{humdim}§a, 坐标§e{humpos}')
@@ -224,7 +228,7 @@ def on_load(server: PluginServerInterface, old):
                 ],
                 'pos': minecraft_data_api.get_player_info(src.player, 'Pos')
             }
-            server.save_config_simple(data, 'data.json')
+            save_data(server)
             server.execute(
                 f'execute in {dim} run tp {src.player} {" ".join(pos)}'
             )
@@ -274,6 +278,10 @@ def on_load(server: PluginServerInterface, old):
     )
 
 
+def save_data(server: PluginServerInterface):
+    server.save_config_simple({'data': data}, 'data.json')
+
+
 def sur_to_spec(server, player):
     dim = DIMENSIONS[minecraft_data_api.get_player_info(player, 'Dimension')]
     pos = minecraft_data_api.get_player_info(player, 'Pos')
@@ -287,7 +295,7 @@ def sur_to_spec(server, player):
         }
     }
     server.execute(f'gamemode spectator {player}')
-    server.save_config_simple(data, 'data.json')
+    save_data(server)
 
 
 def spec_to_sur(server, player):
@@ -297,7 +305,7 @@ def spec_to_sur(server, player):
         'execute in {} run tp {} {}'.format(dim, player, ' '.join(pos)))
     server.execute(f'gamemode survival {player}')
     del data[player]
-    server.save_config_simple(data, 'data.json')
+    save_data(server)
 
 
 def on_player_joined(server, player, info):
