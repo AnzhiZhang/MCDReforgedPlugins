@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.0.0...gamemode-v1.0.1) (2023-03-18)
+
+
+### Bug Fixes
+
+* **gamemode:** 👽️ fix config api issue (fix [#114](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/114)) ([2ed962f](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2ed962f914adfc9184e228bf7b80161482136968))
+
 ## [1.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v0.1.0...gamemode-v1.0.0) (2022-12-02)
 
 
