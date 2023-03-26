@@ -89,7 +89,7 @@ jobs:
         id: pack
         if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         run: |
-          python -m mcdreforged pack -i ${{ matrix.plugin }}
+          python -m mcdreforged pack --ignore-patterns __pycache__ -i ${{ matrix.plugin }}
           echo "name=$(ls *.mcdr)" >> $GITHUB_OUTPUT
 
       - name: Upload
