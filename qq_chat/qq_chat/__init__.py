@@ -175,10 +175,9 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
             else:
                 server.say(f"§7[QQ] [{data[user_id]}] {event.content}")
         else:
-            bot.sync.send_group_msg(
-                group_id=event.group_id,
-                message=f"[CQ:at,qq={user_id}] 无法转发您的消息，"
-                        f"请通过/bound <Player>绑定游戏ID"
+            reply(
+                event,
+                f"[CQ:at,qq={user_id}] 无法转发您的消息，请通过/bound <Player>绑定游戏ID"
             )
 
 
