@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v1.0.1...qq_chat-v2.0.0) (2023-05-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **qq_chat:** `config.json` remove  `groups`, To maintain the original performance, please fill in the id in the original `groups` into `message_sync_groups`
+
+### Features
+
+* **qq_chat:** ✨ code refactor && manage feature advance && command_prefix config support ([224f921](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/224f9215694bf4d96e6fbfdb3dcf2b8dabb3e49d))
+
 ## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v1.0.0...qq_chat-v1.0.1) (2023-02-26)
 
 
