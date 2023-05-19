@@ -364,21 +364,10 @@ def list_command_handle(server: PluginServerInterface, event: MessageEvent):
     if not config.commands["list"]:
         return
     online_player_api = server.get_plugin_instance("online_player_api")
-    real_players = []
-    bot_players = []
-    all_players = online_player_api.get_player_list()
-    for player in all_players:
-        if str(player).lower().startswith("bot_"):
-            bot_players.append(player)
-        else:
-            real_players.append(player)
+    players = online_player_api.get_player_list()
     reply(
         event,
-        "在线玩家共{}人\n--玩家列表--\n{}\n--bot列表--\n{}".format(
-            len(real_players),
-            "\n".join(real_players),
-            "\n".join(bot_players)
-        )
+        "在线玩家共{}人，玩家列表：\n{}".format(len(players), "\n".join(players))
     )
 
 
