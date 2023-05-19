@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 from asyncio import AbstractEventLoop
 
@@ -43,6 +44,12 @@ class Config(Serializable):
     command_prefix: List[str] = [
         "/",
     ]
+
+    # 玩家列表分类
+    player_list_regex: Dict[str, str] = {
+        "玩家": "^(?!bot_).*$",
+        "假人": "^bot_.*$",
+    }
 
 
 @unique
@@ -364,10 +371,44 @@ def list_command_handle(server: PluginServerInterface, event: MessageEvent):
         return
     online_player_api = server.get_plugin_instance("online_player_api")
     players = online_player_api.get_player_list()
-    reply(
-        event,
-        "在线玩家共{}人，玩家列表：\n{}".format(len(players), "\n".join(players))
-    )
+
+    # init groups
+    regex_rules: Dict[str, re.Pattern] = {
+        group: re.compile(regex)
+        for group, regex in config.player_list_regex.items()
+    }
+    groups: Dict[str, List[str]] = {
+        group: []
+        for group in config.player_list_regex.keys()
+    }
+    groups["其它"] = []
+
+    # sort players
+    for player in players:
+        for group, value in regex_rules.items():
+            if value.match(player):
+                groups[group].append(player)
+                break
+        else:
+            groups["其它"].append(player)
+
+    # remote empty groups
+    new_groups = {}
+    for group, players in groups.items():
+        if len(players) != 0:
+            new_groups[group] = players
+
+    # generate message
+    players_count = sum([len(players) for players in new_groups.values()])
+    message = f"在线玩家共{players_count}人"
+    if len(new_groups) != 0:
+        message += "，玩家列表：\n"
+    for group, players in new_groups.items():
+        message += f"--{group}--\n"
+        for player in players:
+            message += f"{player}\n"
+
+    reply(event, message)
 
 
 def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
