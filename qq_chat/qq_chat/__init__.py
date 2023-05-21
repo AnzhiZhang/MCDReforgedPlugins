@@ -474,7 +474,7 @@ def mc_message_command_handle(
         event_type: EventType
 ):
     if (
-            config.commands["mc"]
+            not config.commands["mc"]
             or event_type == EventType.NONE
             or not config.forwards["qq_to_mc"]
     ):
