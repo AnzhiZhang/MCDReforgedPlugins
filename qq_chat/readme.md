@@ -36,6 +36,7 @@
 | `whitelist_remove_with_leave` | 玩家退群自动移除白名单 | `true` | 须防止冒名绑定id |
 | `mc_to_qq` | mc发言同步qq群 | `false` | 主群只同步使用 `!!qq` 指令的信息<br />同步群全部同步 |
 | `qq_to_mc` | qq群发言同步mc | `false` | 主群只同步使用 `/mc` 指令的信息<br />同步群全部同步 |
+| `command` | 开启 `/command` 指令 | `true` | |
 | `list` | 开启 `/list` 指令 | `true` | |
 | `mc` | 开启 `/mc` 指令 | `true` | |
 | `qq` | 开启 `/qq` 指令 | `true` | |
