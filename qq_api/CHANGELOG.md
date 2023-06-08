@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.2.0...qq_api-v1.2.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* **qq_api:** :bug:  qq_bridge use original headers to transmit ([fd63610](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/fd636107f57509820c32f6830710d5fcbfa11166))
+
 ## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.1.1...qq_api-v1.2.0) (2023-02-26)
 
 
