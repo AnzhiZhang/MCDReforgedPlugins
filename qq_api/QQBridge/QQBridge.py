@@ -101,9 +101,10 @@ class QQBridge:
         @self.server.route(self.config['post_url'], methods=['POST'])
         def recv():
             data = json.loads(request.get_data().decode('utf-8'))
+            headers = request.headers
             self.logger.info(f'Received data from {request.remote_addr}')
             self.logger.debug(json.dumps(data, indent=4, ensure_ascii=False))
-            self.send(data)
+            self.send(data, headers)
             return ''
 
         self.logger.info(f'Server starting up with {self.config["post_host"]}:'
@@ -113,7 +114,7 @@ class QQBridge:
                         host=self.config['post_host'],
                         threaded=False)
 
-    def send(self, data):
+    def send(self, data, headers):
         self.logger.debug(f'All server list: '
                           f'{json.dumps(self.config["server_list"], indent=4)}')
         for server_name, i in self.config['server_list'].items():
@@ -123,7 +124,7 @@ class QQBridge:
             # 添加标识
             data['server'] = server_name
             try:
-                requests.post(target, json=data)
+                requests.post(target, json=data, headers=headers)
                 self.logger.info(f'Transmit to {server_name} success')
             except:
                 self.logger.warning(f'Transmit to {server_name} failed')
