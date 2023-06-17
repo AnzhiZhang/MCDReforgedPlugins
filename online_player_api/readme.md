@@ -4,10 +4,6 @@
 >
 > 获取在线玩家列表
 
-## 使用
-
-使用 `!!list` 获取在线玩家列表
-
 ## API
 
 `check_online(player)`
