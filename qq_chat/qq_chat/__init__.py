@@ -13,11 +13,14 @@ from enum import Enum, unique
 class Config(Serializable):
     # 服务器主群
     main_group: List[int] = [123456]
+
     # 服务器管理群
     manage_groups: List[int] = [1234563, 1234564]
+
     # 服务器消息同步群
     message_sync_groups: List[int] = [1234567, 1234568]
     server_name: str = "survival"
+
     # 是否开启群组服消息拦截
     multi_server: bool = False
     admins: List[int] = [1234565, 1234566]
@@ -210,7 +213,10 @@ def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
         if user_id in data.keys():
             command = f"whitelist remove {data[user_id]}"
             server.execute(command)
-            reply(event, f"{data[user_id]} 已退群，移除[{config.server_name}]白名单")
+            reply(
+                event,
+                f"{data[user_id]} 已退群，移除[{config.server_name}]白名单"
+            )
             del data[user_id]
             save_data(server)
 
@@ -289,10 +295,16 @@ def parse_main_group():
 
 
 def save_data(server: PluginServerInterface):
-    server.save_config_simple({"data": data, "user_cache": user_cache}, "data.json")
+    server.save_config_simple(
+        {
+            "data": data,
+            "user_cache": user_cache
+        },
+        "data.json"
+    )
 
 
-def execute(server: PluginServerInterface, event: Event, command: str):
+def execute(server: PluginServerInterface, event: MessageEvent, command: str):
     if server.is_rcon_running():
         result = server.rcon_query(command)
         if result == "":
@@ -306,11 +318,13 @@ def execute(server: PluginServerInterface, event: Event, command: str):
 def reply(event: Event, message: str):
     event_loop.create_task(final_bot.send(event, message))
 
+
 def reply_decorate(event: MessageEvent, msg: str):
     if config.multi_server:
         reply(event, f"[{config.server_name}]{msg}")
     else:
         reply(event, msg)
+
 
 def send_msg_to_all_groups(message: str):
     send_msg_to_manage_groups(message)
@@ -453,7 +467,10 @@ def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
                 return bound_qq_to_player(server, event, command[1])
         elif len(command) == 3 and command[1] == "check":
             if command[2] in data:
-                reply_decorate(event, f"{command[2]} 绑定的ID是{data[command[2]]}")
+                reply_decorate(
+                    event,
+                    f"{command[2]} 绑定的ID是{data[command[2]]}"
+                )
             else:
                 reply_decorate(event, f"{command[2]} 未绑定")
         elif len(command) == 3 and command[1] == "unbound":
@@ -485,10 +502,16 @@ def bound_qq_to_player(server, event, player_name):
     else:
         data[user_id] = player_name
         save_data(server)
-        reply_decorate(event, f"[CQ:at,qq={user_id}] 已成功绑定到{player_name}")
+        reply_decorate(
+            event,
+            f"[CQ:at,qq={user_id}] 已成功绑定到{player_name}"
+        )
         if config.whitelist_add_with_bound:
             server.execute(f"whitelist add {player_name}")
-            reply_decorate(event, f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单")
+            reply_decorate(
+                event,
+                f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
+            )
 
 
 def mc_message_command_handle(
@@ -554,7 +577,10 @@ def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
         )
     else:
         if not config.commands["mcdr"]:
-            reply_decorate(event, "未开启MCDR指令控制，请在配置文件指令中开启mcdr!")
+            reply_decorate(
+                event,
+                "未开启MCDR指令控制，请在配置文件指令中开启mcdr!"
+            )
         else:
             if len(command) > 1:
                 cmd = " ".join(command[1:])
@@ -578,7 +604,10 @@ def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
         )
     else:
         if not config.commands["command"]:
-            reply_decorate(event, "未开启原版指令控制，请在配置文件指令中开启command!")
+            reply_decorate(
+                event,
+                "未开启原版指令控制，请在配置文件指令中开启command!"
+            )
         else:
             cmd = " ".join(command[1:])
             cmd = cmd.replace("&#91;", "[").replace("&#93;", "]")
@@ -586,12 +615,15 @@ def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
 
 
 def set_server_handle(server: PluginServerInterface, event: MessageEvent,
-                          command: List[str], event_type: EventType):
+                      command: List[str], event_type: EventType):
     # 禁止非管理私聊set server
     if event_type in [EventType.NONE, EventType.PRIVATE_NOT_ADMIN_CHAT]:
         return
     if not config.multi_server:
-        reply(event, f"[{config.server_name}]服务器并未开启多服务器配置，server功能暂不开放")
+        reply(
+            event,
+            f"[{config.server_name}]服务器并未开启多服务器配置，server功能暂不开放"
+        )
         return
     user_id = str(event.user_id)
     this_server = False
@@ -601,7 +633,7 @@ def set_server_handle(server: PluginServerInterface, event: MessageEvent,
     # 输入/server查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
     if len(command) == 1:
         if this_server:
-            reply(event,f"当前连接到[{config.server_name}]")
+            reply(event, f"当前连接到[{config.server_name}]")
 
     elif len(command) == 2:
         new_server_name = command[1]
@@ -612,13 +644,18 @@ def set_server_handle(server: PluginServerInterface, event: MessageEvent,
                 user_cache[user_id] = False
                 save_data(server)
             else:
-                reply(event, f"[CQ:at,qq={event.user_id}]>>你已经连接到[{new_server_name}]了")
+                reply(
+                    event,
+                    f"[CQ:at,qq={event.user_id}]>>你已经连接到[{new_server_name}]了"
+                )
         # 已连接了其他服务器，切换到当前服务器
         elif not this_server and new_server_name == config.server_name:
             user_cache[user_id] = True
             save_data(server)
-            reply(event, f"[CQ:at,qq={event.user_id}]>>聊天服务器已连接至[{new_server_name}]")
-
+            reply(
+                event,
+                f"[CQ:at,qq={event.user_id}]>>聊天服务器已连接至[{new_server_name}]"
+            )
 
 
 # -------------------------
@@ -627,6 +664,9 @@ def set_server_handle(server: PluginServerInterface, event: MessageEvent,
 def server_event_interceptor(event: MessageEvent) -> bool:
     # 配置群组服检查user是否匹配，否则全部放行
     if config.multi_server:
-        return str(event.user_id) in user_cache.keys() and user_cache[str(event.user_id)]
+        return (
+                str(event.user_id) in user_cache.keys()
+                and user_cache[str(event.user_id)]
+        )
     else:
         return True
