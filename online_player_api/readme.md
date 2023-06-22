@@ -1,12 +1,6 @@
 # OnlinePlayerAPI
 
-> 在线玩家API
->
-> 获取在线玩家列表
-
-## 使用
-
-使用 `!!list` 获取在线玩家列表
+> 在线玩家 API
 
 ## API
 
@@ -18,4 +12,4 @@
 
 `get_player_list()`
 
-返回一个在线玩家的list
+返回一个在线玩家的 list
