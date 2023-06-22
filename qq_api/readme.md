@@ -16,7 +16,17 @@ account:
   password: ''
 ```
 
-Add http server in `servers` field:
+We recommend to use WebSocket, please set `http` in config to `false` and `websocket` to `true`. Then set `ws-reverse` in `servers` field of go-cqhttp config (this example config should match the default config of QQAPI):
+
+```yaml
+servers:
+  - ws-reverse:
+      universal: ws://127.0.0.1:5700/ws/
+```
+
+---
+
+If you wish to use HTTP, set `http` in config to `true` and `websocket` to `false`. Then set `http` in `servers` field of go-cqhttp config (this example config should match the default config of QQAPI):
 
 ```yaml
 servers:
@@ -26,31 +36,20 @@ servers:
       - url: http://127.0.0.1:5701/
 ```
 
+**NOTE: Remember to start go-cqhttp after QQAPI so that reverse ws can connect!**
+
 ## 配置文件
 
-`post_host`
-
-默认值: `127.0.0.1`
-
-接收转发消息的ip地址
-
-`post_port`
-
-默认值: `5701`
-
-接收转发消息的端口
-
-`api_host`
-
-默认值: `127.0.0.1`
-
-api的ip地址
-
-`api_port`
-
-默认值: `5700`
-
-api的端口
+| 配置项 | 默认值 | 说明 |
+| - | - | - |
+| http | `false` | 是否使用 HTTP |
+| post_host | `127.0.0.1` | 接收数据上报的地址 |
+| post_port | `5701` | 对应 go-cqhttp 的 HTTP 监听端口 |
+| api_host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
+| api_port | `5700` | 对应 go-cqhttp `url` 配置的端口 |
+| websocket | `true` | 是否使用 WebSocket |
+| ws_host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
+| ws_port | `5700` | 对应 go-cqhttp 的 WebSocket 监听端口 |
 
 ### 关于多服使用
 

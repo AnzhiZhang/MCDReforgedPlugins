@@ -27,10 +27,14 @@ class MessageEvent(Event):
 
 
 class PluginConfig(Serializable):
+    http: bool = False
     api_host: str = "127.0.0.1"
     api_port: int = 5700
     post_host: str = "127.0.0.1"
     post_port: int = 5701
+    websocket: bool = False
+    ws_host: str = "127.0.0.1"
+    ws_port: int = 5700
 
 
 def on_load(server: PluginServerInterface, old):
@@ -39,6 +43,34 @@ def on_load(server: PluginServerInterface, old):
     # mcdr init
     __mcdr_server = server
     config = server.load_config_simple(target_class=PluginConfig)
+
+    # check config
+    if config.http is config.websocket:
+        server.logger.warning(
+            "HTTP and WebSocket cannot be both enabled or disabled, "
+            "websocket will be set to enabled"
+        )
+        config.http = False
+        config.websocket = True
+        server.save_config_simple(config)
+
+    # calculate http or websocket
+    if config.http:
+        api_root = f"http://{config.api_host}:{config.api_port}"
+        host = config.post_host
+        port = config.post_port
+        server.logger.info(
+            "HTTP mode enabled, "
+            f"API URL: {api_root}, "
+            f"Event URL: http://{host}:{port}"
+        )
+    else:
+        api_root = None
+        host = config.ws_host
+        port = config.ws_port
+        server.logger.info(
+            f"WebSocket mode enabled, HOST: {host}, PORT: {port}"
+        )
 
     # cqhttp init
     cqhttp_init_event = threading.Event()
@@ -49,13 +81,11 @@ def on_load(server: PluginServerInterface, old):
 
         async def cqhttp_main():
             global __bot, __uvicorn_server
-            __bot = CQHttp(
-                api_root=f"http://{config.api_host}:{config.api_port}"
-            )
+            __bot = CQHttp(api_root=api_root)
             __uvicorn_server = Server(Config(
                 __bot.server_app,
-                host=config.post_host,
-                port=config.post_port,
+                host=host,
+                port=port,
                 loop="none",
                 log_level=logging.CRITICAL
             ))
