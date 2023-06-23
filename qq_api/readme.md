@@ -22,6 +22,7 @@ We recommend to use WebSocket, please set `http` in config to `false` and `webso
 servers:
   - ws-reverse:
       universal: ws://127.0.0.1:5700/ws/
+      reconnect-interval: 3000
 ```
 
 ---
@@ -35,8 +36,6 @@ servers:
       post:
       - url: http://127.0.0.1:5701/
 ```
-
-**NOTE: Remember to start go-cqhttp after QQAPI so that reverse ws can connect!**
 
 ## 配置文件
 
