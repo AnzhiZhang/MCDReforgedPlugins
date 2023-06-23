@@ -6,3 +6,7 @@
 
 # python
 __pycache__/
+
+# plugins data
+/qq_api/QQBridge/logs/
+/qq_api/QQBridge/config.yml
