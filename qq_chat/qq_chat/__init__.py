@@ -176,6 +176,7 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
                event: MessageEvent):
     # 判断用户是否选择了该服务器
     need_process = server_event_interceptor(event)
+
     # is command?
     content = event.content
     for prefix in config.command_prefix:
