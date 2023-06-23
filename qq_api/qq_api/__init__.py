@@ -163,13 +163,13 @@ def on_load(server: PluginServerInterface, old):
 
         __event_loop.run_until_complete(cqhttp_main())
 
-    threading.Thread(target=cqhttp_init, name="QQ API Server").start()
+    threading.Thread(target=cqhttp_init, name="QQ API").start()
     cqhttp_init_event.wait()
-    server.logger.info("Bot listener server started.")
+    server.logger.info("QQ API started.")
 
 
 def on_unload(server: PluginServerInterface):
-    __mcdr_server.logger.info("Exiting bot listener server.")
+    __mcdr_server.logger.info("Exiting QQ API.")
     __uvicorn_server.should_exit = True
     time.sleep(0.1)
 
