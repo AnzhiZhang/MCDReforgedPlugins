@@ -143,7 +143,7 @@ def on_load(server: PluginServerInterface, old):
         if config.commands["qq"]:
             player = src.player if src.is_player else "Console"
             # 通过qq指令发送的消息会同步发送到主群中
-            msg = f"[{config.server_name}][{player}]{ctx['message']}"
+            msg = f"[{config.server_name}] <{player}> {ctx['message']}"
             send_msg_to_main_groups(msg)
             send_msg_to_message_sync_groups(msg)
 
@@ -164,7 +164,7 @@ def on_user_info(server: PluginServerInterface, info):
         # 所有信息都会发到同步群中
         if not info.content.startswith("!!qq"):
             send_msg_to_message_sync_groups(
-                f"[{config.server_name}][{info.player}] {info.content}"
+                f"[{config.server_name}] <{info.player}> {info.content}"
             )
 
 
@@ -321,7 +321,7 @@ def reply(event: Event, message: str):
 
 def reply_decorate(event: MessageEvent, msg: str):
     if config.multi_server:
-        reply(event, f"[{config.server_name}]{msg}")
+        reply(event, f"[{config.server_name}] {msg}")
     else:
         reply(event, msg)
 
@@ -532,9 +532,9 @@ def mc_message_command_handle(
         if user_id in data.keys():
             # 管理员提示为绿色ID
             if user_id in config.admins:
-                server.say(f"§7[QQ] §a[{data[user_id]}]§7 {event.content[4:]}")
+                server.say(f"§7[QQ] §a<{data[user_id]}>§7 {event.content[4:]}")
             else:
-                server.say(f"§7[QQ] [{data[user_id]}] {event.content[4:]}")
+                server.say(f"§7[QQ] <{data[user_id]}> {event.content[4:]}")
         else:
             reply_decorate(
                 event,
