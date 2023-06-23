@@ -27,14 +27,18 @@ class MessageEvent(Event):
 
 
 class PluginConfig(Serializable):
-    http: bool = False
-    api_host: str = "127.0.0.1"
-    api_port: int = 5700
-    post_host: str = "127.0.0.1"
-    post_port: int = 5701
-    websocket: bool = False
-    ws_host: str = "127.0.0.1"
-    ws_port: int = 5700
+    http: dict = {
+        "enable": False,
+        "api_host": "127.0.0.1",
+        "api_port": 5700,
+        "post_host": "127.0.0.1",
+        "post_port": 5701,
+    }
+    websocket: dict = {
+        "enable": False,
+        "host": "127.0.0.1",
+        "port": 5700,
+    }
 
 
 def on_load(server: PluginServerInterface, old):
@@ -45,20 +49,23 @@ def on_load(server: PluginServerInterface, old):
     config = server.load_config_simple(target_class=PluginConfig)
 
     # check config
-    if config.http is config.websocket:
+    if config.http["enable"] is config.websocket["enable"]:
         server.logger.warning(
             "HTTP and WebSocket cannot be both enabled or disabled, "
             "websocket will be set to enabled"
         )
-        config.http = False
-        config.websocket = True
+        config.http["enable"] = False
+        config.websocket["enable"] = True
         server.save_config_simple(config)
 
     # calculate http or websocket
-    if config.http:
-        api_root = f"http://{config.api_host}:{config.api_port}"
-        host = config.post_host
-        port = config.post_port
+    if config.http["enable"]:
+        api_root = (
+            f"http://"
+            f"{config.http['api_host']}:{config.http['api_port']}"
+        )
+        host = config.http["post_host"]
+        port = config.http["post_port"]
         server.logger.info(
             "HTTP mode enabled, "
             f"API URL: {api_root}, "
@@ -66,10 +73,10 @@ def on_load(server: PluginServerInterface, old):
         )
     else:
         api_root = None
-        host = config.ws_host
-        port = config.ws_port
+        host = config.websocket["host"]
+        port = config.websocket["port"]
         server.logger.info(
-            f"WebSocket mode enabled, HOST: {host}, PORT: {port}"
+            f"WebSocket mode enabled at {host}:{port}"
         )
 
     # cqhttp init

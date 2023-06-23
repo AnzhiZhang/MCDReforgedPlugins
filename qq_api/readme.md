@@ -42,14 +42,14 @@ servers:
 
 | 配置项 | 默认值 | 说明 |
 | - | - | - |
-| http | `false` | 是否使用 HTTP |
-| post_host | `127.0.0.1` | 接收数据上报的地址 |
-| post_port | `5701` | 对应 go-cqhttp 的 HTTP 监听端口 |
-| api_host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
-| api_port | `5700` | 对应 go-cqhttp `url` 配置的端口 |
-| websocket | `true` | 是否使用 WebSocket |
-| ws_host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
-| ws_port | `5700` | 对应 go-cqhttp 的 WebSocket 监听端口 |
+| http.enable | `false` | 是否使用 HTTP |
+| http.post_host | `127.0.0.1` | 接收数据上报的地址 |
+| http.post_port | `5701` | 对应 go-cqhttp 的 HTTP 监听端口 |
+| http.api_host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
+| http.api_port | `5700` | 对应 go-cqhttp `url` 配置的端口 |
+| websocket.enable | `true` | 是否使用 WebSocket |
+| websocket.host | `127.0.0.1` | 对应 go-cqhttp 的地址 |
+| websocket.port | `5700` | 对应 go-cqhttp 的 WebSocket 监听端口 |
 
 ### 关于多服使用
 
