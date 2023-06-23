@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+
 import yaml
 
 
@@ -24,14 +25,13 @@ class Config:
             self._add(key, default)
 
     def check_config(self):
-        self.touch('post_host', '127.0.0.1')
-        self.touch('post_port', 5701)
-        self.touch('post_url', '/post')
+        self.touch('websocket', True)
+        self.touch('host', '127.0.0.1')
+        self.touch('port', 5700)
         self.touch('server_list', {
             'example': {
                 'host': '127.0.0.1',
-                'port': 5702,
-                'url': 'post'
+                'port': 5701
             }
         })
         self.touch('debug_mode', False)
