@@ -1,0 +1,5 @@
+flask
+psutil
+PyYAML
+requests
+colorlog

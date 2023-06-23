@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-import requests
-import json
 import re
-import psutil
+import json
 import threading
-from flask import Flask, request
 from logging import INFO, DEBUG
+
+import psutil
+import requests
+from flask import Flask, request
 
 from config import Config
 from logger import Logger
