@@ -149,7 +149,10 @@ def on_load(server: PluginServerInterface, old):
 
             @__bot.on_meta_event
             async def on_meta_event(event: Event):
-                server.logger.debug(f"on meta event: {event}")
+                # no heartbeat log
+                if event.meta_event_type != "heartbeat":
+                    server.logger.debug(f"on meta event: {event}")
+
                 server.dispatch_event(
                     LiteralEvent("qq_api.on_meta_event"),
                     (__bot, event)
