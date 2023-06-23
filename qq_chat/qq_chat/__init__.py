@@ -174,8 +174,15 @@ def on_user_info(server: PluginServerInterface, info):
 
 def on_message(server: PluginServerInterface, bot: CQHttp,
                event: MessageEvent):
-    # 判断用户是否选择了该服务器
-    need_process = server_event_interceptor(event)
+    # 判断指令是否需要处理，如果是多服模式，只处理设置了此服的用户
+    need_process = (
+            config.multi_server is False
+            or (
+                    config.multi_server is True
+                    and str(event.user_id) in user_cache.keys()
+                    and user_cache[str(event.user_id)] is True
+            )
+    )
 
     # is command?
     content = event.content
@@ -208,6 +215,7 @@ def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
     if event.group_id != main_group:
         return
 
+    # Remove whitelist with leave
     is_group_decrease = (event.detail_type == "group_decrease")
     if is_group_decrease and config.whitelist_remove_with_leave:
         user_id = str(event.user_id)
@@ -231,25 +239,28 @@ def on_qq_command(
         bot: CQHttp,
         event: MessageEvent,
         command_prefix: str,
-        process: bool
+        need_process: bool
 ):
     # Event did not trigger
     event_type = parse_event_type(event)
     if event_type == EventType.NONE:
         return
+
     # parse command
     command = parse_command_list(event.content, command_prefix)
 
     # /server 设置操作服务器指令，检测到set需要做处理
     if command[0] == "server":
-        set_server_handle(server, event, command, event_type)
-    if not process:
-        # 不做处理
+        server_command_handle(server, event, command, event_type)
+
+    # 无需处理直接返回
+    if not need_process:
         return
-    # /help指令
+
+    # /help 指令
     if command[0] == "help":
-        helper(server, event, event_type)
-    # /list指令
+        help_command_handle(server, event, event_type)
+    # /list 指令
     elif command[0] == "list":
         list_command_handle(server, event)
     # /bound 绑定指令
@@ -388,7 +399,51 @@ def parse_event_type(event: MessageEvent) -> EventType:
 #  command handle
 # -------------------------
 
-def helper(
+def server_command_handle(server: PluginServerInterface, event: MessageEvent,
+                          command: List[str], event_type: EventType):
+    # 禁止非管理私聊set server
+    if event_type in [EventType.NONE, EventType.PRIVATE_NOT_ADMIN_CHAT]:
+        return
+    if not config.multi_server:
+        reply(
+            event,
+            f"[{config.server_name}]服务器并未开启多服务器配置，server功能暂不开放"
+        )
+        return
+    user_id = str(event.user_id)
+    this_server = False
+    if user_id in user_cache.keys():
+        this_server = user_cache[user_id]
+
+    # 输入/server查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
+    if len(command) == 1:
+        if this_server:
+            reply(event, f"当前连接到[{config.server_name}]")
+
+    elif len(command) == 2:
+        new_server_name = command[1]
+        # 已连接当前服务器
+        if this_server:
+            if new_server_name != config.server_name:
+                # 表示去连接其他服务器，将当前服务器的缓存置为false或清空
+                user_cache[user_id] = False
+                save_data(server)
+            else:
+                reply(
+                    event,
+                    f"[CQ:at,qq={event.user_id}] 你已经连接到 [{new_server_name}] 了！"
+                )
+        # 已连接了其他服务器，切换到当前服务器
+        elif not this_server and new_server_name == config.server_name:
+            user_cache[user_id] = True
+            save_data(server)
+            reply(
+                event,
+                f"[CQ:at,qq={event.user_id}] 聊天服务器已连接至 [{new_server_name}]"
+            )
+
+
+def help_command_handle(
         server: PluginServerInterface,
         event: MessageEvent,
         event_type: EventType
@@ -613,61 +668,3 @@ def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
             cmd = " ".join(command[1:])
             cmd = cmd.replace("&#91;", "[").replace("&#93;", "]")
             execute(server, event, cmd)
-
-
-def set_server_handle(server: PluginServerInterface, event: MessageEvent,
-                      command: List[str], event_type: EventType):
-    # 禁止非管理私聊set server
-    if event_type in [EventType.NONE, EventType.PRIVATE_NOT_ADMIN_CHAT]:
-        return
-    if not config.multi_server:
-        reply(
-            event,
-            f"[{config.server_name}]服务器并未开启多服务器配置，server功能暂不开放"
-        )
-        return
-    user_id = str(event.user_id)
-    this_server = False
-    if user_id in user_cache.keys():
-        this_server = user_cache[user_id]
-
-    # 输入/server查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
-    if len(command) == 1:
-        if this_server:
-            reply(event, f"当前连接到[{config.server_name}]")
-
-    elif len(command) == 2:
-        new_server_name = command[1]
-        # 已连接当前服务器
-        if this_server:
-            if new_server_name != config.server_name:
-                # 表示去连接其他服务器，将当前服务器的缓存置为false或清空
-                user_cache[user_id] = False
-                save_data(server)
-            else:
-                reply(
-                    event,
-                    f"[CQ:at,qq={event.user_id}]>>你已经连接到[{new_server_name}]了"
-                )
-        # 已连接了其他服务器，切换到当前服务器
-        elif not this_server and new_server_name == config.server_name:
-            user_cache[user_id] = True
-            save_data(server)
-            reply(
-                event,
-                f"[CQ:at,qq={event.user_id}]>>聊天服务器已连接至[{new_server_name}]"
-            )
-
-
-# -------------------------
-#  server handler
-# -------------------------
-def server_event_interceptor(event: MessageEvent) -> bool:
-    # 配置群组服检查user是否匹配，否则全部放行
-    if config.multi_server:
-        return (
-                str(event.user_id) in user_cache.keys()
-                and user_cache[str(event.user_id)]
-        )
-    else:
-        return True
