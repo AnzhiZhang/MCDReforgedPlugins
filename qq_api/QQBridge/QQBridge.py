@@ -21,7 +21,7 @@ debug thread 查看线程列表
 class Console(threading.Thread):
     def __init__(self, logger, config):
         super().__init__(name='Console')
-        self.p = psutil.Process()
+        self.process = psutil.Process()
         self.logger = logger
         self.config = config
         self.cmd = []
@@ -82,7 +82,7 @@ class Console(threading.Thread):
 
     def exit(self):
         self.logger.info('Exiting QQBridge')
-        self.p.terminate()
+        self.process.terminate()
 
 
 class QQBridge:
