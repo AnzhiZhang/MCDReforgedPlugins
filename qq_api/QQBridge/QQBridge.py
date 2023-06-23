@@ -182,14 +182,8 @@ class DownstreamWebsocket(BaseWebsocket):
                     "X-Client-Role": "Universal"
                 }
         ) as websocket:
-            # handshake
+            # save websocket
             self.websocket = websocket
-            self.send({
-                'meta_event_type': 'lifecycle',
-                'post_type': 'meta_event',
-                'sub_type': 'connect',
-                'time': time.time()
-            })
             self.logger.info(f'Connected to the server "{self.name}"')
 
             # main loop
