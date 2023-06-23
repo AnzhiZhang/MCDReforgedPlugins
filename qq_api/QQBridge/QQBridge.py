@@ -10,7 +10,7 @@ from logging import INFO, DEBUG
 from config import Config
 from logger import Logger
 
-help_msg = '''stop 关闭QQBridge
+help_msg = '''stop 关闭 QQBridge
 help 获取帮助
 reload config 重载配置文件
 debug thread 查看线程列表
@@ -40,7 +40,7 @@ class Console(threading.Thread):
                 self.logger.debug(f'    Raw input: "{raw_input}"')
                 self.logger.debug(f'    Split result: {self.cmd}')
                 self.cmd_parser()
-            except EOFError or KeyboardInterrupt as e:
+            except EOFError or KeyboardInterrupt:
                 self.exit()
 
     def send_msg(self, msg):
@@ -64,9 +64,11 @@ class Console(threading.Thread):
     def cmd_debug_parser(self):
         if self.cmd[1] == 'thread':
             thread_list = threading.enumerate()
-            self.logger.info(f'当前线程列表, 共 {len(thread_list)} 个活跃线程:')
+            self.logger.info(
+                f'当前线程列表, 共 {len(thread_list)} 个活跃线程:'
+            )
             for i in thread_list:
-                self.logger.info(f'    - {i.getName()}')
+                self.logger.info(f'    - {i.name}')
 
     def reload_config(self):
         self.logger.info('正在重载配置文件')
@@ -98,7 +100,7 @@ class QQBridge:
         self.start()
 
     def start(self):
-        @self.server.route(self.config['post_url'], methods=['POST'])
+        @self.server.route('/', methods=['POST'])
         def recv():
             data = json.loads(request.get_data().decode('utf-8'))
             headers = request.headers
@@ -107,18 +109,23 @@ class QQBridge:
             self.send(data, headers)
             return ''
 
-        self.logger.info(f'Server starting up with {self.config["post_host"]}:'
-                         f'{self.config["post_port"]}'
-                         f'{self.config["post_url"]}')
-        self.server.run(port=self.config['post_port'],
-                        host=self.config['post_host'],
-                        threaded=False)
+        self.logger.info(
+            f'Server starting up with '
+            f'{self.config["host"]}:{self.config["port"]}'
+        )
+        self.server.run(
+            host=self.config['host'],
+            port=self.config['port'],
+            threaded=False
+        )
 
     def send(self, data, headers):
-        self.logger.debug(f'All server list: '
-                          f'{json.dumps(self.config["server_list"], indent=4)}')
+        self.logger.debug(
+            f'All server list: '
+            f'{json.dumps(self.config["server_list"], indent=4)}'
+        )
         for server_name, i in self.config['server_list'].items():
-            target = f'http://{i["host"]}:{i["port"]}/{i["url"]}'
+            target = f'http://{i["host"]}:{i["port"]}'
             self.logger.info(f'Transmitting to the server {server_name}')
             self.logger.debug(f'Server address {target}')
             # 添加标识

@@ -25,8 +25,10 @@ class Logger:
         },
         datefmt='%H:%M:%S'
     )
-    file_fmt = logging.Formatter('[%(asctime)s] [%(levelname)s]: %(message)s',
-                                 datefmt='%Y-%m-%d %H:%M:%S', )
+    file_fmt = logging.Formatter(
+        '[%(asctime)s] [%(levelname)s]: %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
 
     def __init__(self):
         logging.getLogger('werkzeug').setLevel(logging.ERROR)
@@ -60,8 +62,10 @@ class Logger:
 
     def set_file(self):
         if os.path.isfile(self.file_path):
-            modify_time = time.strftime('%Y-%m-%d', time.localtime(
-                os.stat(self.file_path).st_mtime))
+            modify_time = time.strftime(
+                '%Y-%m-%d',
+                time.localtime(os.stat(self.file_path).st_mtime)
+            )
             c = 0
             while c := c + 1:
                 backup_file_name = f'logs/{modify_time}-{c}.log'
