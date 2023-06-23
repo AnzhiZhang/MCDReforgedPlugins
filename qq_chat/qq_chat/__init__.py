@@ -196,7 +196,7 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
             else:
                 server.say(f"§7[QQ] [{data[user_id]}] {event.content}")
         else:
-            reply_decorate(
+            reply_with_server_name(
                 event,
                 f"[CQ:at,qq={user_id}] 无法转发您的消息，请通过/bound <Player>绑定游戏ID"
             )
@@ -312,14 +312,14 @@ def execute(server: PluginServerInterface, event: MessageEvent, command: str):
     else:
         server.execute(command)
         result = "由于未启用 RCON，没有返回结果"
-    reply_decorate(event, result)
+    reply_with_server_name(event, result)
 
 
 def reply(event: Event, message: str):
     event_loop.create_task(final_bot.send(event, message))
 
 
-def reply_decorate(event: MessageEvent, msg: str):
+def reply_with_server_name(event: MessageEvent, msg: str):
     if config.multi_server:
         reply(event, f"[{config.server_name}] {msg}")
     else:
@@ -446,7 +446,7 @@ def list_command_handle(server: PluginServerInterface, event: MessageEvent):
         for player in players:
             message += f"{player}\n"
 
-    reply_decorate(event, message)
+    reply_with_server_name(event, message)
 
 
 def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
@@ -462,28 +462,28 @@ def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
                 for i in range(0, len(bound_list)):
                     reply_msg += f"{i + 1}. {bound_list[i]}\n"
                 reply_msg = "还没有人绑定" if reply_msg == "" else reply_msg
-                reply_decorate(event, reply_msg)
+                reply_with_server_name(event, reply_msg)
             else:
                 return bound_qq_to_player(server, event, command[1])
         elif len(command) == 3 and command[1] == "check":
             if command[2] in data:
-                reply_decorate(
+                reply_with_server_name(
                     event,
                     f"{command[2]} 绑定的ID是{data[command[2]]}"
                 )
             else:
-                reply_decorate(event, f"{command[2]} 未绑定")
+                reply_with_server_name(event, f"{command[2]} 未绑定")
         elif len(command) == 3 and command[1] == "unbound":
             if command[2] in data:
                 del data[command[2]]
                 save_data(server)
-                reply_decorate(event, f"已解除 {command[2]} 绑定的ID")
+                reply_with_server_name(event, f"已解除 {command[2]} 绑定的ID")
             else:
-                reply_decorate(event, f"{command[2]} 未绑定")
+                reply_with_server_name(event, f"{command[2]} 未绑定")
         elif len(command) == 3 and command[1].isdigit():
             data[command[1]] = command[2]
             save_data(server)
-            reply_decorate(event, "已成功绑定")
+            reply_with_server_name(event, "已成功绑定")
 
     # 非管理权限
     elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
@@ -495,20 +495,20 @@ def bound_qq_to_player(server, event, player_name):
     user_id = str(event.user_id)
     if user_id in data.keys():
         _id = data[user_id]
-        reply_decorate(
+        reply_with_server_name(
             event,
             f"[CQ:at,qq={user_id}] 您已绑定ID: {_id}, 请联系管理员修改"
         )
     else:
         data[user_id] = player_name
         save_data(server)
-        reply_decorate(
+        reply_with_server_name(
             event,
             f"[CQ:at,qq={user_id}] 已成功绑定到{player_name}"
         )
         if config.whitelist_add_with_bound:
             server.execute(f"whitelist add {player_name}")
-            reply_decorate(
+            reply_with_server_name(
                 event,
                 f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
             )
@@ -536,7 +536,7 @@ def mc_message_command_handle(
             else:
                 server.say(f"§7[QQ] <{data[user_id]}> {event.content[4:]}")
         else:
-            reply_decorate(
+            reply_with_server_name(
                 event,
                 f"[CQ:at,qq={user_id}] 无法转发您的消息, 请通过/bound <Player>绑定游戏ID"
             )
@@ -552,7 +552,7 @@ def whitelist_command_handle(
         return
     # 非管理禁止操作白名单
     if event_type not in admin_event:
-        reply_decorate(
+        reply_with_server_name(
             event,
             f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
         )
@@ -571,13 +571,13 @@ def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
         return
     # 非admin
     if event_type not in admin_event:
-        reply_decorate(
+        reply_with_server_name(
             event,
             f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
         )
     else:
         if not config.commands["mcdr"]:
-            reply_decorate(
+            reply_with_server_name(
                 event,
                 "未开启MCDR指令控制，请在配置文件指令中开启mcdr!"
             )
@@ -587,9 +587,9 @@ def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
                 if cmd.startswith("!!"):
                     cmd = cmd[2:]
                 server.execute_command("!!" + cmd)
-                reply_decorate(event, f"已执行MCDR指令 >> !!{cmd}")
+                reply_with_server_name(event, f"已执行MCDR指令 >> !!{cmd}")
             else:
-                reply_decorate(event, "请输入MCDR指令!")
+                reply_with_server_name(event, "请输入MCDR指令!")
 
 
 def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
@@ -598,13 +598,13 @@ def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
         return
     # 非admin
     if event_type not in admin_event:
-        reply_decorate(
+        reply_with_server_name(
             event,
             f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
         )
     else:
         if not config.commands["command"]:
-            reply_decorate(
+            reply_with_server_name(
                 event,
                 "未开启原版指令控制，请在配置文件指令中开启command!"
             )
