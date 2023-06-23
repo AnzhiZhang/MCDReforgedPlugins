@@ -54,7 +54,7 @@ servers:
 
 `QQBridge` 是一个可以将机器人上报消息分发给多个服务器进行处理的应用。
 
-直接运行 `QQBridge.py` 即可。
+安装依赖后直接运行 `QQBridge.py` 即可。
 
 #### 指令
 
@@ -67,25 +67,13 @@ servers:
 
 #### 配置
 
-`post_host`
-
-接收上报信息的地址
-
-默认值: `127.0.0.1`
-
-`post_port`
-
-接收上报信息的端口
-
-默认值: `5701`
-
-`post_utl`
-
-接收上报信息的url
-
-默认值: `/post`
-
-以上接收上报消息的配置与 [readme.md](../readme.md) 对应
+| 配置项 | 默认值 | 说明 |
+| - | - | - |
+| webscocket | `false` | 是否使用 WebSocket（为 true 则使用 HTTP） |
+| host | `127.0.0.1` | 接收数据上报的地址 |
+| port | `5700` | 对应 go-cqhttp 的 HTTP 监听端口 |
+| server_list | 详见下文 | 需要转发的服务器列表 |
+| debug_mode | `false` | 调试模式 |
 
 `server_list`
 
@@ -94,21 +82,12 @@ servers:
 ```yaml
 example:
   host: 127.0.0.1
-  port: 5702
-  url: ''
+  port: 5701
 ```
-
-默认值: 上文的例子
-
-`debug_mode`
-
-调试模式
-
-默认值: `flase`
 
 > 你还需要修改 QQAPI 配置文件的 `post_host`, `post_port` 使其与 `server_list` 的内容对应
 >
-> 建议从 `5702` 向上增加，如第一个服为 `5702` 第二个服为 `5703`
+> 建议从 `5701` 向上增加，如第一个服为 `5701` 第二个服为 `5702`
 
 ## 开发
 
