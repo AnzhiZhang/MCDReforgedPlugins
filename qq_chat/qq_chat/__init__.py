@@ -36,7 +36,7 @@ class Config(Serializable):
         "qq_to_mc": False
     }
 
-    # command权限开关
+    # command 权限开关
     commands: Dict[str, bool] = {
         "command": True,
         "list": True,
@@ -69,13 +69,14 @@ class EventType(Enum):
     GROUP_MANAGE_CHAT = 7
 
 
-admin_event = [
+ADMIN_EVENT_TYPES = [
     EventType.PRIVATE_ADMIN_CHAT,
     EventType.GROUP_MAIN_ADMIN_CHAT,
     EventType.GROUP_MSG_SYNC_ADMIN_CHAT,
     EventType.GROUP_MANAGE_CHAT
 ]
-not_admin_event = [
+
+NOT_ADMIN_EVENT_TYPES = [
     EventType.PRIVATE_NOT_ADMIN_CHAT,
     EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
     EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT
@@ -88,12 +89,13 @@ final_bot: CQHttp
 event_loop: AbstractEventLoop
 main_group: int
 
-group_help_msg = """命令帮助如下:
+group_help = """命令帮助如下:
 /list 获取在线玩家列表
 /bound <ID> 绑定你的游戏ID
 /mc <msg> 向游戏内发送消息
 """
-admin_help_msg = """管理员命令帮助如下
+
+admin_help = """管理员命令帮助如下
 /bound 查看绑定相关帮助
 /whitelist 查看白名单相关帮助
 /command <command> 执行任意指令
@@ -401,46 +403,71 @@ def parse_event_type(event: MessageEvent) -> EventType:
 
 def server_command_handle(server: PluginServerInterface, event: MessageEvent,
                           command: List[str], event_type: EventType):
-    # 禁止非管理私聊set server
-    if event_type in [EventType.NONE, EventType.PRIVATE_NOT_ADMIN_CHAT]:
-        return
+    """
+    Server command handle.
+    User can choose to connect a server or switch to another server.
+    To use this command, the config "multi_server" must be set to True.
+
+    When user type /server without any arguments:
+        If user is not connected to any server, reply with this server's name.
+        If user is connected to this server, say already connected to this.
+        If user is connected to another server, ignore that command.
+
+    When user type /server <server_name>:
+        If user is already connected to this server, reply it's connected.
+        If user is connecting this server, reply and save status.
+        If user is connecting another server, save this status and ignore.
+    """
+    # 检查是否开启多服务器配置
     if not config.multi_server:
         reply(
             event,
-            f"[{config.server_name}]服务器并未开启多服务器配置，server功能暂不开放"
+            f"[{config.server_name}] 服务器并未开启多服务器配置，server 功能暂不开放"
         )
         return
+
+    # save status of is user connected to this server
     user_id = str(event.user_id)
-    this_server = False
-    if user_id in user_cache.keys():
-        this_server = user_cache[user_id]
+    is_on_this_server = user_cache.get(user_id)
 
-    # 输入/server查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
+    # 输入 /server 查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
     if len(command) == 1:
-        if this_server:
-            reply(event, f"当前连接到[{config.server_name}]")
+        # 已连接到此服务器
+        if is_on_this_server is True:
+            reply(event, f"当前已连接到 [{config.server_name}]")
 
+        # 未连接到此服务器
+        elif is_on_this_server is False:
+            pass
+
+        # 未连接到任何服务器
+        elif is_on_this_server is None:
+            reply(event, f"您可以连接到 [{config.server_name}]")
+
+    # 输入 /server <server_name> 连接到指定服务器
     elif len(command) == 2:
         new_server_name = command[1]
-        # 已连接当前服务器
-        if this_server:
-            if new_server_name != config.server_name:
-                # 表示去连接其他服务器，将当前服务器的缓存置为false或清空
-                user_cache[user_id] = False
-                save_data(server)
-            else:
-                reply(
-                    event,
-                    f"[CQ:at,qq={event.user_id}] 你已经连接到 [{new_server_name}] 了！"
-                )
-        # 已连接了其他服务器，切换到当前服务器
-        elif not this_server and new_server_name == config.server_name:
+
+        # 已经连接到此服务器
+        if new_server_name == config.server_name and is_on_this_server:
+            reply(
+                event,
+                f"[CQ:at,qq={event.user_id}] 你已经连接到 [{new_server_name}] 了！"
+            )
+
+        # 连接到当前服务器
+        elif new_server_name == config.server_name and not is_on_this_server:
             user_cache[user_id] = True
             save_data(server)
             reply(
                 event,
                 f"[CQ:at,qq={event.user_id}] 聊天服务器已连接至 [{new_server_name}]"
             )
+
+        # 连接到其他服务器
+        else:
+            user_cache[user_id] = False
+            save_data(server)
 
 
 def help_command_handle(
@@ -453,11 +480,11 @@ def help_command_handle(
     elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
                         EventType.GROUP_MAIN_ADMIN_CHAT,
                         EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT]:
-        reply(event, group_help_msg)
+        reply(event, group_help)
     elif event_type in [EventType.PRIVATE_ADMIN_CHAT,
                         EventType.GROUP_MANAGE_CHAT,
                         EventType.GROUP_MSG_SYNC_ADMIN_CHAT]:
-        reply(event, admin_help_msg)
+        reply(event, admin_help)
 
 
 def list_command_handle(server: PluginServerInterface, event: MessageEvent):
@@ -508,7 +535,7 @@ def list_command_handle(server: PluginServerInterface, event: MessageEvent):
 def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
                          command: List[str], event_type: EventType):
     # 管理权限
-    if event_type in admin_event:
+    if event_type in ADMIN_EVENT_TYPES:
         if len(command) == 1:
             reply(event, bound_help)
         elif len(command) == 2:
@@ -607,7 +634,7 @@ def whitelist_command_handle(
     if event_type == EventType.NONE:
         return
     # 非管理禁止操作白名单
-    if event_type not in admin_event:
+    if event_type not in ADMIN_EVENT_TYPES:
         reply_with_server_name(
             event,
             f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
@@ -625,8 +652,9 @@ def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
                         command: List[str], event_type: EventType):
     if event_type == EventType.NONE:
         return
-    # 非admin
-    if event_type not in admin_event:
+
+    # not admin
+    if event_type not in ADMIN_EVENT_TYPES:
         reply_with_server_name(
             event,
             f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
@@ -652,17 +680,18 @@ def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
                           command: List[str], event_type: EventType):
     if event_type == EventType.NONE:
         return
-    # 非admin
-    if event_type not in admin_event:
+
+    # not admin
+    if event_type not in ADMIN_EVENT_TYPES:
         reply_with_server_name(
             event,
-            f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
+            f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令！"
         )
     else:
         if not config.commands["command"]:
             reply_with_server_name(
                 event,
-                "未开启原版指令控制，请在配置文件指令中开启command!"
+                "未开启原版指令控制，请在配置文件指令中开启！"
             )
         else:
             cmd = " ".join(command[1:])
