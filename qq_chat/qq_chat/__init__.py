@@ -93,6 +93,8 @@ group_help = """命令帮助如下:
 /list 获取在线玩家列表
 /bound <ID> 绑定你的游戏ID
 /mc <msg> 向游戏内发送消息
+/server 查看已连接或可连接的服务器
+/server <server_name> 连接到指定服务器
 """
 
 admin_help = """管理员命令帮助如下
