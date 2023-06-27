@@ -144,7 +144,7 @@ def on_load(server: PluginServerInterface, old):
     main_group = parse_main_group()
 
     def qq(src, ctx):
-        if config.commands["qq"]:
+        if config.commands["qq"] is True:
             player = src.player if src.is_player else "Console"
             # 通过qq指令发送的消息会同步发送到主群中
             msg = f"[{config.server_name}] <{player}> {ctx['message']}"
@@ -164,7 +164,7 @@ def on_server_startup(server: PluginServerInterface):
 
 
 def on_user_info(server: PluginServerInterface, info):
-    if info.is_player and config.forwards["mc_to_qq"]:
+    if info.is_player and config.forwards["mc_to_qq"] is True:
         # 所有信息都会发到同步群中
         if not info.content.startswith("!!qq"):
             send_msg_to_message_sync_groups(
@@ -190,14 +190,21 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
 
     # is command?
     content = event.content
+    is_command = False
+    prefix = None
     for prefix in config.command_prefix:
         if prefix != "" and content.startswith(prefix):
-            # 先进行拦截
-            return on_qq_command(server, bot, event, prefix, need_process)
+            is_command = True
+            prefix = prefix
+            break
 
-    # 非command，目前只支持msg_sync群中直接发送消息到服务器
+    # if it's a command, process it and stop here
+    if is_command:
+        return on_qq_command(server, bot, event, prefix, need_process)
+
+    # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
     if (
-            config.forwards["qq_to_mc"]
+            config.forwards["qq_to_mc"] is True
             and event.group_id in config.message_sync_groups
     ):
         user_id = str(event.user_id)
@@ -272,13 +279,13 @@ def on_qq_command(
         bound_command_handle(server, event, command, event_type)
     # /mc 发送消息指令
     elif command[0] == "mc":
-        mc_message_command_handle(server, event, command, event_type)
+        mc_command_handle(server, event, command, event_type)
     # /whitelist 操作白名单
     elif command[0] == "whitelist":
         whitelist_command_handle(server, event, command, event_type)
     # /command 执行原版指令
     elif command[0] == "command":
-        mc_cmd_command_handle(server, event, command, event_type)
+        command_command_handle(server, event, command, event_type)
     # /mcdr 执行MCDR指令
     elif command[0] == "mcdr":
         mcdr_command_handle(server, event, command, event_type)
@@ -599,18 +606,19 @@ def bound_qq_to_player(server, event, player_name):
             )
 
 
-def mc_message_command_handle(
+def mc_command_handle(
         server: PluginServerInterface,
         event: MessageEvent,
         command: List[str],
         event_type: EventType
 ):
     if (
-            not config.commands["mc"]
+            config.commands["mc"] is False
             or event_type == EventType.NONE
             or not config.forwards["qq_to_mc"]
     ):
         return
+
     # 非管理不允许私聊机器人发送消息,发送消息需在群聊中
     if event_type not in [EventType.PRIVATE_NOT_ADMIN_CHAT]:
         user_id = str(event.user_id)
@@ -678,8 +686,8 @@ def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
                 reply_with_server_name(event, "请输入MCDR指令!")
 
 
-def mc_cmd_command_handle(server: PluginServerInterface, event: MessageEvent,
-                          command: List[str], event_type: EventType):
+def command_command_handle(server: PluginServerInterface, event: MessageEvent,
+                           command: List[str], event_type: EventType):
     if event_type == EventType.NONE:
         return
 
