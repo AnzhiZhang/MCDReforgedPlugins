@@ -615,7 +615,6 @@ def mc_command_handle(
     if (
             config.commands["mc"] is False
             or event_type == EventType.NONE
-            or not config.forwards["qq_to_mc"]
     ):
         return
 
