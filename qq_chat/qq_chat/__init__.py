@@ -30,12 +30,6 @@ class Config(Serializable):
     whitelist_add_with_bound: bool = False
     whitelist_remove_with_leave: bool = True
 
-    # 转发是否开启
-    forwards: Dict[str, bool] = {
-        "mc_to_qq": False,
-        "qq_to_mc": False
-    }
-
     # command 权限开关
     commands: Dict[str, bool] = {
         "command": True,
@@ -164,7 +158,7 @@ def on_server_startup(server: PluginServerInterface):
 
 
 def on_user_info(server: PluginServerInterface, info):
-    if info.is_player and config.forwards["mc_to_qq"] is True:
+    if info.is_player is True:
         # 所有信息都会发到同步群中
         if not info.content.startswith("!!qq"):
             send_msg_to_message_sync_groups(
@@ -203,10 +197,7 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
         return on_qq_command(server, bot, event, prefix, need_process)
 
     # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
-    if (
-            config.forwards["qq_to_mc"] is True
-            and event.group_id in config.message_sync_groups
-    ):
+    if event.group_id in config.message_sync_groups:
         user_id = str(event.user_id)
         if user_id in data.keys():
             # 管理员提示为绿色ID
