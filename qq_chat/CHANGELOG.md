@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.0.0...qq_chat-v2.1.0) (2023-06-29)
+
+
+### Features
+
+* **qq_chat:** :sparkles: multi server support ([#131](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/131)) ([a573d0b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a573d0b6e83edf55375d2fb7c553a8f830d5eeea))
+
+
+### Bug Fixes
+
+* **qq_chat:** :bug: fix all message which starts with long command prefix returns help msg ([5787d03](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/5787d038c5edd490da16016aeaf4edc0eb4e4d6f))
+* **qq_chat:** :bug: remove forwards config. move forward feature to sync group ([6126ab9](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/6126ab9bd7c266576ed02e99f8262b32bf6a9754))
+
 ## [2.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v1.0.1...qq_chat-v2.0.0) (2023-05-21)
 
 
