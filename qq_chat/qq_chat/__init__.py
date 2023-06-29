@@ -299,7 +299,7 @@ def parse_command_list(msg: str, prefix: str):
     # 如果prefix长度大于1，与实际指令之间需要加空格
     if len(prefix) > 1:
         command = msg.split(" ")
-        if len(command) == 1:
+        if len(command) == 1 and command[0] == prefix:
             # 只有指令前缀，则当做help
             return ["help"]
         else:
