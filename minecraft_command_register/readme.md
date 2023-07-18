@@ -31,3 +31,11 @@
 ### Fabric
 
 安装 [MCDR Command Fabric](https://www.curseforge.com/minecraft/mc-mods/mcdr-command-fabric) 模组。
+
+### Forge
+
+Comming soom...
+
+### Bukkit
+
+Comming soom...
