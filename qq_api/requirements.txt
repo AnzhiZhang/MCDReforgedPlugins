@@ -1,2 +1,2 @@
 aiocqhttp
-uvicorn==0.20.0
+uvicorn
