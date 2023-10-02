@@ -4,6 +4,7 @@
     "bot",
     "database_api",
     "dict_command_registration",
+    "fastapi_mcdr",
     "gamemode",
     "info",
     "let_me_click_and_send",
