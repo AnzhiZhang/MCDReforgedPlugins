@@ -256,7 +256,7 @@ class CommandHandler:
             .then(config_literal)
         )
 
-    def __parse_name(self, name: str) -> str:
+    def parse_name(self, name: str) -> str:
         """
         Parse the name of the bot.
         :param name: Name of the bot.
@@ -369,7 +369,7 @@ class CommandHandler:
 
     @new_thread('commandSpawn')
     def __command_spawn(self, src: Source, ctx: Dict[str, Any]):
-        name = self.__parse_name(ctx['name'])
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.spawn(
                 name,
@@ -596,7 +596,7 @@ class CommandHandler:
 
     @new_thread('commandSave')
     def __command_save(self, src: Source, ctx: Dict[str, Any]):
-        name = self.__parse_name(ctx['name'])
+        name = self.parse_name(ctx['name'])
         position = ctx.get('position')
         facing = ctx.get('facing', [0.0, 0.0])
         dimension = ctx.get('dimension', '0')
@@ -633,7 +633,7 @@ class CommandHandler:
 
     def __command_config_name(self, src: Source, ctx: Dict[str, Any]):
         name = ctx['name']
-        new_name = self.__parse_name(ctx['new_name'])
+        new_name = self.parse_name(ctx['new_name'])
         try:
             self.__plugin.bot_manager.get_bot(name).set_name(new_name)
             self.__plugin.bot_manager.update_list()
