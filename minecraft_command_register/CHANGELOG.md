@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.5.1...minecraft_command_register-v1.6.0) (2023-10-13)
+
+
+### Features
+
+* **minecraft_command_register:** ✨ MCDR 2.11.0 ([f7dd014](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f7dd0146406adf9a8aee907ccb47339fa3ef0351))
+
 ## [1.5.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v1.5.0...minecraft_command_register-v1.5.1) (2023-07-25)
 
 
