@@ -33,6 +33,8 @@
 
 `!!bot config <name> <option> <value>` Config bot
 
+### Workflow
+
 ```mermaid
 sequenceDiagram
     participant Player/Console
@@ -123,33 +125,71 @@ Delete saved bot
 
 Config bot
 
+### Full Command Tree
+
 ```mermaid
 flowchart LR
-    start([config])
-    start --> bot_name(name)
+    start(!!bot)
 
-    bot_name --> name(name)
-    bot_name --> position(position)
-    bot_name --> facing(facing)
-    bot_name --> dimension(dimension)
-    bot_name --> comment(comment)
-    bot_name --> actions(actions)
-    bot_name --> tags(tags)
-    bot_name --> autoLogin(autoLogin)
-    bot_name --> autoRunActions(autoRunActions)
-    bot_name --> autoUpdate(autoUpdate)
+    start --> list(list)
+    list --> list_index[&lt;index&gt;]
+    list_index --> list_index_arg["
+        --all
+        --online
+        --saved
+    "]
 
-    actions --> actions_append("append &lt;action&gt;")
-    actions --> actions_insert("insert &lt;index&gt; &lt;action&gt;")
-    actions --> actions_delete("delete &lt;index&gt")
-    actions --> actions_edit("edit &lt;index&gt; &lt;action&gt;")
-    actions --> actions_clear(clear)
+    start --> spawn(spawn)
+    spawn --> spawn_name(&lt;name&gt;)
 
-    tags --> tags_append("append &lt;tag&gt;")
-    tags --> tags_insert("insert &lt;index&gt; &lt;tag&gt;")
-    tags --> tags_delete("delete &lt;index&gt")
-    tags --> tags_edit("edit &lt;index&gt; &lt;tag&gt;")
-    tags --> tags_clear(clear)
+    start --> kill(kill)
+    kill --> kill_name(&lt;name&gt;)
+
+    start --> action(action)
+    action --> action_name(&lt;name&gt;)
+    action_name --> action_name_index[&lt;index&gt;]
+
+    start --> tags(tags)
+    tags --> tags_tag[&lt;tag&gt;]
+    tags_tag --> tags_tag_spawn(spawn)
+    tags_tag --> tags_tag_kill(kill)
+
+    start --> info(info)
+    info --> info_name(&lt;name&gt;)
+
+    start --> save(save)
+    save --> save_name(&lt;name&gt;)
+    save_name --> save_name_position[&lt;position&gt;]
+    save_name_position --> save_name_position_facing[&lt;facing&gt;]
+    save_name_position_facing --> save_name_position_facing_dimension[&lt;dimension&gt;]
+
+    start --> del(del)
+    del --> del_name(&lt;name&gt;)
+
+    start --> config(config)
+    config --> config_name(&lt;name&gt;)
+    config_name --> config_name_name(name &lt;newName&gt;)
+    config_name --> config_name_position(position &lt;position&gt;)
+    config_name --> config_name_facing(facing &lt;facing&gt;)
+    config_name --> config_name_dimension(dimension &lt;dimension&gt;)
+    config_name --> config_name_comment(comment &lt;comment&gt;)
+    config_name --> config_name_actions(actions)
+    config_name --> config_name_tags(tags)
+    config_name --> config_name_autoLogin(autoLogin &lt;autoLogin&gt;)
+    config_name --> config_name_autoRunActions(autoRunActions &lt;autoRunActions&gt;)
+    config_name --> config_name_autoUpdate(autoUpdate &lt;autoUpdate&gt;)
+
+    config_name_actions --> config_name_actions_append["append &lt;action&gt;"]
+    config_name_actions --> config_name_actions_insert["insert &lt;index&gt; &lt;action&gt;"]
+    config_name_actions --> config_name_actions_delete["delete &lt;index&gt"]
+    config_name_actions --> config_name_actions_edit["edit &lt;index&gt; &lt;action&gt;"]
+    config_name_actions --> config_name_actions_clear[clear]
+
+    config_name_tags --> config_name_tags_append["append &lt;tag&gt;"]
+    config_name_tags --> config_name_tags_insert["insert &lt;index&gt; &lt;tag&gt;"]
+    config_name_tags --> config_name_tags_delete["delete &lt;index&gt"]
+    config_name_tags --> config_name_tags_edit["edit &lt;index&gt; &lt;tag&gt;"]
+    config_name_tags --> config_name_tags_clear[clear]
 ```
 
 ## Config
