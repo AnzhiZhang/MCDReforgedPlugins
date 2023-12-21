@@ -238,7 +238,10 @@ class BotManager:
                 bot = self.get_bot(name)
             else:
                 if player is not None:
-                    bot = self.new_bot(name, self.__plugin.get_location(player))
+                    bot = self.new_bot(
+                        name,
+                        self.__plugin.get_location(player)
+                    )
                 else:
                     raise BotNotExistsException(name)
         else:
