@@ -456,7 +456,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botOnline', e.name))
 
     def __command_kill(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.kill(name)
             src.reply(RTextMCDRTranslation('bot.command.killed', name))
@@ -466,7 +466,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botOffline', e.name))
 
     def __command_action(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.action(
                 name, ctx.get('index')
@@ -530,14 +530,16 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.tagNotExists', tag))
 
     def __command_info(self, src: Source, ctx: Dict[str, Any]):
+        name = self.parse_name(ctx['name'])
+
         def get_config_button(
-                name: str,
+                bot_name: str,
                 config: str,
                 default_value: str
         ) -> RText:
             """
             Get a RText config button.
-            :param name: Name of the bot.
+            :param bot_name: Name of the bot.
             :param config: Config name.
             :param default_value: Default value of the config.
             :return: RText.
@@ -549,12 +551,12 @@ class CommandHandler:
                 )
                 .c(
                     RAction.suggest_command,
-                    f'!!bot config {name} {config} {default_value}'
+                    f'!!bot config {bot_name} {config} {default_value}'
                 )
             )
 
         try:
-            bot = self.__plugin.bot_manager.get_bot(ctx['name'])
+            bot = self.__plugin.bot_manager.get_bot(name)
             minimap_button = RTextList(
                 RText('[+V]', color=RColor.aqua)
                 .h(
@@ -799,7 +801,7 @@ class CommandHandler:
             )
 
     def __command_del(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.delete(name)
             src.reply(RTextMCDRTranslation('bot.command.deleted', name))
@@ -809,7 +811,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotSaved', e.name))
 
     def __command_config_name(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         new_name = self.parse_name(ctx['new_name'])
         try:
             self.__plugin.bot_manager.get_bot(name).set_name(new_name)
@@ -824,7 +826,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_position(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         position = ctx['position']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -842,7 +844,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_facing(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         facing = ctx['facing']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -860,7 +862,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_dimension(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         dimension = ctx['dimension']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -887,7 +889,7 @@ class CommandHandler:
             )
 
     def __command_config_comment(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         comment = ctx['comment']
         try:
             if comment.startswith('"') and comment.endswith('"'):
@@ -905,7 +907,7 @@ class CommandHandler:
     def __command_config_actions_append(
             self, src: Source, ctx: Dict[str, Any]
     ):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         action = ctx['action']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -924,7 +926,7 @@ class CommandHandler:
     def __command_config_actions_insert(
             self, src: Source, ctx: Dict[str, Any]
     ):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         action = ctx['action']
         try:
@@ -952,7 +954,7 @@ class CommandHandler:
     def __command_config_actions_delete(
             self, src: Source, ctx: Dict[str, Any]
     ):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -977,7 +979,7 @@ class CommandHandler:
             ))
 
     def __command_config_actions_edit(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         action = ctx['action']
         try:
@@ -1003,7 +1005,7 @@ class CommandHandler:
             ))
 
     def __command_config_actions_clear(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.get_bot(name).set_actions([])
             self.__plugin.bot_manager.save_data()
@@ -1016,7 +1018,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_tags_append(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         tag = ctx['tag']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -1033,7 +1035,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_tags_insert(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         tag = ctx['tag']
         try:
@@ -1059,7 +1061,7 @@ class CommandHandler:
             ))
 
     def __command_config_tags_delete(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
@@ -1084,7 +1086,7 @@ class CommandHandler:
             ))
 
     def __command_config_tags_edit(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         index = ctx['index']
         tag = ctx['tag']
         try:
@@ -1110,7 +1112,7 @@ class CommandHandler:
             ))
 
     def __command_config_tags_clear(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         try:
             self.__plugin.bot_manager.get_bot(name).set_tags([])
             self.__plugin.bot_manager.save_data()
@@ -1123,7 +1125,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_auto_login(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         auto_login = ctx['autoLogin']
         try:
             self.__plugin.bot_manager.get_bot(name).set_auto_login(auto_login)
@@ -1139,7 +1141,7 @@ class CommandHandler:
     def __command_config_auto_run_actions(
             self, src: Source, ctx: Dict[str, Any]
     ):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         auto_run_actions = ctx['autoRunActions']
         try:
             self.__plugin.bot_manager.get_bot(name).set_auto_run_actions(
@@ -1156,7 +1158,7 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
     def __command_config_auto_update(self, src: Source, ctx: Dict[str, Any]):
-        name = ctx['name']
+        name = self.parse_name(ctx['name'])
         auto_update = ctx['autoUpdate']
         try:
             self.__plugin.bot_manager.get_bot(name).set_auto_update(
