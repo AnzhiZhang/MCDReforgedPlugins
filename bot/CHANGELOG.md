@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.6...bot-v1.1.0) (2023-12-21)
+
+
+### Features
+
+* **bot:** ✨ always parse name in command handlers ([cfdf9ba](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/cfdf9bafee63bdab12be5d934d158b36f1e1ab7d))
+* **bot:** ✨ config check ([cc5b2ae](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/cc5b2ae2263caa00165e000dcb4d751b78628636))
+* **bot:** ✨ fastapi_mcdr support (resolve [#145](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/145)) ([b75aa6e](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b75aa6e040e3db750fdc2a77f2588c0440e0d71e))
+* **bot:** ✨ set bot online in post and patch requests ([4c41ab8](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/4c41ab86f2b9ca34f979c9620286b2ca016e2451))
+* **bot:** ✨ set default name_prefix config to `bot_` ([15338b3](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/15338b3660c2e204e1d6e7944a97facd6210084d))
+* **bot:** ✨ tags and auto update ([e67ba25](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/e67ba2549020b8d0649d2b6450c5756c1572b585))
+* **bot:** 🌐 update english help message ([8c58216](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/8c5821663e707fd097bf7c2a0ed18f93c6c16b0a))
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix name in fastapi_manager and improve code style ([bce91f0](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/bce91f08e96b11bd58cbdcbd06fea998f2fa9efa))
+
 ## [1.0.6](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.5...bot-v1.0.6) (2023-01-19)
 
 
