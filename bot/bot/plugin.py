@@ -19,6 +19,7 @@ class Plugin:
             CONFIG_FILE_NAME,
             target_class=Config
         )
+        self.__check_config()
 
         self.__bot_manager = BotManager(self, prev_module)
         self.__fastapi_manager = FastAPIManager(self)
@@ -52,6 +53,25 @@ class Plugin:
     @property
     def command_handler(self):
         return self.__command_handler
+
+    def __check_config(self):
+        # flag
+        save_flag = False
+
+        # permission
+        for name, level in Config.permissions.items():
+            if name not in self.__config.permissions:
+                self.server.logger.warning(
+                    'During checking config, '
+                    'permission "{}" not found, '
+                    'will add it to config.'.format(name)
+                )
+                self.__config.permissions[name] = level
+                save_flag = True
+
+        # save
+        if save_flag:
+            self.server.save_config_simple(self.__config, CONFIG_FILE_NAME)
 
     def get_location(self, name: str) -> Location:
         """
