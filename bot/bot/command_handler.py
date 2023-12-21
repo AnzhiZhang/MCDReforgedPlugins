@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Dict, Any, List, Callable, Union
+from typing import TYPE_CHECKING, Dict, Any, List, Set, Callable, Union
 
 from mcdreforged.api.types import ConsoleCommandSource, PlayerCommandSource
 from mcdreforged.api.command import *
@@ -23,6 +23,7 @@ class PermissionsRequirements(Serializable):
     SPAWN: Callable
     KILL: Callable
     ACTION: Callable
+    TAGS: Callable
     INFO: Callable
     SAVE: Callable
     DEL: Callable
@@ -94,6 +95,23 @@ class CommandHandler:
                 .then(
                     Integer('index')
                     .runs(self.__command_action)
+                )
+            )
+        )
+        tags_literal = (
+            Literal('tags')
+            .requires(permissions.TAGS)
+            .runs(self.__command_tag_list)
+            .then(
+                Text('tag')
+                .suggests(self.tag_list)
+                .then(
+                    Literal('spawn')
+                    .runs(self.__command_tag_spawn)
+                )
+                .then(
+                    Literal('kill')
+                    .runs(self.__command_tag_kill)
                 )
             )
         )
@@ -218,6 +236,47 @@ class CommandHandler:
                     )
                 )
                 .then(
+                    Literal('tags')
+                    .then(
+                        Literal('append')
+                        .then(
+                            Text('tag')
+                            .runs(self.__command_config_tags_append)
+                        )
+                    )
+                    .then(
+                        Literal('insert')
+                        .then(
+                            Integer('index')
+                            .then(
+                                Text('tag')
+                                .runs(self.__command_config_tags_insert)
+                            )
+                        )
+                    )
+                    .then(
+                        Literal('delete')
+                        .then(
+                            Integer('index')
+                            .runs(self.__command_config_tags_delete)
+                        )
+                    )
+                    .then(
+                        Literal('edit')
+                        .then(
+                            Integer('index')
+                            .then(
+                                Text('tag')
+                                .runs(self.__command_config_tags_edit)
+                            )
+                        )
+                    )
+                    .then(
+                        Literal('clear')
+                        .runs(self.__command_config_tags_clear)
+                    )
+                )
+                .then(
                     Literal('autoLogin')
                     .then(
                         Boolean('autoLogin')
@@ -229,6 +288,13 @@ class CommandHandler:
                     .then(
                         Boolean('autoRunActions')
                         .runs(self.__command_config_auto_run_actions)
+                    )
+                )
+                .then(
+                    Literal('autoUpdate')
+                    .then(
+                        Boolean('autoUpdate')
+                        .runs(self.__command_config_auto_update)
                     )
                 )
             )
@@ -250,11 +316,18 @@ class CommandHandler:
             .then(spawn_literal)
             .then(kill_literal)
             .then(action_literal)
+            .then(tags_literal)
             .then(info_literal)
             .then(save_literal)
             .then(del_literal)
             .then(config_literal)
         )
+
+    def tag_list(self) -> Set[str]:
+        tags = []
+        for bot in self.__plugin.bot_manager.bots.values():
+            tags += bot.tags
+        return set(tags)
 
     def parse_name(self, name: str) -> str:
         """
@@ -319,8 +392,9 @@ class CommandHandler:
                             bot.name, bot.location.rounded_position,
                             bot.location.rounded_facing,
                             bot.location.display_dimension,
-                            bot.comment, bot.actions, bot.auto_login,
-                            bot.auto_run_actions
+                            bot.comment, bot.actions, bot.tags,
+                            bot.auto_login, bot.auto_run_actions,
+                            bot.auto_update
                         )
                     )
                     .c(RAction.run_command, f'!!bot info {bot.name}')
@@ -406,6 +480,54 @@ class CommandHandler:
             src.reply(RTextMCDRTranslation(
                 'bot.error.illegalActionIndex', e.index
             ))
+
+    def __command_tag_list(self, src: Source):
+        src.reply(RTextMCDRTranslation(
+            'bot.command.tag.list',
+            list(self.tag_list())
+        ))
+
+    def __command_tag_spawn(self, src: Source, ctx: Dict[str, Any]):
+        tag = ctx['tag']
+        try:
+            # check tag exists
+            if tag not in self.tag_list():
+                raise TagNotExistsException(tag)
+
+            # spawn
+            counter = 0
+            for bot in self.__plugin.bot_manager.get_bots_by_tag(tag):
+                if not bot.online:
+                    bot.spawn()
+                    counter += 1
+
+            # reply
+            src.reply(RTextMCDRTranslation(
+                'bot.command.tag.spawn', counter, tag
+            ))
+        except TagNotExistsException:
+            src.reply(RTextMCDRTranslation('bot.error.tagNotExists', tag))
+
+    def __command_tag_kill(self, src: Source, ctx: Dict[str, Any]):
+        tag = ctx['tag']
+        try:
+            # check tag exists
+            if tag not in self.tag_list():
+                raise TagNotExistsException(tag)
+
+            # spawn
+            counter = 0
+            for bot in self.__plugin.bot_manager.get_bots_by_tag(tag):
+                if bot.online:
+                    bot.kill()
+                    counter += 1
+
+            # reply
+            src.reply(RTextMCDRTranslation(
+                'bot.command.tag.kill', counter, tag
+            ))
+        except TagNotExistsException:
+            src.reply(RTextMCDRTranslation('bot.error.tagNotExists', tag))
 
     def __command_info(self, src: Source, ctx: Dict[str, Any]):
         def get_config_button(
@@ -533,6 +655,50 @@ class CommandHandler:
                     f'!!bot config {bot.name} actions append '
                 )
             )
+            tags_info = RTextList(
+                RTextMCDRTranslation('bot.command.info.tags'), ' ',
+                RText('[×]', color=RColor.red)
+                .h(
+                    RTextMCDRTranslation(
+                        'bot.command.info.tags.clearButton'
+                    )
+                )
+                .c(
+                    RAction.run_command,
+                    f'!!bot config {bot.name} tags clear'
+                ),
+                *[
+                    RTextList(
+                        '\n', '  ',
+                        get_config_button(
+                            bot.name, f'tags edit {index}', tag
+                        ), ' ',
+                        RText('[×]', color=RColor.red)
+                        .h(
+                            RTextMCDRTranslation(
+                                'bot.command.info.tags.deleteButton', index
+                            )
+                        )
+                        .c(
+                            RAction.run_command,
+                            f'!!bot config {bot.name} tags delete {index}'
+                        ), ' ',
+                        f'§3{index}. {tag}',
+                    )
+                    for index, tag
+                    in enumerate(bot.tags)
+                ], '\n', '                ',
+                RText('[+]', color=RColor.green)
+                .h(
+                    RTextMCDRTranslation(
+                        'bot.command.info.tags.appendButton'
+                    )
+                )
+                .c(
+                    RAction.suggest_command,
+                    f'!!bot config {bot.name} tags append '
+                )
+            )
             src.reply(RTextList(
                 '----------------', '\n',
                 get_config_button(
@@ -577,6 +743,10 @@ class CommandHandler:
                 ), ' ',
                 actions_info, '\n',
                 get_config_button(
+                    bot.name, 'tags', ''
+                ), ' ',
+                tags_info, '\n',
+                get_config_button(
                     bot.name, 'autoLogin', bot.auto_login
                 ), ' ',
                 RTextMCDRTranslation(
@@ -589,6 +759,13 @@ class CommandHandler:
                 RTextMCDRTranslation(
                     'bot.command.info.autoRunActions',
                     bot.auto_run_actions
+                ), '\n',
+                get_config_button(
+                    bot.name, 'autoUpdate', bot.auto_update
+                ), ' ',
+                RTextMCDRTranslation(
+                    'bot.command.info.autoUpdate',
+                    bot.auto_update
                 ), '\n',
             ))
         except BotNotExistsException as e:
@@ -838,6 +1015,113 @@ class CommandHandler:
         except BotNotExistsException as e:
             src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
 
+    def __command_config_tags_append(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        tag = ctx['tag']
+        try:
+            bot = self.__plugin.bot_manager.get_bot(name)
+            tags = bot.tags
+            tags.append(tag)
+            bot.set_tags(tags)
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'tags', tags
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+
+    def __command_config_tags_insert(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        index = ctx['index']
+        tag = ctx['tag']
+        try:
+            bot = self.__plugin.bot_manager.get_bot(name)
+            tags = bot.tags
+
+            if not 0 <= index <= len(tags):
+                raise IllegalTagIndexException(index)
+
+            tags.insert(index, tag)
+            bot.set_tags(tags)
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'tags', tags
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+        except IllegalTagIndexException as e:
+            src.reply(RTextMCDRTranslation(
+                'bot.error.illegalTagIndex', e.index
+            ))
+
+    def __command_config_tags_delete(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        index = ctx['index']
+        try:
+            bot = self.__plugin.bot_manager.get_bot(name)
+            tags = bot.tags
+
+            if not 0 <= index < len(tags):
+                raise IllegalTagIndexException(index)
+
+            tags.pop(index)
+            bot.set_tags(tags)
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'tags', tags
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+        except IllegalTagIndexException as e:
+            src.reply(RTextMCDRTranslation(
+                'bot.error.illegalTagIndex', e.index
+            ))
+
+    def __command_config_tags_edit(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        index = ctx['index']
+        tag = ctx['tag']
+        try:
+            bot = self.__plugin.bot_manager.get_bot(name)
+            tags = bot.tags
+
+            if not 0 <= index < len(tags):
+                raise IllegalTagIndexException(index)
+
+            tags[index] = tag
+            bot.set_tags(tags)
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'tags', tags
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+        except IllegalTagIndexException as e:
+            src.reply(RTextMCDRTranslation(
+                'bot.error.illegalTagIndex', e.index
+            ))
+
+    def __command_config_tags_clear(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        try:
+            self.__plugin.bot_manager.get_bot(name).set_tags([])
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'tags', []
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+
     def __command_config_auto_login(self, src: Source, ctx: Dict[str, Any]):
         name = ctx['name']
         auto_login = ctx['autoLogin']
@@ -866,6 +1150,23 @@ class CommandHandler:
                 RTextMCDRTranslation(
                     'bot.command.config', name, 'autoRunActions',
                     auto_run_actions
+                )
+            )
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+
+    def __command_config_auto_update(self, src: Source, ctx: Dict[str, Any]):
+        name = ctx['name']
+        auto_update = ctx['autoUpdate']
+        try:
+            self.__plugin.bot_manager.get_bot(name).set_auto_update(
+                auto_update
+            )
+            self.__plugin.bot_manager.save_data()
+            src.reply(
+                RTextMCDRTranslation(
+                    'bot.command.config', name, 'autoUpdate',
+                    auto_update
                 )
             )
         except BotNotExistsException as e:

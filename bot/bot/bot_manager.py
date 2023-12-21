@@ -35,11 +35,17 @@ class BotManager:
             name = bot_data['name']
             self.__bots[name] = self.new_bot(
                 name,
-                Location.from_dict(bot_data['location']),
-                bot_data['comment'],
-                bot_data['actions'],
-                bot_data['autoLogin'],
-                bot_data['autoRunActions']
+                Location.from_dict(bot_data.get('location', {
+                    'position': [0.0, 0.0, 0.0],
+                    'facing': [0.0, 0.0],
+                    'dimension': 0
+                })),
+                bot_data.get('comment', ''),
+                bot_data.get('actions', []),
+                bot_data.get('tags', []),
+                bot_data.get('autoLogin', False),
+                bot_data.get('autoRunActions', False),
+                bot_data.get('autoUpdate', False)
             )
             self.__bots[name].set_saved(True)
 
@@ -79,6 +85,17 @@ class BotManager:
             if bot.online or bot.saved
         }
 
+    def get_bots_by_tag(self, tag: str) -> List[Bot]:
+        """
+        Get bots by tag.
+        :param tag: Tag.
+        :return: A list of bots.
+        """
+        return [
+            bot for bot in self.bots.values()
+            if tag in bot.tags
+        ]
+
     def get_bot(self, name: str) -> Bot:
         """
         Get a bot by its name.
@@ -96,26 +113,32 @@ class BotManager:
             location: Location,
             comment: str = '',
             actions: List[str] = None,
+            tags: List[str] = None,
             auto_login: bool = False,
-            auto_run_actions: bool = False
+            auto_run_actions: bool = False,
+            auto_update: bool = False
     ) -> Bot:
         """
         :param name: A string, name.
         :param location: A Location.
         :param comment: A string, comment.
         :param actions: A list of string, action commands.
+        :param tags: A list of string, tags.
         :param auto_login: A bool, auto login.
         :param auto_run_actions: A bool, auto run actions.
+        :param auto_update: A bool, auto update location when logout.
         :return: Bot, return a new bot if not in the list.
         """
         if actions is None:
             actions = []
+        if tags is None:
+            tags = []
 
         if not self.is_in_list(name):
             self.__bots[name] = Bot(
                 self.__plugin,
-                name, location, comment, actions,
-                auto_login, auto_run_actions
+                name, location, comment, actions, tags,
+                auto_login, auto_run_actions, auto_update
             )
             return self.__bots[name]
         else:

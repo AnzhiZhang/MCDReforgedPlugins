@@ -12,6 +12,7 @@ class Config(Serializable):
         'spawn': 1,
         'kill': 1,
         'action': 1,
+        'tags': 1,
         'info': 1,
         'save': 2,
         'del': 2,

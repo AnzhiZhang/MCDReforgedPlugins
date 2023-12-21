@@ -21,6 +21,10 @@
 
 `!!bot action <name> [index]` Execute bot action(s)
 
+`!!bot tags` View available tags
+
+`!!bot tags <tag> spawn/kill` Spawn/kill bot(s) with tag
+
 `!!bot info <name>` View bot info
 
 `!!bot save <name> [position] [facing] [dimension]` Save bot
@@ -76,6 +80,16 @@ Execute bot action(s)
 
 When `index` is specified, execute specific action(s) instead of all actions
 
+### tags
+
+View available tags and spawn/kill bot(s) with tag
+
+`!!bot tags` View available tags
+
+`!!bot tags <tag> spawn` Spawn bot(s) with tag
+
+`!!bot tags <tag> kill` Kill bot(s) with tag
+
 ### info
 
 View bot info
@@ -120,14 +134,22 @@ flowchart LR
     bot_name --> dimension(dimension)
     bot_name --> comment(comment)
     bot_name --> actions(actions)
+    bot_name --> tags(tags)
     bot_name --> autoLogin(autoLogin)
     bot_name --> autoRunActions(autoRunActions)
+    bot_name --> autoUpdate(autoUpdate)
 
-    actions --> append("append &lt;action&gt;")
-    actions --> insert("insert &lt;index&gt; &lt;action&gt;")
-    actions --> delete("delete &lt;index&gt")
-    actions --> edit("edit &lt;index&gt; &lt;action&gt;")
-    actions --> clear(clear)
+    actions --> actions_append("append &lt;action&gt;")
+    actions --> actions_insert("insert &lt;index&gt; &lt;action&gt;")
+    actions --> actions_delete("delete &lt;index&gt")
+    actions --> actions_edit("edit &lt;index&gt; &lt;action&gt;")
+    actions --> actions_clear(clear)
+
+    tags --> tags_append("append &lt;tag&gt;")
+    tags --> tags_insert("insert &lt;index&gt; &lt;tag&gt;")
+    tags --> tags_delete("delete &lt;index&gt")
+    tags --> tags_edit("edit &lt;index&gt; &lt;tag&gt;")
+    tags --> tags_clear(clear)
 ```
 
 ## Config

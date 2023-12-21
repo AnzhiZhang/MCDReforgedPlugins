@@ -23,8 +23,10 @@ class BotModel(BaseModel):
     location: LocationModel
     comment: str
     actions: List[str]
+    tags: List[str]
     auto_login: bool
     auto_run_actions: bool
+    auto_update: bool
     online: bool
     saved: bool
 
@@ -34,8 +36,10 @@ class PostBotRequest(BaseModel):
     location: LocationModel
     comment: str | None = None
     actions: List[str] | None = None
+    tags: List[str] | None = None
     auto_login: bool | None = None
     auto_run_actions: bool | None = None
+    auto_update: bool | None = None
     online: bool | None = None
 
 
@@ -43,8 +47,10 @@ class PatchBotRequest(BaseModel):
     location: LocationModel | None = None
     comment: str | None = None
     actions: List[str] | None = None
+    tags: List[str] | None = None
     auto_login: bool | None = None
     auto_run_actions: bool | None = None
+    auto_update: bool | None = None
     online: bool | None = None
 
 
@@ -164,6 +170,10 @@ class FastAPIManager:
             if request.auto_run_actions is not None:
                 bot.set_auto_run_actions(request.auto_run_actions)
 
+            # auto update
+            if request.auto_update is not None:
+                bot.set_auto_update(request.auto_update)
+
             # spawn or kill
             if request.online is not None:
                 self.__spawn_or_kill(bot, request.online)
@@ -200,6 +210,7 @@ class FastAPIManager:
                 request.actions is None and
                 request.auto_login is None and
                 request.auto_run_actions is None and
+                request.auto_update is None and
                 request.online is None
         ):
             raise HTTPException(
@@ -236,6 +247,10 @@ class FastAPIManager:
             # auto run actions
             if request.auto_run_actions is not None:
                 bot.set_auto_run_actions(request.auto_run_actions)
+
+            # auto update
+            if request.auto_update is not None:
+                bot.set_auto_update(request.auto_update)
 
             # spawn or kill
             if request.online is not None:

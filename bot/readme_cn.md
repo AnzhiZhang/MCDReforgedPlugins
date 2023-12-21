@@ -21,6 +21,10 @@
 
 `!!bot action <name> [index]` 执行假人动作
 
+`!!bot tags` 查看可用标签
+
+`!!bot tags <tag> spawn/kill` 上线/下线带有标签的假人
+
 `!!bot info <name>` 查看假人信息
 
 `!!bot save <name> [position] [facing] [dimension]` 保存假人
@@ -76,6 +80,16 @@ flowchart TD
 
 当指定 `index` 时，执行特定动作而不是全部动作
 
+### tags
+
+查看可用标签和上线/下线带有标签的假人
+
+`!!bot tags` 查看可用标签
+
+`!!bot tags <tag> spawn` 上线带有标签的假人
+
+`!!bot tags <tag> kill` 下线带有标签的假人
+
 ### info
 
 查看假人信息
@@ -120,14 +134,22 @@ flowchart LR
     bot_name --> dimension(dimension)
     bot_name --> comment(comment)
     bot_name --> actions(actions)
+    bot_name --> tags(tags)
     bot_name --> autoLogin(autoLogin)
     bot_name --> autoRunActions(autoRunActions)
+    bot_name --> autoUpdate(autoUpdate)
 
-    actions --> append("append &lt;action&gt;")
-    actions --> insert("insert &lt;index&gt; &lt;action&gt;")
-    actions --> delete("delete &lt;index&gt")
-    actions --> edit("edit &lt;index&gt; &lt;action&gt;")
-    actions --> clear(clear)
+    actions --> actions_append("append &lt;action&gt;")
+    actions --> actions_insert("insert &lt;index&gt; &lt;action&gt;")
+    actions --> actions_delete("delete &lt;index&gt")
+    actions --> actions_edit("edit &lt;index&gt; &lt;action&gt;")
+    actions --> actions_clear(clear)
+
+    tags --> tags_append("append &lt;tag&gt;")
+    tags --> tags_insert("insert &lt;index&gt; &lt;tag&gt;")
+    tags --> tags_delete("delete &lt;index&gt")
+    tags --> tags_edit("edit &lt;index&gt; &lt;tag&gt;")
+    tags --> tags_clear(clear)
 ```
 
 ## 配置

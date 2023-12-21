@@ -7,6 +7,8 @@ bot.help.content: |
   §6!!bot spawn <name> §7Spawn bot
   §6!!bot kill <name> §7Kill bot
   §6!!bot action <name> [index] §7Execute bot action(s)
+  §6!!bot tags §7View available tags
+  §6!!bot tags <tag> spawn/kill §7Spawn/kill bot(s) with tag
   §6!!bot info <name> §7View bot info
   §6!!bot save <name> [position] [facing] [dimension] §7Save bot
   §6!!bot del <name> §7Delete saved bot
@@ -14,6 +16,8 @@ bot.help.content: |
 bot.error.illegalDimension: §cDimension §6{0} §cis illegal!
 bot.error.illegalListIndex: §cError list index §6{0}§c！
 bot.error.illegalActionIndex: §cError action index §6{0}§c！
+bot.error.illegalTagIndex: §cError tag index §6{0}§c！
+bot.error.tagNotExists: §cTag §6{0} §cdoes not exists!
 bot.error.botAlreadyExists: §cBot §6{0} §cis already exists!
 bot.error.botNotExists: §cBot §6{0} §cis not exists!
 bot.error.botOnline: §cBot §6{0} §cis already online!
@@ -23,6 +27,9 @@ bot.error.botNotSaved: §cBot §6{0} is not saved!
 bot.command.spawned: §aBot §6{0} §aspawned
 bot.command.killed: §aBot §6{0} §akilled
 bot.command.action: §aBot §6{0} §aactions run
+bot.command.tag.list: '§aAvailable tags: §6{0}'
+bot.command.tag.spawn: §6{0} bots with tag §6{1} §aspawned
+bot.command.tag.kill: §6{0} bots with tag §6{1} §akilled
 bot.command.info.configButtonHover: §7Click to configure
 bot.command.info.name: '§7Name: §3{0}'
 bot.command.info.position: '§7Position: §3{0}'
@@ -37,8 +44,13 @@ bot.command.info.actions.clearButton: §cClick to clear
 bot.command.info.actions.actionButtonIndex: §9Click to run action §6{0}
 bot.command.info.actions.deleteButton: §cClick to delete §6{0}
 bot.command.info.actions.appendButton: §aClick to append
+bot.command.info.tags: '§7Tags: '
+bot.command.info.tags.clearButton: §cClick to clear
+bot.command.info.tags.deleteButton: §cClick to delete §6{0}
+bot.command.info.tags.appendButton: §aClick to append
 bot.command.info.autoLogin: '§7Auto Login: §3{0}'
 bot.command.info.autoRunActions: '§7Auto Run: §3{0}'
+bot.command.info.autoUpdate: '§7Auto Update: §3{0}'
 bot.command.saved: §aBot §6{0} §asaved
 bot.command.deleted: §aBot §6{0} §adeleted
 bot.command.config: §aBot §6{0}'s §aconfiguration item §6{1} §ahas been set to §6{2}
@@ -52,7 +64,9 @@ bot.list.infoButton: |
   §7Dimension: §3{3}
   §7Comment: §3{4}
   §7Actions: §3{5}
-  §7Auto Login: §3{6}
-  §7Auto Run Actions: §3{7}
+  §7Tags: §3{6}
+  §7Auto Login: §3{7}
+  §7Auto Run Actions: §3{8}
+  §7Auto Update: §3{9}
   §7Click to show info
 bot.list.deleteButton: §cClick to delete

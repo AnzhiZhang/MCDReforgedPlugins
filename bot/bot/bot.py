@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, List, Dict, Any
 
+from mcdreforged.api.decorator import new_thread
+
 from bot.exceptions import *
 from bot.location import Location
 
@@ -15,8 +17,10 @@ class Bot:
             location: Location,
             comment: str,
             actions: List[str],
+            tags: List[str],
             auto_login: bool,
-            auto_run_actions: bool
+            auto_run_actions: bool,
+            auto_update: bool
     ):
         """
         :param plugin: Plugin.
@@ -24,8 +28,10 @@ class Bot:
         :param location: A Location.
         :param comment: A string, comment.
         :param actions: A list of string, action commands.
+        :param tags: A list of string, tags.
         :param auto_login: A bool, auto login.
         :param auto_run_actions: A bool, auto run actions.
+        :param auto_update: A bool, auto update location when logout.
         """
         self.__plugin: 'Plugin' = plugin
         self.__server = plugin.server
@@ -33,8 +39,10 @@ class Bot:
         self.__location = location
         self.__comment = comment
         self.__actions = actions
+        self.__tags = tags
         self.__auto_login = auto_login
         self.__auto_run_actions = auto_run_actions
+        self.__auto_update = auto_update
 
         self.__online: bool = False
         self.__saved: bool = False
@@ -60,12 +68,20 @@ class Bot:
         return self.__actions
 
     @property
+    def tags(self):
+        return self.__tags
+
+    @property
     def auto_login(self):
         return self.__auto_login
 
     @property
     def auto_run_actions(self):
         return self.__auto_run_actions
+
+    @property
+    def auto_update(self):
+        return self.__auto_update
 
     @property
     def online(self):
@@ -90,8 +106,10 @@ class Bot:
             },
             'comment': self.comment,
             'actions': self.actions,
+            'tags': self.tags,
             'autoLogin': self.auto_login,
-            'autoRunActions': self.auto_run_actions
+            'autoRunActions': self.auto_run_actions,
+            'autoUpdate': self.auto_update,
         }
 
     def set_name(self, name: str) -> None:
@@ -122,6 +140,13 @@ class Bot:
         """
         self.__actions = actions
 
+    def set_tags(self, tags: List[str]) -> None:
+        """
+        Set tags.
+        :param tags: Tags.
+        """
+        self.__tags = tags
+
     def set_auto_login(self, auto_login: bool) -> None:
         """
         Set auto login.
@@ -135,6 +160,13 @@ class Bot:
         :param auto_run_actions: Auto run actions.
         """
         self.__auto_run_actions = auto_run_actions
+
+    def set_auto_update(self, auto_update: bool) -> None:
+        """
+        Set auto update.
+        :param auto_update: Auto update.
+        """
+        self.__auto_update = auto_update
 
     def set_online(self, online: bool) -> None:
         """
@@ -174,11 +206,18 @@ class Bot:
         else:
             raise BotOnlineException(self.name)
 
+    @new_thread('killBot')
     def kill(self) -> None:
         """
         Kill the bot.
         """
         if self.__online:
+            # auto update location
+            if self.auto_update:
+                self.set_location(self.__plugin.get_location(self.name))
+                self.__plugin.bot_manager.save_data()
+
+            # kill
             self.set_online(False)
             self.__server.execute(f'player {self.name} kill')
         else:

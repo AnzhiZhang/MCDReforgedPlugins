@@ -2,6 +2,8 @@ __all__ = [
     'IllegalDimensionException',
     'IllegalListIndexException',
     'IllegalActionIndexException',
+    'IllegalTagIndexException',
+    'TagNotExistsException',
     'BotAlreadyExistsException',
     'BotNotExistsException',
     'BotOnlineException',
@@ -27,6 +29,18 @@ class IllegalActionIndexException(IndexError):
     def __init__(self, index: int):
         super().__init__(f'Action index {index} out of range')
         self.index = index
+
+
+class IllegalTagIndexException(IndexError):
+    def __init__(self, index: int):
+        super().__init__(f'Tag index {index} out of range')
+        self.index = index
+
+
+class TagNotExistsException(Exception):
+    def __init__(self, tag: str):
+        super().__init__(f'Tag {tag} does not exists')
+        self.tag = tag
 
 
 class BotException(Exception):
