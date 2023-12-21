@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field, conlist
 from mcdreforged.api.types import PluginServerInterface
 
+from bot.bot import Bot
 from bot.exceptions import *
 from bot.location import Location
 
@@ -35,6 +36,7 @@ class PostBotRequest(BaseModel):
     actions: List[str] | None = None
     auto_login: bool | None = None
     auto_run_actions: bool | None = None
+    online: bool | None = None
 
 
 class PatchBotRequest(BaseModel):
@@ -43,6 +45,7 @@ class PatchBotRequest(BaseModel):
     actions: List[str] | None = None
     auto_login: bool | None = None
     auto_run_actions: bool | None = None
+    online: bool | None = None
 
 
 class FastAPIManager:
@@ -109,6 +112,23 @@ class FastAPIManager:
                 self.__plugin.server.get_self_metadata().id
             )
 
+    @staticmethod
+    def __spawn_or_kill(bot: Bot, online: bool) -> None:
+        if online and bot.online:
+            raise HTTPException(
+                status_code=400,
+                detail=f'Bot "{bot.name}" is already online.'
+            )
+        elif online and not bot.online:
+            bot.spawn()
+        elif not online and bot.online:
+            bot.kill()
+        elif not online and not bot.online:
+            raise HTTPException(
+                status_code=400,
+                detail=f'Bot "{bot.name}" is not online.'
+            )
+
     async def __get_bots(self) -> Dict[str, BotModel]:
         return self.__bot_manager.bots
 
@@ -144,6 +164,10 @@ class FastAPIManager:
             if request.auto_run_actions is not None:
                 bot.set_auto_run_actions(request.auto_run_actions)
 
+            # spawn or kill
+            if request.online is not None:
+                self.__spawn_or_kill(bot, request.online)
+
             # save data
             self.__plugin.bot_manager.save_data()
 
@@ -175,7 +199,8 @@ class FastAPIManager:
                 request.comment is None and
                 request.actions is None and
                 request.auto_login is None and
-                request.auto_run_actions is None
+                request.auto_run_actions is None and
+                request.online is None
         ):
             raise HTTPException(
                 status_code=400,
@@ -211,6 +236,10 @@ class FastAPIManager:
             # auto run actions
             if request.auto_run_actions is not None:
                 bot.set_auto_run_actions(request.auto_run_actions)
+
+            # spawn or kill
+            if request.online is not None:
+                self.__spawn_or_kill(bot, request.online)
 
             # save data
             self.__plugin.bot_manager.save_data()
