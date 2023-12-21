@@ -4,13 +4,13 @@ bot.help.content: |
   -----------------------------------
   §6!!bot §7View help
   §6!!bot list [index] [filter]§7Show bot list
-  §6!!bot spawn <name> §7Spawn a bot
-  §6!!bot kill <name> §7Kill a bot
-  §6!!bot action <name> [index] §7Run actions of a bot
-  §6!!bot info <name> §7See info of a bot
+  §6!!bot spawn <name> §7Spawn bot
+  §6!!bot kill <name> §7Kill bot
+  §6!!bot action <name> [index] §7Execute bot action(s)
+  §6!!bot info <name> §7View bot info
   §6!!bot save <name> [position] [facing] [dimension] §7Save bot
   §6!!bot del <name> §7Delete saved bot
-  §6!!bot config <name> <option> <value> §7Set config of a bot
+  §6!!bot config <name> <option> <value> §7onfig bot
 bot.error.illegalDimension: §cDimension §6{0} §cis illegal!
 bot.error.illegalListIndex: §cError list index §6{0}§c！
 bot.error.illegalActionIndex: §cError action index §6{0}§c！
