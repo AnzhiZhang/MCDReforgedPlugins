@@ -179,11 +179,11 @@ flowchart LR
     config_name --> config_name_autoRunActions("autoRunActions &lt;autoRunActions&gt;")
     config_name --> config_name_autoUpdate("autoUpdate &lt;autoUpdate&gt;")
 
-    config_name_actions --> config_name_actions_append["append &lt;action&gt;"]
-    config_name_actions --> config_name_actions_insert["insert &lt;index&gt; &lt;action&gt;"]
-    config_name_actions --> config_name_actions_delete["delete &lt;index&gt"]
-    config_name_actions --> config_name_actions_edit["edit &lt;index&gt; &lt;action&gt;"]
-    config_name_actions --> config_name_actions_clear[clear]
+    config_name_actions --> config_name_actions_append("append &lt;action&gt;")
+    config_name_actions --> config_name_actions_insert("insert &lt;index&gt; &lt;action&gt;")
+    config_name_actions --> config_name_actions_delete("delete &lt;index&gt")
+    config_name_actions --> config_name_actions_edit("edit &lt;index&gt; &lt;action&gt;")
+    config_name_actions --> config_name_actions_clear(clear)
 
     config_name_tags --> config_name_tags_append["append &lt;tag&gt;"]
     config_name_tags --> config_name_tags_insert["insert &lt;index&gt; &lt;tag&gt;"]
