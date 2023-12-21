@@ -140,13 +140,13 @@ flowchart LR
 
 ### name_prefix
 
-默认值：无
+默认值: `bot_`
 
 假人名称前缀
 
 ### name_suffix
 
-默认值：无
+默认值: 无
 
 假人名称前缀
 

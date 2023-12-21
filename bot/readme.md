@@ -140,7 +140,7 @@ Game mode of bot
 
 ### name_prefix
 
-Default: None
+Default: `bot_`
 
 Prefix of bot name
 
