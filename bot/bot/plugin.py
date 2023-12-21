@@ -3,6 +3,7 @@ from mcdreforged.api.types import PluginServerInterface
 from bot.constants import CONFIG_FILE_NAME
 from bot.config import Config
 from bot.bot_manager import BotManager
+from bot.fastapi_manager import FastAPIManager
 from bot.command_handler import CommandHandler
 from bot.event_handler import EventHandler
 from bot.location import Location
@@ -20,8 +21,13 @@ class Plugin:
         )
 
         self.__bot_manager = BotManager(self, prev_module)
+        self.__fastapi_manager = FastAPIManager(self)
         self.__command_handler = CommandHandler(self)
         self.__event_handler = EventHandler(self)
+
+    @property
+    def fastapi_mcdr(self):
+        return self.__server.get_plugin_instance('fastapi_mcdr')
 
     @property
     def server(self):
@@ -38,6 +44,10 @@ class Plugin:
     @property
     def bot_manager(self):
         return self.__bot_manager
+
+    @property
+    def fastapi_manager(self):
+        return self.__fastapi_manager
 
     @property
     def command_handler(self):

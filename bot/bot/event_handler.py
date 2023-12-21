@@ -67,3 +67,8 @@ class EventHandler:
             server.logger.debug(f'Bot {player} left')
             plugin.bot_manager.get_bot(player).set_online(False)
             plugin.bot_manager.update_list()
+
+    @staticmethod
+    @event_listener(MCDRPluginEvents.PLUGIN_UNLOADED)
+    def on_unload(server: PluginServerInterface):
+        plugin.fastapi_manager.unload()
