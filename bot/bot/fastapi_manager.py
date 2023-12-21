@@ -38,7 +38,6 @@ class PostBotRequest(BaseModel):
 
 
 class PatchBotRequest(BaseModel):
-    name: str
     location: LocationModel | None = None
     comment: str | None = None
     actions: List[str] | None = None
@@ -150,7 +149,7 @@ class FastAPIManager:
 
             # log
             self.__logger.debug(
-                f'Created "{bot.name}" with PostBotRequest({request})'
+                f'Created "{name}" with PostBotRequest({request})'
             )
 
             # return
@@ -162,9 +161,13 @@ class FastAPIManager:
                 detail=f'Bot "{name}" is already saved.'
             )
 
-    async def __patch_bot(self, request: PatchBotRequest) -> BotModel:
+    async def __patch_bot(
+            self,
+            bot_name: str,
+            request: PatchBotRequest
+    ) -> BotModel:
         # parse name
-        name = self.__command_handler.parse_name(request.name)
+        name = self.__command_handler.parse_name(bot_name)
 
         # check request params
         if (
@@ -214,7 +217,7 @@ class FastAPIManager:
 
             # log
             self.__logger.debug(
-                f'Patched "{bot.name}" with PatchBotRequest({request})'
+                f'Patched "{name}" with PatchBotRequest({request})'
             )
 
             # return
