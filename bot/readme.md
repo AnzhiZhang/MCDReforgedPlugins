@@ -132,7 +132,7 @@ flowchart LR
     start(!!bot)
 
     start --> list(list)
-    list --> list_index[&lt;index&gt;]
+    list --> list_index["&lt;index&gt;"]
     list_index --> list_index_arg["
         --all
         --online
@@ -140,44 +140,44 @@ flowchart LR
     "]
 
     start --> spawn(spawn)
-    spawn --> spawn_name(&lt;name&gt;)
+    spawn --> spawn_name("&lt;name&gt;")
 
     start --> kill(kill)
-    kill --> kill_name(&lt;name&gt;)
+    kill --> kill_name("&lt;name&gt;")
 
     start --> action(action)
-    action --> action_name(&lt;name&gt;)
-    action_name --> action_name_index[&lt;index&gt;]
+    action --> action_name("&lt;name&gt;")
+    action_name --> action_name_index["&lt;index&gt;"]
 
     start --> tags(tags)
-    tags --> tags_tag[&lt;tag&gt;]
+    tags --> tags_tag["&lt;tag&gt;"]
     tags_tag --> tags_tag_spawn(spawn)
     tags_tag --> tags_tag_kill(kill)
 
     start --> info(info)
-    info --> info_name(&lt;name&gt;)
+    info --> info_name("&lt;name&gt;")
 
     start --> save(save)
-    save --> save_name(&lt;name&gt;)
-    save_name --> save_name_position[&lt;position&gt;]
-    save_name_position --> save_name_position_facing[&lt;facing&gt;]
-    save_name_position_facing --> save_name_position_facing_dimension[&lt;dimension&gt;]
+    save --> save_name("&lt;name&gt;")
+    save_name --> save_name_position["&lt;position&gt;"]
+    save_name_position --> save_name_position_facing["&lt;facing&gt;"]
+    save_name_position_facing --> save_name_position_facing_dimension["&lt;dimension&gt;"]
 
     start --> del(del)
-    del --> del_name(&lt;name&gt;)
+    del --> del_name("&lt;name&gt;")
 
     start --> config(config)
-    config --> config_name(&lt;name&gt;)
-    config_name --> config_name_name(name &lt;newName&gt;)
-    config_name --> config_name_position(position &lt;position&gt;)
-    config_name --> config_name_facing(facing &lt;facing&gt;)
-    config_name --> config_name_dimension(dimension &lt;dimension&gt;)
-    config_name --> config_name_comment(comment &lt;comment&gt;)
+    config --> config_name("&lt;name&gt;")
+    config_name --> config_name_name("name &lt;newName&gt;")
+    config_name --> config_name_position("position &lt;position&gt;")
+    config_name --> config_name_facing("facing &lt;facing&gt;")
+    config_name --> config_name_dimension("dimension &lt;dimension&gt;")
+    config_name --> config_name_comment("comment &lt;comment&gt;")
     config_name --> config_name_actions(actions)
     config_name --> config_name_tags(tags)
-    config_name --> config_name_autoLogin(autoLogin &lt;autoLogin&gt;)
-    config_name --> config_name_autoRunActions(autoRunActions &lt;autoRunActions&gt;)
-    config_name --> config_name_autoUpdate(autoUpdate &lt;autoUpdate&gt;)
+    config_name --> config_name_autoLogin("autoLogin &lt;autoLogin&gt;")
+    config_name --> config_name_autoRunActions("autoRunActions &lt;autoRunActions&gt;")
+    config_name --> config_name_autoUpdate("autoUpdate &lt;autoUpdate&gt;")
 
     config_name_actions --> config_name_actions_append["append &lt;action&gt;"]
     config_name_actions --> config_name_actions_insert["insert &lt;index&gt; &lt;action&gt;"]
