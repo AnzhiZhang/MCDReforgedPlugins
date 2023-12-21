@@ -1,31 +1,33 @@
 # Bot
 
-> 最好用的地毯模组假人管理器！
+[简体中文](https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/bot/readme_cn.md)
 
-## 依赖
+> The best carpet bot manager!
+
+## Dependencies
 
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
 - [MoreCommandNodes](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes)
 
-## 使用方法
+## Usage
 
-`!!bot` 查看帮助
+`!!bot` View help
 
-`!!bot list [index] [filter]` 显示假人列表
+`!!bot list [index] [filter]` Show bot list
 
-`!!bot spawn <name>` 上线假人
+`!!bot spawn <name>` Spawn bot
 
-`!!bot kill <name>` 下线假人
+`!!bot kill <name>` Kill bot
 
-`!!bot action <name> [index]` 执行假人动作
+`!!bot action <name> [index]` Execute bot action(s)
 
-`!!bot info <name>` 查看假人信息
+`!!bot info <name>` View bot info
 
-`!!bot save <name> [position] [facing] [dimension]` 保存假人
+`!!bot save <name> [position] [facing] [dimension]` Save bot
 
-`!!bot del <name>` 删除保存的假人
+`!!bot del <name>` Delete saved bot
 
-`!!bot config <name> <option> <value>` 配置假人
+`!!bot config <name> <option> <value>` Config bot
 
 ```mermaid
 sequenceDiagram
@@ -43,13 +45,13 @@ sequenceDiagram
 
 ### list
 
-**index**：列表的页码
+**index**: Page number of the list
 
-**filter**：可用选项为：`--all`、`--online` 或 `--saved`，过滤假人
+**filter**: Available options are: `--all`, `--online` or `--saved`, filter bots
 
 ### spawn
 
-上线假人
+Spawn bot
 
 ```mermaid
 flowchart TD
@@ -66,21 +68,21 @@ flowchart TD
 
 ### kill
 
-下线假人
+Kill bot
 
 ### action
 
-执行假人动作
+Execute bot action(s)
 
-当指定 `index` 时，执行特定动作而不是全部动作
+When `index` is specified, execute specific action(s) instead of all actions
 
 ### info
 
-查看假人信息
+View bot info
 
 ### save
 
-保存假人
+Save bot
 
 ```mermaid
 flowchart TD
@@ -101,11 +103,11 @@ flowchart TD
 
 ### del
 
-删除保存的假人
+Delete saved bot
 
 ### config
 
-配置假人
+Config bot
 
 ```mermaid
 flowchart LR
@@ -128,30 +130,30 @@ flowchart LR
     actions --> clear(clear)
 ```
 
-## 配置
+## Config
 
 ### gamemode
 
-默认值: `survival`
+Default: `survival`
 
-生成假人的游戏模式
+Game mode of bot
 
 ### name_prefix
 
-默认值：无
+Default: None
 
-假人名称前缀
+Prefix of bot name
 
 ### name_suffix
 
-默认值：无
+Default: None
 
-假人名称前缀
+Suffix of bot name
 
 ### permissions
 
-使用对应指令的最低权限
+Minimum permission to use corresponding command
 
 ## FastAPI MCDR
 
-该插件支持 [FastAPI MCDR](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/fastapi_mcdr) 插件，详细接口请查阅源码，或运行后通过 `http://127.0.0.1:8080/docs` 查看 FastAPI 文档。
+This plugin supports [FastAPI MCDR](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/fastapi_mcdr) plugin, please refer to the source code for detailed API, or run and view the FastAPI document via `http://127.0.0.1:8080/docs`.
