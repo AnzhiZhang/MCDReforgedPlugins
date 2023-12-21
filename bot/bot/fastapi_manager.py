@@ -31,19 +31,7 @@ class BotModel(BaseModel):
     saved: bool
 
 
-class PostBotRequest(BaseModel):
-    name: str
-    location: LocationModel
-    comment: str | None = None
-    actions: List[str] | None = None
-    tags: List[str] | None = None
-    auto_login: bool | None = None
-    auto_run_actions: bool | None = None
-    auto_update: bool | None = None
-    online: bool | None = None
-
-
-class PatchBotRequest(BaseModel):
+class BaseBotRequest(BaseModel):
     location: LocationModel | None = None
     comment: str | None = None
     actions: List[str] | None = None
@@ -52,6 +40,15 @@ class PatchBotRequest(BaseModel):
     auto_run_actions: bool | None = None
     auto_update: bool | None = None
     online: bool | None = None
+
+
+class PostBotRequest(BaseBotRequest):
+    name: str
+    location: LocationModel
+
+
+class PatchBotRequest(BaseBotRequest):
+    pass
 
 
 class FastAPIManager:
@@ -118,22 +115,56 @@ class FastAPIManager:
                 self.__plugin.server.get_self_metadata().id
             )
 
-    @staticmethod
-    def __spawn_or_kill(bot: Bot, online: bool) -> None:
-        if online and bot.online:
-            raise HTTPException(
-                status_code=400,
-                detail=f'Bot "{bot.name}" is already online.'
+    def __update_bot_data(self, bot: Bot, request: BaseBotRequest) -> None:
+        # location
+        if request.location is not None:
+            bot.set_location(
+                Location(
+                    request.location.position,
+                    request.location.facing,
+                    request.location.dimension
+                )
             )
-        elif online and not bot.online:
-            bot.spawn()
-        elif not online and bot.online:
-            bot.kill()
-        elif not online and not bot.online:
-            raise HTTPException(
-                status_code=400,
-                detail=f'Bot "{bot.name}" is not online.'
-            )
+
+        # comment
+        if request.comment is not None:
+            bot.set_comment(request.comment)
+
+        # actions
+        if request.actions is not None:
+            bot.set_actions(request.actions)
+
+        # auto login
+        if request.auto_login is not None:
+            bot.set_auto_login(request.auto_login)
+
+        # auto run actions
+        if request.auto_run_actions is not None:
+            bot.set_auto_run_actions(request.auto_run_actions)
+
+        # auto update
+        if request.auto_update is not None:
+            bot.set_auto_update(request.auto_update)
+
+        # spawn or kill
+        if request.online is not None:
+            if request.online and bot.online:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f'Bot "{bot.name}" is already online.'
+                )
+            elif request.online and not bot.online:
+                bot.spawn()
+            elif not request.online and bot.online:
+                bot.kill()
+            elif not request.online and not bot.online:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f'Bot "{bot.name}" is not online.'
+                )
+
+        # save data
+        self.__plugin.bot_manager.save_data()
 
     async def __get_bots(self) -> Dict[str, BotModel]:
         return self.__bot_manager.bots
@@ -154,32 +185,8 @@ class FastAPIManager:
                 )
             )
 
-            # comment
-            if request.comment is not None:
-                bot.set_comment(request.comment)
-
-            # actions
-            if request.actions is not None:
-                bot.set_actions(request.actions)
-
-            # auto login
-            if request.auto_login is not None:
-                bot.set_auto_login(request.auto_login)
-
-            # auto run actions
-            if request.auto_run_actions is not None:
-                bot.set_auto_run_actions(request.auto_run_actions)
-
-            # auto update
-            if request.auto_update is not None:
-                bot.set_auto_update(request.auto_update)
-
-            # spawn or kill
-            if request.online is not None:
-                self.__spawn_or_kill(bot, request.online)
-
-            # save data
-            self.__plugin.bot_manager.save_data()
+            # update data
+            self.__update_bot_data(bot, request)
 
             # log
             self.__logger.debug(
@@ -222,42 +229,8 @@ class FastAPIManager:
         try:
             bot = self.__bot_manager.get_bot(name)
 
-            # location
-            if request.location is not None:
-                bot.set_location(
-                    Location(
-                        request.location.position,
-                        request.location.facing,
-                        request.location.dimension
-                    )
-                )
-
-            # comment
-            if request.comment is not None:
-                bot.set_comment(request.comment)
-
-            # actions
-            if request.actions is not None:
-                bot.set_actions(request.actions)
-
-            # auto login
-            if request.auto_login is not None:
-                bot.set_auto_login(request.auto_login)
-
-            # auto run actions
-            if request.auto_run_actions is not None:
-                bot.set_auto_run_actions(request.auto_run_actions)
-
-            # auto update
-            if request.auto_update is not None:
-                bot.set_auto_update(request.auto_update)
-
-            # spawn or kill
-            if request.online is not None:
-                self.__spawn_or_kill(bot, request.online)
-
-            # save data
-            self.__plugin.bot_manager.save_data()
+            # update data
+            self.__update_bot_data(bot, request)
 
             # log
             self.__logger.debug(
