@@ -151,3 +151,7 @@ flowchart LR
 ### permissions
 
 使用对应指令的最低权限
+
+## FastAPI MCDR
+
+该插件支持 [FastAPI MCDR](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/fastapi_mcdr) 插件，详细接口请查阅源码，或运行后通过 `http://127.0.0.1:8080/docs` 查看 FastAPI 文档。
