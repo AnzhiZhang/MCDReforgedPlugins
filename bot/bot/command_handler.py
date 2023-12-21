@@ -162,7 +162,7 @@ class CommandHandler:
                 .then(
                     Literal('name')
                     .then(
-                        Text('new_name')
+                        Text('newName')
                         .runs(self.__command_config_name)
                     )
                 )
@@ -812,7 +812,7 @@ class CommandHandler:
 
     def __command_config_name(self, src: Source, ctx: Dict[str, Any]):
         name = self.parse_name(ctx['name'])
-        new_name = self.parse_name(ctx['new_name'])
+        new_name = self.parse_name(ctx['newName'])
         try:
             self.__plugin.bot_manager.get_bot(name).set_name(new_name)
             self.__plugin.bot_manager.update_list()
