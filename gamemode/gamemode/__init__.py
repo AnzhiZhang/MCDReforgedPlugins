@@ -62,8 +62,8 @@ def overworld_to_nether(x, z):
 
 
 def on_load(server: PluginServerInterface, old):
-    global data, minecraft_data_api
-    permissions = server.load_config_simple(
+    global config, data, minecraft_data_api
+    config = server.load_config_simple(
         'config.json',
         default_config=DEFAULT_CONFIG,
         target_class=Config
@@ -236,7 +236,7 @@ def on_load(server: PluginServerInterface, old):
 
     server.register_command(
         Literal('!!spec')
-        .requires(lambda src: src.has_permission(permissions.spec))
+        .requires(lambda src: src.has_permission(config.spec))
         .runs(change_mode)
         .then(
             Literal('help')
@@ -245,14 +245,14 @@ def on_load(server: PluginServerInterface, old):
         .then(
             Text('player')
             .requires(
-                lambda src: src.has_permission(permissions.spec_other)
+                lambda src: src.has_permission(config.spec_other)
             )
             .runs(change_mode)
         )
     )
     server.register_command(
         Literal('!!tp')
-        .requires(lambda src: src.has_permission(permissions.tp))
+        .requires(lambda src: src.has_permission(config.tp))
         .then(
             Text('param1')
             .runs(tp).  # !!tp <dimension> -- param1 = dimension
@@ -273,7 +273,7 @@ def on_load(server: PluginServerInterface, old):
     )
     server.register_command(
         Literal('!!back')
-        .requires(lambda src: src.has_permission(permissions.back))
+        .requires(lambda src: src.has_permission(config.back))
         .runs(back)
     )
 
