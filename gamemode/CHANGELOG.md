@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.0.1...gamemode-v1.1.0) (2023-12-26)
+
+
+### Features
+
+* **gamemode:** ✨ add shorter command !s ([5ac0725](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/5ac0725dc950478e5d21d275eb8d6a2c6dbc0e81))
+* **gamemode:** ✨ update help messsage ([015850e](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/015850ea4c8c9faa54872b7e927ef9ac707b9625))
+
 ## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.0.0...gamemode-v1.0.1) (2023-03-18)
 
 
