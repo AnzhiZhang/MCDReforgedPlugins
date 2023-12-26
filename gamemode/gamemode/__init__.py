@@ -75,7 +75,7 @@ def on_load(server: PluginServerInterface, old):
     )['data']
     minecraft_data_api = server.get_plugin_instance('minecraft_data_api')
 
-    server.register_help_message('!!spec help', 'Gamemode插件帮助')
+    server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
     @new_thread('Gamemode switch mode')
     def change_mode(src, ctx):
