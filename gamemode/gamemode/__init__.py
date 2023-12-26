@@ -42,6 +42,7 @@ HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 
 
 class Config(Serializable):
+    short_command: bool = True
     spec: int = 1
     spec_other: int = 2
     tp: int = 1
@@ -234,8 +235,14 @@ def on_load(server: PluginServerInterface, old):
             )
             src.reply('§a已将您传送至上个地点')
 
+    # spec literals
+    spec_literals = ['!!spec']
+    if config.short_command:
+        spec_literals.append('!s')
+
+    # register
     server.register_command(
-        Literal('!!spec')
+        Literal(spec_literals)
         .requires(lambda src: src.has_permission(config.spec))
         .runs(change_mode)
         .then(
