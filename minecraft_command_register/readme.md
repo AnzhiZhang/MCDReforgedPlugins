@@ -36,7 +36,7 @@
 
 ### Fabric
 
-安装 [MCDR Command Fabric](https://www.curseforge.com/minecraft/mc-mods/mcdr-command-fabric) 模组。
+安装此插件，并配合 [MCDR Command Fabric](https://modrinth.com/mod/mcdr-command-fabric) 模组使用。
 
 ### Forge
 
