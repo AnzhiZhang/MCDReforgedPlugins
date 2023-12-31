@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.0...bot-v1.1.1) (2023-12-31)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix fastapi import bug ([b0eccdb](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b0eccdb2e66f3215d10df40a4237d18187183c4e))
+* **bot:** 🔇 update logging level in FastAPIManager ([4cbe835](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/4cbe83526aff21533b181f3f30459b7f9f331584))
+
 ## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.0.6...bot-v1.1.0) (2023-12-21)
 
 
