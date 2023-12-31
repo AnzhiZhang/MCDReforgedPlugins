@@ -1,8 +1,13 @@
 from typing import TYPE_CHECKING, List, Dict
 
-from fastapi import HTTPException
 from pydantic import BaseModel, Field, conlist
 from mcdreforged.api.types import PluginServerInterface
+
+# fast api
+try:
+    from fastapi import HTTPException
+except ImportError:
+    HTTPException = None
 
 from bot.bot import Bot
 from bot.exceptions import *
