@@ -57,7 +57,7 @@ class FastAPIManager:
 
         # check fast api loaded
         if self.__plugin.fastapi_mcdr is None:
-            self.__logger.warning(
+            self.__logger.debug(
                 "FastAPI MCDR is not loaded, will not register APIs."
             )
         elif self.__plugin.fastapi_mcdr.is_ready():
