@@ -1,13 +1,8 @@
 from typing import TYPE_CHECKING, List, Dict
 
+from fastapi import HTTPException
 from pydantic import BaseModel, Field, conlist
 from mcdreforged.api.types import PluginServerInterface
-
-# fast api
-try:
-    from fastapi import HTTPException
-except ImportError:
-    HTTPException = None
 
 from bot.bot import Bot
 from bot.exceptions import *
@@ -60,12 +55,11 @@ class FastAPIManager:
     def __init__(self, plugin: 'Plugin'):
         self.__plugin: 'Plugin' = plugin
 
-        # check fast api loaded
-        if self.__plugin.fastapi_mcdr is None:
-            self.__logger.debug(
-                "FastAPI MCDR is not loaded, will not register APIs."
-            )
-        elif self.__plugin.fastapi_mcdr.is_ready():
+        # check fast api ready
+        if (
+                self.__plugin.fastapi_mcdr is not None and
+                self.__plugin.fastapi_mcdr.is_ready()
+        ):
             self.__register_apis(self.__plugin.server)
 
         # register event listener

@@ -71,4 +71,4 @@ class EventHandler:
     @staticmethod
     @event_listener(MCDRPluginEvents.PLUGIN_UNLOADED)
     def on_unload(server: PluginServerInterface):
-        plugin.fastapi_manager.unload()
+        plugin.unload_fastapi_manager()

@@ -3,10 +3,14 @@ from mcdreforged.api.types import PluginServerInterface
 from bot.constants import CONFIG_FILE_NAME
 from bot.config import Config
 from bot.bot_manager import BotManager
-from bot.fastapi_manager import FastAPIManager
 from bot.command_handler import CommandHandler
 from bot.event_handler import EventHandler
 from bot.location import Location
+
+try:
+    from bot.fastapi_manager import FastAPIManager
+except ImportError:
+    FastAPIManager = None
 
 
 class Plugin:
@@ -22,9 +26,23 @@ class Plugin:
         self.__check_config()
 
         self.__bot_manager = BotManager(self, prev_module)
-        self.__fastapi_manager = FastAPIManager(self)
+        self.__fastapi_manager = None
+        self.load_fastapi_manager()
         self.__command_handler = CommandHandler(self)
         self.__event_handler = EventHandler(self)
+
+    def load_fastapi_manager(self):
+        if FastAPIManager is not None:
+            self.__fastapi_manager = FastAPIManager(self)
+        else:
+            self.server.logger.debug(
+                "FastAPI library is not installed, "
+                "will not register APIs with FastAPI MCDR."
+            )
+
+    def unload_fastapi_manager(self):
+        if self.__fastapi_manager is not None:
+            self.__fastapi_manager.unload()
 
     @property
     def fastapi_mcdr(self):
