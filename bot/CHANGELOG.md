@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.1...bot-v1.1.2) (2024-01-15)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix fastapi lib loading issue (fix [#161](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/161)) ([27738a6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/27738a68833051de821928febac110252b532e63))
+
 ## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.0...bot-v1.1.1) (2023-12-31)
 
 
