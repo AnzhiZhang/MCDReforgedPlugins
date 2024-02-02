@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/v0.3.1...v0.4.0) (2024-02-02)
+
+
+### Features
+
+* **advanced_calculator:** test ([0f3cb92](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0f3cb92ed06c8597438003a745035a60735357cb))
+
 ## [0.3.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.3.0...advanced_calculator-v0.3.1) (2023-01-19)
 
 
