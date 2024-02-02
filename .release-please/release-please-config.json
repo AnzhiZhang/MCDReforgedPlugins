@@ -1,0 +1,62 @@
+{
+  "release-type": "simple",
+  "pull-request-title-pattern": "chore${scope}: 🔖 release${component} ${version}",
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "mcdreforged.plugin.json",
+      "jsonpath": "$.json"
+    }
+  ],
+  "separate-pull-requests": true,
+  "packages": {
+    "src/advanced_calculator": {
+      "package-name": "advanced_calculator"
+    },
+    "src/bingo": {
+      "package-name": "bingo"
+    },
+    "src/bot": {
+      "package-name": "bot"
+    },
+    "src/database_api": {
+      "package-name": "database_api"
+    },
+    "src/dict_command_registration": {
+      "package-name": "dict_command_registration"
+    },
+    "src/fastapi_mcdr": {
+      "package-name": "fastapi_mcdr"
+    },
+    "src/gamemode": {
+      "package-name": "gamemode"
+    },
+    "src/info": {
+      "package-name": "info"
+    },
+    "src/let_me_click_and_send": {
+      "package-name": "let_me_click_and_send"
+    },
+    "src/lowercase_mcdr_command": {
+      "package-name": "lowercase_mcdr_command"
+    },
+    "src/minecraft_command_register": {
+      "package-name": "minecraft_command_register"
+    },
+    "src/more_command_nodes": {
+      "package-name": "more_command_nodes"
+    },
+    "src/online_player_api": {
+      "package-name": "online_player_api"
+    },
+    "src/qq_api": {
+      "package-name": "qq_api"
+    },
+    "src/qq_chat": {
+      "package-name": "qq_chat"
+    },
+    "src/uuid_api": {
+      "package-name": "uuid_api"
+    }
+  }
+}
