@@ -1,0 +1,45 @@
+{
+  "release-type": "simple",
+  "pull-request-title-pattern": "chore${scope}: 🔖 release${component} ${version}",
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "mcdreforged.plugin.json",
+      "jsonpath": "$.json"
+    }
+  ],
+  "packages": {
+    "src/advanced_calculator": {
+    },
+    "src/bingo": {
+    },
+    "src/bot": {
+    },
+    "src/database_api": {
+    },
+    "src/dict_command_registration": {
+    },
+    "src/fastapi_mcdr": {
+    },
+    "src/gamemode": {
+    },
+    "src/info": {
+    },
+    "src/let_me_click_and_send": {
+    },
+    "src/lowercase_mcdr_command": {
+    },
+    "src/minecraft_command_register": {
+    },
+    "src/more_command_nodes": {
+    },
+    "src/online_player_api": {
+    },
+    "src/qq_api": {
+    },
+    "src/qq_chat": {
+    },
+    "src/uuid_api": {
+    }
+  }
+}
