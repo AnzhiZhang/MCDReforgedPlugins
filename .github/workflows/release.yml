@@ -1,100 +1,75 @@
-name: Release Please
+name: Release
 on:
   push:
     branches:
       - master
 
 jobs:
-  change-finder:
+  release-please:
     runs-on: ubuntu-latest
-    name: Change Finder
+    name: Release Please
 
     outputs:
-      changed: ${{ steps.find.outputs.changed }}
-      plugins: ${{ steps.find.outputs.plugins }}
+      releases_created: ${{ steps.release_please.outputs.releases_created }}
+      release_created: ${{ steps.release_please.outputs[format('{0}--release_created', steps.set-outputs.path)] }}
+      tag_name: ${{ steps.release_please.outputs[format('{0}--tag_name', steps.set-outputs.path)] }}
+      path: ${{ steps.set-outputs.path }}
 
     steps:
-      - name: Check Out
-        uses: actions/checkout@v3
+      - name: Release Please
+        uses: google-github-actions/release-please-action@v4
+        id: release_please
         with:
-          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLEASE_GITHUB_TOKEN }}
+          config-file: .release-please/release-please-config.json
+          manifest-file: .release-please/.release-please-manifest.json
 
-      - name: Find
-        id: find
+      - name: Set Outputs
+        id: set-outputs
         run: |
-          npm i @actions/core
-          node changeFinder.js
+          echo "path=${{ fromJson(steps.release_please.outputs.paths_released)[0] }}" >> $GITHUB_OUTPUT
+          echo "${{ steps.release_please.outputs.releases_created }}"
+          echo "${{ fromJson(steps.release_please.outputs.paths_released)[0] }}"
+          echo "${{ steps.release_please.outputs[format('{0}--tag_name', steps.set-outputs.path)] }}"
 
-  release-please-pr:
+      - if: ${{ steps.release_please.outputs.releases_created }}
+        run: |
+          echo "${{ steps.set-outputs.path }}"
+
+  build:
     runs-on: ubuntu-latest
-    name: Release Please PR
-    needs:
-      - change-finder
-      - release-please-release
-    strategy:
-      fail-fast: false
-      matrix:
-        plugin: ${{ fromJson(needs.change-finder.outputs.plugins) }}
+    name: Build
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created }}
 
     steps:
-      - name: Release Please PR
-        uses: google-github-actions/release-please-action@v3
-        with:
-          release-type: simple
-          package-name: ${{ matrix.plugin }}
-          path: ${{ matrix.plugin }}
-          monorepo-tags: true
-          command: release-pr
-          pull-request-title-pattern: 'chore${scope}: 🔖 release${component} ${version}'
-
-  release-please-release:
-    runs-on: ubuntu-latest
-    name: Release Please Release
-    needs: change-finder
-    if: ${{ needs.change-finder.outputs.changed == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        plugin: ${{ fromJson(needs.change-finder.outputs.plugins) }}
-
-    steps:
-      - name: Release Please Release
-        uses: google-github-actions/release-please-action@v3
-        id: release_please_release
-        with:
-          release-type: simple
-          package-name: ${{ matrix.plugin }}
-          path: ${{ matrix.plugin }}
-          monorepo-tags: true
-          command: github-release
-          pull-request-title-pattern: 'chore${scope}: 🔖 release${component} ${version}'
+      - run: |
+          echo "${{ needs.release-please.outputs.releases_created }}"
+          echo "${{ needs.release-please.outputs.release_created }}"
+          echo "${{ needs.release-please.outputs.tag_name }}"
+          echo "${{ needs.release-please.outputs.path }}"
 
       - name: Check Out
-        uses: actions/checkout@v3
-        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
-        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
       - name: Install Dependencies
-        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         run: |
           python -m pip install --upgrade pip
           pip install mcdreforged
 
       - name: Pack
         id: pack
-        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         run: |
-          python -m mcdreforged pack --ignore-patterns __pycache__ -i ${{ matrix.plugin }}
+          mcdreforged pack --ignore-patterns __pycache__ -i ${{ needs.release-please.outputs.path }}
           echo "name=$(ls *.mcdr)" >> $GITHUB_OUTPUT
 
       - name: Upload
-        if: ${{ steps.release_please_release.outputs[format('{0}--release_created', matrix.plugin)] }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload ${{ steps.release_please_release.outputs[format('{0}--tag_name', matrix.plugin)] }} ${{ steps.pack.outputs.name }}
+          gh release upload ${{ needs.release-please.outputs.tag_name }} ${{ steps.pack.outputs.name }}
