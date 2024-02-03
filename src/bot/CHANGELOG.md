@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.2...bot-v1.2.0) (2024-02-03)
+
+
+### Features
+
+* **bot:** test ([0f6241d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0f6241d14111d053b04d4b45a40bf4fc793edc77))
+
 ## [1.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.1...bot-v1.1.2) (2024-01-15)
 
 
