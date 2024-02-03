@@ -29,8 +29,8 @@ def on_load(server: PluginServerInterface, prev_module):
         }
     )
     server.register_command(
-        Literal('!!info').
-            runs(
+        Literal('!!info')
+        .runs(
             lambda src: src.reply(get_server_info(src.get_server()))
         )
     )
