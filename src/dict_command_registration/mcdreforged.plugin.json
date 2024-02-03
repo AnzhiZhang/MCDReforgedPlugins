@@ -7,7 +7,7 @@
     "zh_cn": "用 Python 字典注册您的指令"
   },
   "author": "Andy Zhang",
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/dict_command_registration",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/dict_command_registration",
   "dependencies": {
     "mcdreforged": "^2.7.0"
   }

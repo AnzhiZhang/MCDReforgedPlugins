@@ -25,7 +25,6 @@ def register(
 ) -> None:
     """
     Register a command.
-    See also: https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/dict_command_registration/readme.md#register
     :param PluginServerInterface server: the PluginServerInterface instance of
         your plugin, to ensure that this command is registered by your plugin.
     :param dict command: Command, please find more information in the document.

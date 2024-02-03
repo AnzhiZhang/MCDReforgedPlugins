@@ -12,7 +12,7 @@
 
 ## 开发文档
 
-查看 [Valut](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/.archived/vault/vault.py) 参考使用方法
+查看 [Valut](../.archived/vault/vault.py) 参考使用方法
 
 提供了以下两个类:
 

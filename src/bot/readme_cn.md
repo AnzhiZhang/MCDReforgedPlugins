@@ -1,13 +1,13 @@
 # Bot
 
-[English](https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/bot/readme.md)
+[English](readme.md)
 
 > 最好用的地毯模组假人管理器！
 
 ## 依赖
 
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
-- [MoreCommandNodes](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes)
+- [MoreCommandNodes](../more_command_nodes)
 
 ## 使用方法
 
@@ -218,4 +218,4 @@ flowchart LR
 
 ## FastAPI MCDR
 
-该插件支持 [FastAPI MCDR](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/fastapi_mcdr) 插件，详细接口请查阅源码，或运行后通过 `http://127.0.0.1:8080/docs` 查看 FastAPI 文档。
+该插件支持 [FastAPI MCDR](../fastapi_mcdr) 插件，详细接口请查阅源码，或运行后通过 `http://127.0.0.1:8080/docs` 查看 FastAPI 文档。

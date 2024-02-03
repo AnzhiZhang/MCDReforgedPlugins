@@ -7,7 +7,7 @@
     "zh_cn": "获取服务器信息"
   },
   "author": "Andy Zhang",
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/info",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/info",
   "resources": [
     "lang"
   ]

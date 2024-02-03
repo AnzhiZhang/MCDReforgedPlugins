@@ -7,7 +7,7 @@
     "zh_cn": "QQ 相关实用功能"
   },
   "author": ["Andy Zhang", "Aimerny"],
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/qq_api",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/qq_api",
   "dependencies": {
     "qq_api": "^1.2.0",
     "online_player_api": "^1.0.0"

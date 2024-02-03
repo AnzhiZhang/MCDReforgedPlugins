@@ -10,7 +10,7 @@
     "Andy Zhang",
     "ZhuRuoLing"
   ],
-  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/minecraft_command_register",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/minecraft_command_register",
   "dependencies": {
     "mcdreforged": "2.12.3"
   }

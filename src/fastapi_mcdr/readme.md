@@ -1,6 +1,6 @@
 # FastAPI
 
-[简体中文](https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/fastapi_mcdr/readme_cn.md)
+[简体中文](readme_cn.md)
 
 > Provides HTTP API
 

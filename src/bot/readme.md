@@ -1,13 +1,13 @@
 # Bot
 
-[简体中文](https://github.com/AnzhiZhang/MCDReforgedPlugins/blob/master/bot/readme_cn.md)
+[简体中文](readme_cn.md)
 
 > The best carpet bot manager!
 
 ## Dependencies
 
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
-- [MoreCommandNodes](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/more_command_nodes)
+- [MoreCommandNodes](../more_command_nodes)
 
 ## Usage
 
@@ -218,4 +218,4 @@ Minimum permission to use corresponding command
 
 ## FastAPI MCDR
 
-This plugin supports [FastAPI MCDR](https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/fastapi_mcdr) plugin, please refer to the source code for detailed API, or run and view the FastAPI document via `http://127.0.0.1:8080/docs`.
+This plugin supports [FastAPI MCDR](../fastapi_mcdr) plugin, please refer to the source code for detailed API, or run and view the FastAPI document via `http://127.0.0.1:8080/docs`.
