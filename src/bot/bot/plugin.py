@@ -1,6 +1,6 @@
 from mcdreforged.api.types import PluginServerInterface
 
-from bot.constants import CONFIG_FILE_NAME
+from bot.constants import CONFIG_FILE_NAME, DIMENSION
 from bot.config import Config
 from bot.bot_manager import BotManager
 from bot.command_handler import CommandHandler
@@ -99,5 +99,5 @@ class Plugin:
         """
         api = self.minecraft_data_api
         info = api.get_player_info(name)
-        dimension = api.get_player_dimension(name)
+        dimension = DIMENSION.INT_TRANSLATION.get(info['Dimension'])
         return Location(info['Pos'], info['Rotation'], dimension)
