@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.2...bot-v1.1.3) (2024-02-27)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot gamemode issue (fix [#186](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/186)) ([250b0da](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/250b0dae2a26b18f9e4c1183d442d5e2c2535787))
+* **bot:** 🐛 fix bot naming issue ([5e9d240](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/5e9d24098a95b0b4aa34c2920da24373863e5c9a))
+
+
+### Performance Improvements
+
+* **bot:** ⚡️ improve perf of get_location ([a3ebfeb](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a3ebfebe2cdb1c4a09a81870cb80f5be0a271e71))
+
 ## [1.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.1...bot-v1.1.2) (2024-01-15)
 
 
