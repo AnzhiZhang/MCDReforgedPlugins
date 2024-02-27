@@ -785,7 +785,7 @@ class CommandHandler:
                 src.player if src.is_player else None,
                 Location(
                     position, facing,
-                    DIMENSION.COMMAND_TRANSLATION.get(dimension)
+                    DIMENSION.INT_TRANSLATION.get(dimension)
                 ) if len(ctx.keys()) > 1 else None
             )
             src.reply(RTextMCDRTranslation('bot.command.saved', name))
@@ -867,7 +867,7 @@ class CommandHandler:
         try:
             bot = self.__plugin.bot_manager.get_bot(name)
             location = bot.location
-            location.dimension = DIMENSION.COMMAND_TRANSLATION.get(dimension)
+            location.dimension = DIMENSION.INT_TRANSLATION.get(dimension)
 
             # Check dimension
             if location.dimension is None:

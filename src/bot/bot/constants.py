@@ -23,12 +23,12 @@ class DIMENSION:
             color=RColor.light_purple
         )
     }
-    USING_TRANSLATION = {
+    STR_TRANSLATION = {
         0: 'minecraft:overworld',
         -1: 'minecraft:the_nether',
         1: 'minecraft:the_end'
     }
-    COMMAND_TRANSLATION = {
+    INT_TRANSLATION = {
         '0': OVERWORLD,
         '-1': THE_NETHER,
         '1': THE_END,

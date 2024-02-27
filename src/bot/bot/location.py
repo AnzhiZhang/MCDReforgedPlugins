@@ -30,7 +30,7 @@ class Location:
         Get minecraft dimension string.
         :return: str.
         """
-        return DIMENSION.USING_TRANSLATION[self.dimension]
+        return DIMENSION.STR_TRANSLATION[self.dimension]
 
     @property
     def display_dimension(self) -> RTextTranslation:
