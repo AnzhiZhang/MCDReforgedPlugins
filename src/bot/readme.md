@@ -200,6 +200,12 @@ Default: `survival`
 
 Game mode of bot
 
+### force_gamemode
+
+Default: `false`
+
+Forcing all bots to use the game mode configured by `gamemode`, if `false`, only saved bots will use the game mode configured by `gamemode`.
+
 ### name_prefix
 
 Default: `bot_`

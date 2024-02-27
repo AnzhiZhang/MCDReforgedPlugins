@@ -200,6 +200,12 @@ flowchart LR
 
 生成假人的游戏模式
 
+### force_gamemode
+
+默认值: `false`
+
+是否强制所有假人使用 `gamemode` 配置的游戏模式，如果为 `false`，只有已保存的假人会使用 `gamemode` 配置的游戏模式。
+
 ### name_prefix
 
 默认值: `bot_`
