@@ -335,6 +335,9 @@ class CommandHandler:
         :param name: Name of the bot.
         :return: Parsed bot name string.
         """
+        # Lowercase
+        name = name.lower()
+
         # Prefix
         if not name.startswith(self.__plugin.config.name_prefix):
             name = self.__plugin.config.name_prefix + name

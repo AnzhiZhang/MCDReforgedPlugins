@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 from mcdreforged.api.event import MCDRPluginEvents
 from mcdreforged.api.types import PluginServerInterface, Info
 from mcdreforged.api.decorator import event_listener, new_thread
+from mcdreforged.minecraft.rtext.style import RColor
+from mcdreforged.minecraft.rtext.text import RText, RTextList
 
 if TYPE_CHECKING:
     from bot.plugin import Plugin
@@ -43,19 +45,27 @@ class EventHandler:
                 r'\w+\[local] logged in with entity id \d+ at \(.*\)',
                 info.content
         ):
+            # parse name
+            name = plugin.command_handler.parse_name(player)
+            if name != player.lower():
+                message = RText(
+                    f'Warning: Bot "{player}" is not named correctly, '
+                    f'it is suggested to use "{name}" as the name',
+                    color=RColor.yellow
+                )
+                server.logger.warning(message)
+                server.say(message)
+                return
+
             # debug log
             server.logger.debug(f'Bot {player} joined')
 
-            # Lowercase
-            player = player.lower()
-
             # To Bot instance
-            if plugin.bot_manager.is_in_list(player):
-                bot = plugin.bot_manager.get_bot(player)
+            if plugin.bot_manager.is_in_list(name):
+                bot = plugin.bot_manager.get_bot(name)
             else:
-                bot = plugin.bot_manager.new_bot(
-                    player, plugin.get_location(player)
-                )
+                location = plugin.get_location(player)
+                bot = plugin.bot_manager.new_bot(name, location)
 
             # Spawned handler
             bot.spawned()
@@ -63,12 +73,13 @@ class EventHandler:
     @staticmethod
     @event_listener(MCDRPluginEvents.PLAYER_LEFT)
     def on_player_left(server: PluginServerInterface, player: str):
-        # Lowercase
-        player = player.lower()
+        # parse name
+        name = plugin.command_handler.parse_name(player)
 
-        if plugin.bot_manager.is_in_list(player):
-            server.logger.debug(f'Bot {player} left')
-            plugin.bot_manager.get_bot(player).set_online(False)
+        # remove from list
+        if plugin.bot_manager.is_in_list(name):
+            server.logger.debug(f'Bot {name} left')
+            plugin.bot_manager.get_bot(name).set_online(False)
             plugin.bot_manager.update_list()
 
     @staticmethod
