@@ -187,7 +187,6 @@ class Bot:
         Spawn the bot.
         """
         if not self.__online:
-            self.set_online(True)
             self.__server.execute(
                 'player {} spawn at {} facing {} in {}'.format(
                     self.name,
@@ -196,15 +195,25 @@ class Bot:
                     self.location.str_dimension
                 )
             )
+        else:
+            raise BotOnlineException(self.name)
+
+    def spawned(self) -> None:
+        """
+        Handler when bot spawned.
+        """
+        # update online status
+        self.set_online(True)
+
+        # set gamemode
+        if self.saved or self.__plugin.config.force_gamemode:
             self.__server.execute(
                 f'gamemode {self.__plugin.config.gamemode} {self.name}'
             )
 
-            # Auto run actions
-            if self.auto_run_actions:
-                self.run_actions()
-        else:
-            raise BotOnlineException(self.name)
+        # auto run actions
+        if self.auto_run_actions:
+            self.run_actions()
 
     @new_thread('killBot')
     def kill(self) -> None:

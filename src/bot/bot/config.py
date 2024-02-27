@@ -5,6 +5,7 @@ from mcdreforged.api.utils.serializer import Serializable
 
 class Config(Serializable):
     gamemode: str = 'survival'
+    force_gamemode: bool = False
     name_prefix: str = 'bot_'
     name_suffix: str = ''
     permissions: Dict[str, int] = {

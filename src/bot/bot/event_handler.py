@@ -43,6 +43,7 @@ class EventHandler:
                 r'\w+\[local] logged in with entity id \d+ at \(.*\)',
                 info.content
         ):
+            # debug log
             server.logger.debug(f'Bot {player} joined')
 
             # Lowercase
@@ -50,12 +51,14 @@ class EventHandler:
 
             # To Bot instance
             if plugin.bot_manager.is_in_list(player):
-                plugin.bot_manager.get_bot(player).set_online(True)
+                bot = plugin.bot_manager.get_bot(player)
             else:
                 bot = plugin.bot_manager.new_bot(
                     player, plugin.get_location(player)
                 )
-                bot.set_online(True)
+
+            # Spawned handler
+            bot.spawned()
 
     @staticmethod
     @event_listener(MCDRPluginEvents.PLAYER_LEFT)
