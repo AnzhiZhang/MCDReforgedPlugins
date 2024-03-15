@@ -55,7 +55,6 @@ class EventHandler:
                 )
                 server.logger.warning(message)
                 server.say(message)
-                return
 
             # debug log
             server.logger.debug(f'Bot {player} joined')
