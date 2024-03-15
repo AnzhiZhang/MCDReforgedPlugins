@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.3...bot-v1.1.4) (2024-03-15)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot join detection bug ([1a367ce](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/1a367cecd27c9a623f91a0641167b5e4faa16af3))
+
 ## [1.1.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.2...bot-v1.1.3) (2024-02-27)
 
 
