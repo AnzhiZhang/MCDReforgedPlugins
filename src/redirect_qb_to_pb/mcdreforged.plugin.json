@@ -1,0 +1,11 @@
+{
+  "id": "redirect_qb_to_pb",
+  "version": "1.0.0",
+  "name": "Redirect qb to pb",
+  "description": {
+    "en_us": "Redirect !!qb to !!pb",
+    "zh_cn": "将 !!qb 重定向到 !!pb"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/redirect_qb_to_pb"
+}
