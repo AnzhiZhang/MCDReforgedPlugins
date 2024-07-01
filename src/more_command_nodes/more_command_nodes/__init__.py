@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Type, Iterable
 
 from mcdreforged.api.command import *
-from mcdreforged.command.builder import command_builder_utils as utils
 
 __all__ = [
     'FloatsArgument',
@@ -90,7 +89,7 @@ class EnumeratedText(Enumeration):
         return map(lambda e: e.value, self.__enum_class)
 
     def parse(self, text: str) -> ParseResult:
-        arg = utils.get_element(text)
+        arg = command_builder_utils.get_element(text)
         try:
             enum = self.__enum_class(arg)
         except ValueError:
