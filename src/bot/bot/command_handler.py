@@ -536,7 +536,7 @@ class CommandHandler:
         def get_config_button(
                 bot_name: str,
                 config: str,
-                default_value: str
+                default_value: str = None
         ) -> RText:
             """
             Get a RText config button.
@@ -545,6 +545,9 @@ class CommandHandler:
             :param default_value: Default value of the config.
             :return: RText.
             """
+            if default_value is None:
+                default_value = ''
+
             return (
                 RText('[✐]', color=RColor.gray)
                 .h(
@@ -742,29 +745,29 @@ class CommandHandler:
                     bot.comment
                 ), '\n',
                 get_config_button(
-                    bot.name, 'actions', ''
+                    bot.name, 'actions'
                 ), ' ',
                 actions_info, '\n',
                 get_config_button(
-                    bot.name, 'tags', ''
+                    bot.name, 'tags'
                 ), ' ',
                 tags_info, '\n',
                 get_config_button(
-                    bot.name, 'autoLogin', bot.auto_login
+                    bot.name, 'autoLogin'
                 ), ' ',
                 RTextMCDRTranslation(
                     'bot.command.info.autoLogin',
                     bot.auto_login
                 ), '\n',
                 get_config_button(
-                    bot.name, 'autoRunActions', bot.auto_run_actions
+                    bot.name, 'autoRunActions'
                 ), ' ',
                 RTextMCDRTranslation(
                     'bot.command.info.autoRunActions',
                     bot.auto_run_actions
                 ), '\n',
                 get_config_button(
-                    bot.name, 'autoUpdate', bot.auto_update
+                    bot.name, 'autoUpdate'
                 ), ' ',
                 RTextMCDRTranslation(
                     'bot.command.info.autoUpdate',
