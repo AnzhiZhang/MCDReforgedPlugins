@@ -44,6 +44,7 @@ class Bot:
         self.__auto_run_actions = auto_run_actions
         self.__auto_update = auto_update
 
+        self.__mc_name: str = ''
         self.__online: bool = False
         self.__saved: bool = False
 
@@ -82,6 +83,10 @@ class Bot:
     @property
     def auto_update(self):
         return self.__auto_update
+
+    @property
+    def mc_name(self):
+        return self.__mc_name
 
     @property
     def online(self):
@@ -198,17 +203,20 @@ class Bot:
         else:
             raise BotOnlineException(self.name)
 
-    def spawned(self) -> None:
+    def spawned(self, mc_name: str) -> None:
         """
         Handler when bot spawned.
         """
+        # set mc name
+        self.__mc_name = mc_name
+
         # update online status
         self.set_online(True)
 
         # set gamemode
         if self.saved or self.__plugin.config.force_gamemode:
             self.__server.execute(
-                f'gamemode {self.__plugin.config.gamemode} {self.name}'
+                f'gamemode {self.__plugin.config.gamemode} {self.mc_name}'
             )
 
         # auto run actions
@@ -223,12 +231,12 @@ class Bot:
         if self.__online:
             # auto update location
             if self.auto_update:
-                self.set_location(self.__plugin.get_location(self.name))
+                self.set_location(self.__plugin.get_location(self.mc_name))
                 self.__plugin.bot_manager.save_data()
 
             # kill
             self.set_online(False)
-            self.__server.execute(f'player {self.name} kill')
+            self.__server.execute(f'player {self.mc_name} kill')
         else:
             raise BotOfflineException(self.name)
 
@@ -249,7 +257,7 @@ class Bot:
 
         # Run actions
         for action in run_actions:
-            self.__server.execute(f'player {self.name} {action}')
+            self.__server.execute(f'player {self.mc_name} {action}')
 
     def __str__(self):
         return (

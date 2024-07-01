@@ -67,7 +67,7 @@ class EventHandler:
                 bot = plugin.bot_manager.new_bot(name, location)
 
             # Spawned handler
-            bot.spawned()
+            bot.spawned(player)
 
     @staticmethod
     @event_listener(MCDRPluginEvents.PLAYER_LEFT)
