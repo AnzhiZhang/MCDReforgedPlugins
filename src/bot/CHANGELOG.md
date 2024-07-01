@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.4...bot-v1.1.5) (2024-07-01)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 save bot actual mc name (fix [#193](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/193)) ([56b7826](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/56b78266adacd52ac567c078dcbb42ff99ee549e))
+
 ## [1.1.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.3...bot-v1.1.4) (2024-03-15)
 
 
