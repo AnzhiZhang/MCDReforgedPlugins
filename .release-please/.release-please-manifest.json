@@ -1,7 +1,7 @@
 {
   "src/advanced_calculator": "0.3.1",
   "src/bingo": "0.0.3",
-  "src/bot": "1.1.4",
+  "src/bot": "1.1.5",
   "src/database_api": "0.1.1",
   "src/dict_command_registration": "1.1.0",
   "src/fastapi_mcdr": "1.0.0",
