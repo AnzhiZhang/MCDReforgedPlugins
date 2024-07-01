@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.1.1...more_command_nodes-v1.1.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **more_command_nodes:** 🐛 use command_builder_utils from api package ([0e49258](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0e49258202850294b535a378966ed3cedb388603))
+
 ## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.1.0...more_command_nodes-v1.1.1) (2024-07-01)
 
 
