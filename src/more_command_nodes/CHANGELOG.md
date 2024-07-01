@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.1.0...more_command_nodes-v1.1.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **more_command_nodes:** 🐛 fix import error by mcdr 2.13 (resolve [#199](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/199)) ([8a10565](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/8a105652a9491c8a79d43397e85ff63a9e5b2f14))
+
 ## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/more_command_nodes-v1.0.3...more_command_nodes-v1.1.0) (2022-07-18)
 
 
