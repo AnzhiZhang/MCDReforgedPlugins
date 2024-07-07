@@ -12,6 +12,6 @@
   ],
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/minecraft_command_register",
   "dependencies": {
-    "mcdreforged": "2.12.3"
+    "mcdreforged": "2.13.0"
   }
 }
