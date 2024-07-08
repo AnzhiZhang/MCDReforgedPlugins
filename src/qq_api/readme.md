@@ -4,9 +4,14 @@
 
 ## Usage
 
-### QQ Bot Configuration
+QQAPI supports [OneBot](https://onebot.dev/) protocol, choice of QQ Bot is up to you. You may search QQNT and OneBot to find one that works for you.
 
-It is recommended to use [go-cqhttp](https://github.com/Mrs4s/go-cqhttp).
+Regarding Tencent's official Bot, we have noticed they have an official Python SDK. However, group bots registered under an individual are not opened yet. We plan to support it in the future. If you really need it immediately, please open an issue.
+
+### go-cqhttp Configuration
+
+> [!NOTE]  
+> [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) has announced stop maintenance, this section is an arcive.
 
 Set qq account and password in `account` field:
 
