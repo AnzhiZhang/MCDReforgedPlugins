@@ -19,6 +19,9 @@
     "src/bot": {
       "package-name": "bot"
     },
+    "src/command_aliases": {
+      "package-name": "command_aliases"
+    },
     "src/database_api": {
       "package-name": "database_api"
     },

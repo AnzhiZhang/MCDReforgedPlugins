@@ -1,0 +1,11 @@
+{
+  "id": "command_aliases",
+  "version": "1.0.0",
+  "name": "Command Aliases",
+  "description": {
+    "en_us": "Aliases commands",
+    "zh_cn": "为命令添加别名"
+  },
+  "author": "Andy Zhang",
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/command_aliases"
+}
