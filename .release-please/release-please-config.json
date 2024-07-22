@@ -40,9 +40,6 @@
     "src/let_me_click_and_send": {
       "package-name": "let_me_click_and_send"
     },
-    "src/lowercase_mcdr_command": {
-      "package-name": "lowercase_mcdr_command"
-    },
     "src/minecraft_command_register": {
       "package-name": "minecraft_command_register"
     },
