@@ -55,9 +55,6 @@
     "src/qq_chat": {
       "package-name": "qq_chat"
     },
-    "src/redirect_qb_to_pb": {
-      "package-name": "redirect_qb_to_pb"
-    },
     "src/uuid_api": {
       "package-name": "uuid_api"
     }
