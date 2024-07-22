@@ -16,5 +16,5 @@ You need to add all commands you would like to alias in the config file, where k
 
 Now you can use `!!mcdr` as an alias for `!!MCDR`.
 
-> [!NOTE]  
+> [!NOTE]
 > There will be no completion for alias commands. If you want to use completion, you need to use original commands. It does not make sense if you need to use alias in an environment where you have completion.
