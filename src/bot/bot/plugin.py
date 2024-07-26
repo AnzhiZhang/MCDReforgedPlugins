@@ -7,10 +7,15 @@ from bot.command_handler import CommandHandler
 from bot.event_handler import EventHandler
 from bot.location import Location
 
+# FastAPIManager
+fastapi_error = None
 try:
     from bot.fastapi_manager import FastAPIManager
 except ImportError:
     FastAPIManager = None
+except Exception as e:
+    FastAPIManager = None
+    fastapi_error = e
 
 
 class Plugin:
@@ -35,10 +40,19 @@ class Plugin:
         if FastAPIManager is not None:
             self.__fastapi_manager = FastAPIManager(self)
         else:
-            self.server.logger.debug(
-                "FastAPI library is not installed, "
-                "will not register APIs with FastAPI MCDR."
-            )
+            if fastapi_error is None:
+                self.server.logger.debug(
+                    "FastAPI libraries is not installed, "
+                    "will not register APIs with FastAPI MCDR."
+                )
+            else:
+                self.server.logger.warning(
+                    "Failed to load FastAPI manager, "
+                    "please check the error message below. "
+                    "If you do not intent to use FastAPI, "
+                    "you may ignore this message.",
+                    exc_info=fastapi_error
+                )
 
     def unload_fastapi_manager(self):
         if self.__fastapi_manager is not None:
