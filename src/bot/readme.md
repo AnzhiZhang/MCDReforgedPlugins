@@ -225,3 +225,9 @@ Minimum permission to use corresponding command
 ## FastAPI MCDR
 
 This plugin supports [FastAPI MCDR](../fastapi_mcdr) plugin, please refer to the source code for detailed API, or run and view the FastAPI document via `http://127.0.0.1:8080/docs`.
+
+Python packages required:
+
+```text
+pydantic>=2.0
+```
