@@ -28,6 +28,7 @@ class Config(Serializable):
 
     # 白名单部分
     whitelist_add_with_bound: bool = False
+    whitelist_add_cmd_template: str = "/whitelist add {}"
     whitelist_remove_with_leave: bool = True
 
     # command 权限开关
@@ -549,29 +550,41 @@ def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
             else:
                 return bound_qq_to_player(server, event, command[1])
         elif len(command) == 3 and command[1] == "check":
-            if command[2] in data:
+            qq_number = parse_at_message(command[2])
+            if qq_number in data:
                 reply_with_server_name(
                     event,
-                    f"{command[2]} 绑定的ID是{data[command[2]]}"
+                    f"{qq_number} 绑定的ID是{data[qq_number]}"
                 )
             else:
-                reply_with_server_name(event, f"{command[2]} 未绑定")
+                reply_with_server_name(event, f"{qq_number} 未绑定")
         elif len(command) == 3 and command[1] == "unbound":
-            if command[2] in data:
-                del data[command[2]]
+            qq_number = parse_at_message(command[2])
+            if qq_number in data:
+                del data[qq_number]
                 save_data(server)
-                reply_with_server_name(event, f"已解除 {command[2]} 绑定的ID")
+                reply_with_server_name(event, f"已解除 {qq_number} 绑定的ID")
             else:
-                reply_with_server_name(event, f"{command[2]} 未绑定")
-        elif len(command) == 3 and command[1].isdigit():
-            data[command[1]] = command[2]
+                reply_with_server_name(event, f"{qq_number} 未绑定")
+        elif len(command) == 3 and parse_at_message(command[1]).isdigit():
+            data[parse_at_message(command[1])] = command[2]
             save_data(server)
             reply_with_server_name(event, "已成功绑定")
+            after_bound(server, event, parse_at_message(command[1]), command[2])
 
     # 非管理权限
     elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
                         EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT]:
         bound_qq_to_player(server, event, command[1])
+
+
+def parse_at_message(node: str) -> str:
+    pattern = r'\[@([^\]]+)\]'
+    match = re.search(pattern, node)
+    if match:
+        return match.group(1)
+    else:
+        return node
 
 
 def bound_qq_to_player(server, event, player_name):
@@ -589,12 +602,22 @@ def bound_qq_to_player(server, event, player_name):
             event,
             f"[CQ:at,qq={user_id}] 已成功绑定到{player_name}"
         )
-        if config.whitelist_add_with_bound:
+        after_bound(server, event, user_id, player_name)
+
+
+def after_bound(server, event, user_id, player_name):
+    if config.whitelist_add_with_bound:
+        if config.whitelist_add_cmd_template is None or config.whitelist_add_cmd_template == '':
             server.execute(f"whitelist add {player_name}")
-            reply_with_server_name(
-                event,
-                f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
-            )
+        else:
+            if config.whitelist_add_cmd_template.startswith("!!"):
+                server.execute_command(config.whitelist_add_cmd_template.format(player_name))
+            else:
+                server.execute(config.whitelist_add_cmd_template.format(player_name))
+        reply_with_server_name(
+            event,
+            f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
+        )
 
 
 def mc_command_handle(
