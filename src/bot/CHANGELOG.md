@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.5...bot-v1.2.0) (2024-07-31)
+
+
+### Features
+
+* **bot:** ✨ update command edit button ([9e4d06d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9e4d06dd7cfcd30f5247ea9f529f848ee53cfbe6))
+* **bot:** 🥅 catch any other error when loading FastAPIManager ([2314f31](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2314f31fabeefaa876625c9ab03d6ae13d098d62))
+
 ## [1.1.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.4...bot-v1.1.5) (2024-07-01)
 
 
