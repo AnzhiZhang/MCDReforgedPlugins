@@ -1,16 +1,16 @@
 name: Plugin Issue Default Template
 description: Bug Report or Feature Request, etc.
-title: "[Plugin Name]: '
+title: "[Plugin Name]: "
 body:
   - type: markdown
     id: notice
     attributes:
       value: |
-        **Please go to [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions) to ask for help!**
+        **Please go to [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions) to ask for help.**
         
         Please input your plugin name in the title.
         
-        **需要帮助请前往 [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions)！**
+        **需要帮助请前往 [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions)。**
         
         请在标题中输入插件名。
   - type: input
@@ -45,6 +45,7 @@ body:
     id: confirmatiion
     attributes:
       label: Confirmation
-      description: Please confirm you have searched in previous [issues](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues) and [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions). And your matter is an issue instead of a discussion question.      options:
+      description: Please confirm you have searched in previous [issues](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues) and [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions). And your matter is an issue instead of a discussion question.
+      options:
         - label: I sincerely confirm that I have searched in previous issues to confirm it is not duplicated, and this should be an issue instead of a discussion.
           required: true
