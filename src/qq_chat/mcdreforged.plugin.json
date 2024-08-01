@@ -1,12 +1,15 @@
 {
   "id": "qq_chat",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "name": "QQChat",
   "description": {
     "en_us": "Useful Functions with QQ",
     "zh_cn": "QQ 相关实用功能"
   },
-  "author": ["Andy Zhang", "Aimerny"],
+  "author": [
+    "Andy Zhang",
+    "Aimerny"
+  ],
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/qq_api",
   "dependencies": {
     "qq_api": "^1.2.0",
