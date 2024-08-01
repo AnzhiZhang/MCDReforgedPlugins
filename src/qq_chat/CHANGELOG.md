@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.1.0...qq_chat-v2.2.0) (2024-08-01)
+
+
+### Features
+
+* **qq_chat:** :sparkles: support '@' instead qq number && whitelist add command template ([9d8e755](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9d8e75586972403d2a37e652e7533ff3bb3d5e49))
+
 ## [2.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.0.0...qq_chat-v2.1.0) (2023-06-29)
 
 
