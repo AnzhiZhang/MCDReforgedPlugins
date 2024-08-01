@@ -570,7 +570,12 @@ def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
             data[parse_at_message(command[1])] = command[2]
             save_data(server)
             reply_with_server_name(event, "已成功绑定")
-            after_bound(server, event, parse_at_message(command[1]), command[2])
+            after_bound(
+                server,
+                event,
+                parse_at_message(command[1]),
+                command[2]
+            )
 
     # 非管理权限
     elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
@@ -610,10 +615,11 @@ def after_bound(server, event, user_id, player_name):
         if config.whitelist_add_cmd_template is None or config.whitelist_add_cmd_template == '':
             server.execute(f"whitelist add {player_name}")
         else:
+            cmd = config.whitelist_add_cmd_template.format(player_name)
             if config.whitelist_add_cmd_template.startswith("!!"):
-                server.execute_command(config.whitelist_add_cmd_template.format(player_name))
+                server.execute_command(cmd)
             else:
-                server.execute(config.whitelist_add_cmd_template.format(player_name))
+                server.execute(cmd)
         reply_with_server_name(
             event,
             f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
