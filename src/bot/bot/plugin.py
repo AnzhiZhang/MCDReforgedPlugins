@@ -103,6 +103,26 @@ class Plugin:
         if save_flag:
             self.server.save_config_simple(self.__config, CONFIG_FILE_NAME)
 
+    def parse_name(self, name: str) -> str:
+        """
+        Parse the name of the bot.
+        :param name: Name of the bot.
+        :return: Parsed bot name string.
+        """
+        # Lowercase
+        name = name.lower()
+
+        # Prefix
+        if not name.startswith(self.config.name_prefix):
+            name = self.config.name_prefix + name
+
+        # Suffix
+        if not name.endswith(self.config.name_suffix):
+            name = name + self.config.name_suffix
+
+        # Return
+        return name
+
     def get_location(self, name: str) -> Location:
         """
         Get location from a player or bot.

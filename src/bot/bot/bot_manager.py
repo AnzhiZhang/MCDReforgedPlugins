@@ -55,7 +55,7 @@ class BotManager:
             api = self.__plugin.minecraft_data_api
             online_list = api.get_server_player_list()[2]
             for name in online_list:
-                name = self.__plugin.command_handler.parse_name(name)
+                name = self.__plugin.parse_name(name)
                 if old_self.is_in_list(name):
                     self.__bots[name] = old_self.get_bot(name)
                     self.__bots[name].set_online(True)

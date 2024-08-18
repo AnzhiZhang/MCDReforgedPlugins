@@ -73,10 +73,6 @@ class FastAPIManager:
         return self.__plugin.server.logger
 
     @property
-    def __command_handler(self):
-        return self.__plugin.command_handler
-
-    @property
     def __bot_manager(self):
         return self.__plugin.bot_manager
 
@@ -170,7 +166,7 @@ class FastAPIManager:
 
     async def __post_bots(self, request: PostBotRequest) -> BotModel:
         # parse name
-        name = self.__command_handler.parse_name(request.name)
+        name = self.__plugin.parse_name(request.name)
 
         # create bot
         try:
@@ -207,7 +203,7 @@ class FastAPIManager:
             request: PatchBotRequest
     ) -> BotModel:
         # parse name
-        name = self.__command_handler.parse_name(bot_name)
+        name = self.__plugin.parse_name(bot_name)
 
         # check request params
         if (
@@ -245,7 +241,7 @@ class FastAPIManager:
             )
 
     async def __delete_bot(self, bot_name: str) -> None:
-        name = self.__command_handler.parse_name(bot_name)
+        name = self.__plugin.parse_name(bot_name)
         try:
             self.__bot_manager.delete(name)
             self.__logger.debug(f'Deleted "{name}"')
