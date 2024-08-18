@@ -13,7 +13,7 @@
 
 `!!bot` View help
 
-`!!bot list [index] [filter]` Show bot list
+`!!bot list [--index <index>] [filters]` Show bot list
 
 `!!bot spawn <name>` Spawn bot
 
@@ -51,9 +51,13 @@ sequenceDiagram
 
 ### list
 
-**index**: Page number of the list
+**--index \<index\>**: Page number, e.g. `--index 1`, default is 0
 
-**filter**: Available options are: `--all`, `--online` or `--saved`, filter bots
+**--online**: Show online bots
+
+**--saved**: Show saved bots
+
+**--tag \<tag\>**: Filter by tag
 
 ### spawn
 
@@ -61,7 +65,7 @@ Spawn bot
 
 ```mermaid
 flowchart TD
-    start([list])
+    start([spawn])
     is_saved{Saved?}
     is_player{Running by Player?}
 
@@ -132,12 +136,10 @@ flowchart LR
     start(!!bot)
 
     start --> list(list)
-    list --> list_index["&lt;index&gt;"]
-    list_index --> list_index_arg["
-        --all
-        --online
-        --saved
-    "]
+    list --> list_index["--index &lt;index&gt;"]
+    list --> list_online[--online]
+    list --> list_saved[--saved]
+    list --> list_tag["--tag &lt;tag&gt;"]
 
     start --> spawn(spawn)
     spawn --> spawn_name("&lt;name&gt;")

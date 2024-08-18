@@ -156,20 +156,24 @@ class BotManager:
             self,
             index: int,
             online: bool,
-            saved: bool
+            saved: bool,
+            tag: str = None
     ) -> Tuple[List[Bot], int]:
         """
         List bots with filters.
         :param index: Page index.
         :param online: Include online bots.
         :param saved: Include saved bots.
+        :param tag: Tag, only include bots with this tag if not None.
         :return: A list of bots.
         """
         # Filter bots by online and saved
-        bots = [
-            bot for bot in self.bots.values()
-            if (bot.online and online) or (bot.saved and saved)
-        ]
+        bots = []
+        for bot in self.bots.values():
+            condition = (online and bot.online) or (saved and bot.saved)
+            condition = condition and (tag is None or tag in bot.tags)
+            if condition:
+                bots.append(bot)
 
         # Check index and filter bots to page
         max_index = math.ceil(len(bots) / 10) - 1

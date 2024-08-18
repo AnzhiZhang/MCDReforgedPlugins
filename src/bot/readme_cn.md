@@ -13,7 +13,7 @@
 
 `!!bot` 查看帮助
 
-`!!bot list [index] [filter]` 显示假人列表
+`!!bot list [--index <index>] [filters]` 显示假人列表
 
 `!!bot spawn <name>` 上线假人
 
@@ -51,9 +51,13 @@ sequenceDiagram
 
 ### list
 
-**index**：列表的页码
+**--index \<index\>**：页码，例如 `--index 1`，默认为 0
 
-**filter**：可用选项为：`--all`、`--online` 或 `--saved`，过滤假人
+**--online**：显示在线假人
+
+**--saved**：显示保存的假人
+
+**--tag \<tag\>**：按标签过滤
 
 ### spawn
 
@@ -61,7 +65,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    start([list])
+    start([spawn])
     is_saved{Saved?}
     is_player{Running by Player?}
 
@@ -132,12 +136,10 @@ flowchart LR
     start(!!bot)
 
     start --> list(list)
-    list --> list_index["&lt;index&gt;"]
-    list_index --> list_index_arg["
-        --all
-        --online
-        --saved
-    "]
+    list --> list_index["--index &lt;index&gt;"]
+    list --> list_online[--online]
+    list --> list_saved[--saved]
+    list --> list_tag["--tag &lt;tag&gt;"]
 
     start --> spawn(spawn)
     spawn --> spawn_name("&lt;name&gt;")

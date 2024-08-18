@@ -5,7 +5,6 @@ from mcdreforged.api.types import CommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.rtext import *
 from mcdreforged.api.decorator import new_thread
-from mcdreforged.api.utils.serializer import Serializable
 from more_command_nodes import Position, Facing, EnumeratedText
 
 from bot.exceptions import *
@@ -16,35 +15,12 @@ if TYPE_CHECKING:
     from bot.plugin import Plugin
 
 
-class PermissionsRequirements(Serializable):
-    LIST: Callable
-    SPAWN: Callable
-    KILL: Callable
-    ACTION: Callable
-    TAGS: Callable
-    INFO: Callable
-    SAVE: Callable
-    DEL: Callable
-    CONFIG: Callable
-
-
-class ListArguments(Enum):
-    ALL = '--all'
-    ONLINE = '--online'
-    SAVED = '--saved'
-
-
 class CommandHandler:
     def __init__(self, plugin: 'Plugin'):
         self.__plugin: 'Plugin' = plugin
-        permissions = PermissionsRequirements(
-            **{
-                key.upper(): Requirements.has_permission(value)
-                for key, value
-                in self.__plugin.config.permissions.items()
-            }
-        )
+        self.register_commands()
 
+    def register_commands(self):
         def bot_list(online: bool = None) -> Callable[[], List[str]]:
             return lambda: [
                 name for name, bot in
@@ -52,41 +28,56 @@ class CommandHandler:
                 if online is None or bot.online == online
             ]
 
-        list_literal = (
-            Literal('list')
-            .requires(permissions.LIST)
-            .runs(self.__command_list)
-            .then(
-                Integer('index')
-                .runs(self.__command_list)
-                .then(
-                    EnumeratedText('arg', ListArguments)
-                    .runs(self.__command_list)
-                )
+        def create_subcommand(literal: str) -> Literal:
+            node = Literal(literal)
+            permission = self.__plugin.config.permissions[literal]
+            node.requires(
+                Requirements.has_permission(permission),
+                lambda: self.__plugin.server.rtr('bot.error.permissionDenied')
             )
-        )
-        spawn_literal = (
-            Literal('spawn')
-            .requires(permissions.SPAWN)
-            .then(
+            return node
+
+        def make_list_command() -> Literal:
+            list_literal = create_subcommand('list').runs(self.__command_list)
+            list_literal.then(
+                Literal('--index')
+                .then(Integer('index').redirects(list_literal))
+            )
+            list_literal.then(
+                CountingLiteral('--online', 'online')
+                .redirects(list_literal)
+            )
+            list_literal.then(
+                CountingLiteral('--saved', 'saved')
+                .redirects(list_literal)
+            )
+            list_literal.then(
+                Literal('--tag')
+                .then(Text('tag').redirects(list_literal))
+            )
+            return list_literal
+
+        def make_spawn_command() -> Literal:
+            spawn_literal = create_subcommand('spawn')
+            spawn_literal.then(
                 Text('name')
                 .runs(self.__command_spawn)
                 .suggests(bot_list(False))
             )
-        )
-        kill_literal = (
-            Literal('kill')
-            .requires(permissions.KILL)
-            .then(
+            return spawn_literal
+
+        def make_kill_command() -> Literal:
+            kill_literal = create_subcommand('kill')
+            kill_literal.then(
                 Text('name')
                 .runs(self.__command_kill)
                 .suggests(bot_list(True))
             )
-        )
-        action_literal = (
-            Literal('action')
-            .requires(permissions.ACTION)
-            .then(
+            return kill_literal
+
+        def make_action_command() -> Literal:
+            action_literal = create_subcommand('action')
+            action_literal.then(
                 Text('name')
                 .runs(self.__command_action)
                 .suggests(bot_list(True))
@@ -95,12 +86,12 @@ class CommandHandler:
                     .runs(self.__command_action)
                 )
             )
-        )
-        tags_literal = (
-            Literal('tags')
-            .requires(permissions.TAGS)
-            .runs(self.__command_tag_list)
-            .then(
+            return action_literal
+
+        def make_tags_command() -> Literal:
+            tags_literal = create_subcommand('tags')
+            tags_literal.runs(self.__command_tag_list)
+            tags_literal.then(
                 Text('tag')
                 .suggests(self.tag_list)
                 .then(
@@ -112,20 +103,20 @@ class CommandHandler:
                     .runs(self.__command_tag_kill)
                 )
             )
-        )
-        info_literal = (
-            Literal('info')
-            .requires(permissions.INFO)
-            .then(
+            return tags_literal
+
+        def make_info_command() -> Literal:
+            info_literal = create_subcommand('info')
+            info_literal.then(
                 Text('name')
                 .runs(self.__command_info)
                 .suggests(bot_list())
             )
-        )
-        save_literal = (
-            Literal('save')
-            .requires(permissions.SAVE)
-            .then(
+            return info_literal
+
+        def make_save_command() -> Literal:
+            save_literal = create_subcommand('save')
+            save_literal.then(
                 Text('name')
                 .runs(self.__command_save)
                 .then(
@@ -141,20 +132,20 @@ class CommandHandler:
                     )
                 )
             )
-        )
-        del_literal = (
-            Literal('del')
-            .requires(permissions.DEL)
-            .then(
+            return save_literal
+
+        def make_del_command() -> Literal:
+            del_literal = create_subcommand('del')
+            del_literal.then(
                 Text('name')
                 .runs(self.__command_del)
                 .suggests(bot_list())
             )
-        )
-        config_literal = (
-            Literal('config')
-            .requires(permissions.CONFIG)
-            .then(
+            return del_literal
+
+        def make_config_command() -> Literal:
+            config_literal = create_subcommand('config')
+            config_literal.then(
                 Text('name')
                 .suggests(bot_list())
                 .then(
@@ -296,7 +287,8 @@ class CommandHandler:
                     )
                 )
             )
-        )
+            return config_literal
+
         self.__plugin.server.register_help_message(
             '!!bot',
             RTextMCDRTranslation('bot.help.message')
@@ -310,15 +302,15 @@ class CommandHandler:
                     self.__plugin.server.rtr('bot.help.content')
                 )
             )
-            .then(list_literal)
-            .then(spawn_literal)
-            .then(kill_literal)
-            .then(action_literal)
-            .then(tags_literal)
-            .then(info_literal)
-            .then(save_literal)
-            .then(del_literal)
-            .then(config_literal)
+            .then(make_list_command())
+            .then(make_spawn_command())
+            .then(make_kill_command())
+            .then(make_action_command())
+            .then(make_tags_command())
+            .then(make_info_command())
+            .then(make_save_command())
+            .then(make_del_command())
+            .then(make_config_command())
         )
 
     def tag_list(self) -> Set[str]:
@@ -328,13 +320,19 @@ class CommandHandler:
         return set(tags)
 
     def __command_list(self, src: CommandSource, ctx: CommandContext):
+        show_online = ctx.get('online', 0) > 0
+        show_saved = ctx.get('saved', 0) > 0
+        show_all = (not show_online) and (not show_saved)
         index = ctx.get('index', 0)
-        arg = ctx.get('arg', ListArguments.ALL)
+        tag = ctx.get('tag')
+
+        self.__plugin.server.logger.warning(tag)
         try:
             bot_list, max_index = self.__plugin.bot_manager.list(
                 index,
-                arg == ListArguments.ALL or arg == ListArguments.ONLINE,
-                arg == ListArguments.ALL or arg == ListArguments.SAVED
+                show_all or show_online,
+                show_all or show_saved,
+                tag
             )
 
             # Header
@@ -404,14 +402,22 @@ class CommandHandler:
                 if index != max_index
                 else RColor.dark_gray
             )
+            cmd_template = '!!bot list'
+            if show_online:
+                cmd_template += ' --online'
+            if show_saved:
+                cmd_template += ' --saved'
+            if tag is not None:
+                cmd_template += f' --tag {tag}'
+            cmd_template += ' --index {}'
             message.append(RTextList(
                 '\n',
                 RText('<<< ', color=left_color).c(
-                    RAction.run_command, f'!!bot list {index - 1}'
+                    RAction.run_command, cmd_template.format(index - 1)
                 ),
                 index, ' / ', max_index,
                 RText(' >>>', color=right_color).c(
-                    RAction.run_command, f'!!bot list {index + 1}'
+                    RAction.run_command, cmd_template.format(index + 1)
                 )
             ))
 
