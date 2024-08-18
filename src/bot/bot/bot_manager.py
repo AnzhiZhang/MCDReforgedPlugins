@@ -25,7 +25,7 @@ class BotManager:
 
     @new_thread('loadBot')
     def __load_data(self, prev_module) -> None:
-        # Saved bots
+        # saved bots
         file_data = self.__plugin.server.load_config_simple(
             DATA_FILE_NAME,
             default_config={'botList': {}},
@@ -49,12 +49,13 @@ class BotManager:
             )
             self.__bots[name].set_saved(True)
 
-        # Old bots
+        # old bots
         if prev_module is not None:
             old_self: 'BotManager' = prev_module.plugin.bot_manager
             api = self.__plugin.minecraft_data_api
             online_list = api.get_server_player_list()[2]
             for name in online_list:
+                name = self.__plugin.command_handler.parse_name(name)
                 if old_self.is_in_list(name):
                     self.__bots[name] = old_self.get_bot(name)
                     self.__bots[name].set_online(True)
