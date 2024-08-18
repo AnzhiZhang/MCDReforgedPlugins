@@ -1,3 +1,4 @@
+import minecraft_data_api
 from mcdreforged.api.types import PluginServerInterface
 
 from bot.constants import CONFIG_FILE_NAME, DIMENSION
@@ -21,9 +22,6 @@ except Exception as e:
 class Plugin:
     def __init__(self, server: PluginServerInterface, prev_module):
         self.__server = server
-        self.__minecraft_data_api = self.__server.get_plugin_instance(
-            'minecraft_data_api'
-        )
         self.__config = self.__server.load_config_simple(
             CONFIG_FILE_NAME,
             target_class=Config
@@ -68,7 +66,7 @@ class Plugin:
 
     @property
     def minecraft_data_api(self):
-        return self.__minecraft_data_api
+        return minecraft_data_api
 
     @property
     def config(self):
