@@ -28,7 +28,9 @@ bot.error.botNotSaved: §cBot §6{0} is not saved!
 bot.command.spawned: §aBot §6{0} §aspawned
 bot.command.killed: §aBot §6{0} §akilled
 bot.command.action: §aBot §6{0} §aactions run
-bot.command.tag.list: '§aAvailable tags: §6{0}'
+bot.command.tag.spawnButton: §aClick to spawn all bots
+bot.command.tag.killButton: §eClick to kill all bots
+bot.command.tag.listButton: §7Click to list all bots
 bot.command.tag.spawn: §6{0} bots with tag §6{1} §aspawned
 bot.command.tag.kill: §6{0} bots with tag §6{1} §akilled
 bot.command.info.configButtonHover: §7Click to configure

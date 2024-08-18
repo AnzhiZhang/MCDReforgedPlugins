@@ -469,10 +469,40 @@ class CommandHandler:
             ))
 
     def __command_tag_list(self, src: CommandSource):
-        src.reply(RTextMCDRTranslation(
-            'bot.command.tag.list',
-            list(self.tag_list())
-        ))
+        # header
+        message = RTextList('-------- List --------')
+
+        # list
+        for tag in self.tag_list():
+            spawn_button = (
+                RText(
+                    '[↑]', color=RColor.green
+                )
+                .h(RTextMCDRTranslation('bot.command.tag.spawnButton'))
+                .c(RAction.run_command, f'!!bot tags {tag} spawn')
+            )
+            kill_button = (
+                RText(
+                    '[↓]', color=RColor.yellow
+                )
+                .h(RTextMCDRTranslation('bot.command.tag.killButton'))
+                .c(RAction.run_command, f'!!bot tags {tag} kill')
+            )
+            list_button = (
+                RText(
+                    '[?]', color=RColor.gray
+                )
+                .h(RTextMCDRTranslation('bot.command.tag.listButton'))
+                .c(RAction.run_command, f'!!bot list --tag {tag}')
+            )
+            name = RText(tag, color=RColor.white)
+            message.append(RTextList(
+                '\n',
+                spawn_button, ' ', kill_button, ' ', list_button, ' ', name
+            ))
+
+        # reply
+        src.reply(message)
 
     def __command_tag_spawn(self, src: CommandSource, ctx: CommandContext):
         tag = ctx['tag']
