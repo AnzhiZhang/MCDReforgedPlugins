@@ -1,6 +1,6 @@
 name: Plugin Issue Default Template
 description: Bug Report or Feature Request, etc.
-title: "[Plugin Name]: "
+title: "[Plugin Name] "
 body:
   - type: markdown
     id: notice
