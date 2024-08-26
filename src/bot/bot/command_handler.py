@@ -326,7 +326,6 @@ class CommandHandler:
         index = ctx.get('index', 0)
         tag = ctx.get('tag')
 
-        self.__plugin.server.logger.warning(tag)
         try:
             bot_list, max_index = self.__plugin.bot_manager.list(
                 index,
