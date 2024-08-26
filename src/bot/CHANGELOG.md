@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.5...bot-v1.2.0) (2024-08-26)
+
+
+### Features
+
+* **bot:** ✨ improve list command ([#218](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/218)) ([3b43b00](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/3b43b006043071420caa768ab39c6447c81874d8))
+* **bot:** ✨ improve tags command ([#218](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/218)) ([8f6a4dd](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/8f6a4dd7bfc20adc9afcbb1992d8232d47f5abf6))
+* **bot:** ✨ update command edit button ([9e4d06d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9e4d06dd7cfcd30f5247ea9f529f848ee53cfbe6))
+* **bot:** 🥅 catch any other error when loading FastAPIManager ([2314f31](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2314f31fabeefaa876625c9ab03d6ae13d098d62))
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot name during reload ([dfbb517](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/dfbb5174e269d255a51c0173a3e734feb9487a37))
+* **bot:** 👽️ fix minecraft_data_api import issue (fix [#221](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/221)) ([9f198dc](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9f198dccf0a80804436e094fabbb9922919bcd1e))
+* **bot:** 🔇 remove logs ([b60d8c1](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b60d8c19ac3936ff8f14ee67bba503620879db8d))
+* **bot:** 🩹 resolve dimension translation text in 1.19 (resolve [#210](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/210)) ([bf62e74](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/bf62e747940288caa1a86acbefecd2c1af4c4010))
+
 ## [1.1.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.4...bot-v1.1.5) (2024-07-01)
 
 
