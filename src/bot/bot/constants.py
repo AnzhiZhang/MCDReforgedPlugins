@@ -9,20 +9,6 @@ class DIMENSION:
     THE_NETHER = -1
     THE_END = 1
 
-    DISPLAY_TRANSLATION = {
-        0: RTextTranslation(
-            'createWorld.customize.preset.overworld',
-            color=RColor.green
-        ),
-        -1: RTextTranslation(
-            'advancements.nether.root.title',
-            color=RColor.dark_red
-        ),
-        1: RTextTranslation(
-            'advancements.end.root.title',
-            color=RColor.light_purple
-        )
-    }
     STR_TRANSLATION = {
         0: 'minecraft:overworld',
         -1: 'minecraft:the_nether',
