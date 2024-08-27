@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.1...bot-v1.2.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix http model key names ([009a04d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/009a04dea642beb1b7bb96e7f333ff02ff2076db))
+
 ## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.0...bot-v1.2.1) (2024-08-27)
 
 
