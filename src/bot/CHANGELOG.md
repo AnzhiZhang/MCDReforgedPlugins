@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.0...bot-v1.2.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot http api response ([4aebad6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/4aebad628a2ed9ed44ea9f983c8536a12bfac37f))
+
 ## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.5...bot-v1.2.0) (2024-08-26)
 
 
