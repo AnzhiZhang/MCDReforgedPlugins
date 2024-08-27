@@ -24,9 +24,9 @@ class BotModel(BaseModel):
     comment: str
     actions: List[str]
     tags: List[str]
-    auto_login: bool
-    auto_run_actions: bool
-    auto_update: bool
+    autoLogin: bool
+    autoRunActions: bool
+    autoUpdate: bool
     online: bool
     saved: bool
 
@@ -36,9 +36,9 @@ class BaseBotRequest(BaseModel):
     comment: str | None = None
     actions: List[str] | None = None
     tags: List[str] | None = None
-    auto_login: bool | None = None
-    auto_run_actions: bool | None = None
-    auto_update: bool | None = None
+    autoLogin: bool | None = None
+    autoRunActions: bool | None = None
+    autoUpdate: bool | None = None
     online: bool | None = None
 
 
@@ -66,9 +66,9 @@ def to_bot_model(bot: Bot) -> BotModel:
         comment=bot.comment,
         actions=bot.actions,
         tags=bot.tags,
-        auto_login=bot.auto_login,
-        auto_run_actions=bot.auto_run_actions,
-        auto_update=bot.auto_update,
+        autoLogin=bot.auto_login,
+        autoRunActions=bot.auto_run_actions,
+        autoUpdate=bot.auto_update,
         online=bot.online,
         saved=bot.saved
     )
@@ -155,16 +155,16 @@ class FastAPIManager:
             bot.set_actions(request.actions)
 
         # auto login
-        if request.auto_login is not None:
-            bot.set_auto_login(request.auto_login)
+        if request.autoLogin is not None:
+            bot.set_auto_login(request.autoLogin)
 
         # auto run actions
-        if request.auto_run_actions is not None:
-            bot.set_auto_run_actions(request.auto_run_actions)
+        if request.autoRunActions is not None:
+            bot.set_auto_run_actions(request.autoRunActions)
 
         # auto update
-        if request.auto_update is not None:
-            bot.set_auto_update(request.auto_update)
+        if request.autoUpdate is not None:
+            bot.set_auto_update(request.autoUpdate)
 
         # spawn or kill
         if request.online is not None:
@@ -239,9 +239,9 @@ class FastAPIManager:
                 request.location is None and
                 request.comment is None and
                 request.actions is None and
-                request.auto_login is None and
-                request.auto_run_actions is None and
-                request.auto_update is None and
+                request.autoLogin is None and
+                request.autoRunActions is None and
+                request.autoUpdate is None and
                 request.online is None
         ):
             raise HTTPException(
