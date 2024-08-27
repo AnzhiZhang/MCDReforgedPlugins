@@ -223,7 +223,6 @@ class FastAPIManager:
 
             # return
             return to_bot_model(bot)
-
         except BotAlreadySavedException:
             raise HTTPException(
                 status_code=422,
