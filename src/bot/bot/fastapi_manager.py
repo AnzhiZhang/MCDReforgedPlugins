@@ -170,7 +170,7 @@ class FastAPIManager:
         if request.online is not None:
             if request.online and bot.online:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=422,
                     detail=f'Bot "{bot.name}" is already online.'
                 )
             elif request.online and not bot.online:
@@ -179,7 +179,7 @@ class FastAPIManager:
                 bot.kill()
             elif not request.online and not bot.online:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=422,
                     detail=f'Bot "{bot.name}" is not online.'
                 )
 
@@ -222,7 +222,7 @@ class FastAPIManager:
 
         except BotAlreadySavedException:
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail=f'Bot "{name}" is already saved.'
             )
 
@@ -245,7 +245,7 @@ class FastAPIManager:
                 request.online is None
         ):
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail='No parameter is provided.'
             )
 
@@ -265,7 +265,7 @@ class FastAPIManager:
             return to_bot_model(bot)
         except BotNotExistsException:
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail=f'Bot "{name}" is not found.'
             )
 
@@ -277,11 +277,11 @@ class FastAPIManager:
             return None
         except BotNotExistsException:
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail=f'Bot "{name}" is not found.'
             )
         except BotNotSavedException:
             raise HTTPException(
-                status_code=400,
+                status_code=422,
                 detail=f'Bot "{name}" is not saved.'
             )
