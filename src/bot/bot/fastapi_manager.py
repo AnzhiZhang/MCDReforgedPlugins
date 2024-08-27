@@ -136,6 +136,19 @@ class FastAPIManager:
             )
 
     def __update_bot_data(self, bot: Bot, request: BaseBotRequest) -> None:
+        # spawn or kill checking
+        if request.online is not None:
+            if request.online and bot.online:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f'Bot "{bot.name}" is already online.'
+                )
+            elif not request.online and not bot.online:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f'Bot "{bot.name}" is not online.'
+                )
+
         # location
         if request.location is not None:
             bot.set_location(
@@ -170,22 +183,12 @@ class FastAPIManager:
         if request.autoUpdate is not None:
             bot.set_auto_update(request.autoUpdate)
 
-        # spawn or kill
+        # spawn or kill perform
         if request.online is not None:
-            if request.online and bot.online:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f'Bot "{bot.name}" is already online.'
-                )
-            elif request.online and not bot.online:
+            if request.online and not bot.online:
                 bot.spawn()
             elif not request.online and bot.online:
                 bot.kill()
-            elif not request.online and not bot.online:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f'Bot "{bot.name}" is not online.'
-                )
 
         # save data
         self.__plugin.bot_manager.save_data()
