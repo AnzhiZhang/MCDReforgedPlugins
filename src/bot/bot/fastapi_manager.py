@@ -51,6 +51,29 @@ class PatchBotRequest(BaseBotRequest):
     pass
 
 
+class BotsGetResponse(BaseModel):
+    bots: Dict[str, BotModel]
+
+
+def to_bot_model(bot: Bot) -> BotModel:
+    return BotModel(
+        name=bot.name,
+        location=LocationModel(
+            position=bot.location.position,
+            facing=bot.location.facing,
+            dimension=bot.location.dimension
+        ),
+        comment=bot.comment,
+        actions=bot.actions,
+        tags=bot.tags,
+        auto_login=bot.auto_login,
+        auto_run_actions=bot.auto_run_actions,
+        auto_update=bot.auto_update,
+        online=bot.online,
+        saved=bot.saved
+    )
+
+
 class FastAPIManager:
     def __init__(self, plugin: 'Plugin'):
         self.__plugin: 'Plugin' = plugin
@@ -82,19 +105,21 @@ class FastAPIManager:
             id_,
             path="/bots",
             endpoint=self.__get_bots,
-            response_model=Dict[str, BotModel],
+            response_model=BotsGetResponse,
             methods=["GET"],
         )
         self.__plugin.fastapi_mcdr.add_api_route(
             id_,
             path="/bots",
             endpoint=self.__post_bots,
+            response_model=BotModel,
             methods=["POST"],
         )
         self.__plugin.fastapi_mcdr.add_api_route(
             id_,
             path="/bots/{bot_name}",
             endpoint=self.__patch_bot,
+            response_model=BotModel,
             methods=["PATCH"],
         )
         self.__plugin.fastapi_mcdr.add_api_route(
@@ -161,8 +186,12 @@ class FastAPIManager:
         # save data
         self.__plugin.bot_manager.save_data()
 
-    async def __get_bots(self) -> Dict[str, BotModel]:
-        return self.__bot_manager.bots
+    async def __get_bots(self) -> BotsGetResponse:
+        bots = {
+            bot.name: to_bot_model(bot)
+            for bot in self.__bot_manager.bots.values()
+        }
+        return BotsGetResponse(bots=bots)
 
     async def __post_bots(self, request: PostBotRequest) -> BotModel:
         # parse name
@@ -189,7 +218,7 @@ class FastAPIManager:
             )
 
             # return
-            return bot
+            return to_bot_model(bot)
 
         except BotAlreadySavedException:
             raise HTTPException(
@@ -233,7 +262,7 @@ class FastAPIManager:
             )
 
             # return
-            return bot
+            return to_bot_model(bot)
         except BotNotExistsException:
             raise HTTPException(
                 status_code=400,
