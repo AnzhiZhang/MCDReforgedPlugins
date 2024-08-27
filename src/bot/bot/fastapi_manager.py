@@ -154,6 +154,10 @@ class FastAPIManager:
         if request.actions is not None:
             bot.set_actions(request.actions)
 
+        # tags
+        if request.tags is not None:
+            bot.set_tags(request.tags)
+
         # auto login
         if request.autoLogin is not None:
             bot.set_auto_login(request.autoLogin)
@@ -239,6 +243,7 @@ class FastAPIManager:
                 request.location is None and
                 request.comment is None and
                 request.actions is None and
+                request.tags is None and
                 request.autoLogin is None and
                 request.autoRunActions is None and
                 request.autoUpdate is None and
