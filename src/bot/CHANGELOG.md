@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.2...bot-v1.2.3) (2024-08-28)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix fastapi error code ([0daa16f](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0daa16fb98fdeb42a09e13652c4303f00af1b534))
+* **bot:** 🐛 fix fastapi setting tags ([bb8d6fc](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/bb8d6fc3461f046b344cbca0f5990c03b814676c))
+* **bot:** 🐛 fix fastapi update data ([6ca272c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/6ca272c040d4acb54fde7e7a710079971ece2b91))
+* **bot:** 🐛 fix update bot name in fastapi ([655a1ec](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/655a1ec3124651ad4004583611e617e57c93636b))
+* **bot:** 🐛 fix update name in fatapi ([29ec38b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/29ec38b9d8a873a46c800654c356bb85a038626a))
+* **bot:** 🐛 patching bot name ([cec65ab](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/cec65abaf4d19b072fef071c63d2f5d2c0a40e73))
+* **bot:** 🐛 update BotsGetResponse ([036aa31](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/036aa310944463c3062abd66aa3304de3c0382dc))
+
 ## [1.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.1...bot-v1.2.2) (2024-08-27)
 
 
