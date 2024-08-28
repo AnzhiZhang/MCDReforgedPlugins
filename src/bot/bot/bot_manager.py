@@ -242,8 +242,12 @@ class BotManager:
         else:
             raise BotNotExistsException(name)
 
-    def save(self, name: str, player: str = None,
-             location: Location = None) -> Bot:
+    def save(
+            self,
+            name: str,
+            player: str = None,
+            location: Location = None
+    ) -> Bot:
         """
         Save the data of a bot.
         :param name: Name of the bot.
