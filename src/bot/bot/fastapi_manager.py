@@ -208,8 +208,7 @@ class FastAPIManager:
         try:
             bot = self.__plugin.bot_manager.save(
                 name,
-                None,
-                Location(
+                location=Location(
                     request.location.position,
                     request.location.facing,
                     request.location.dimension
