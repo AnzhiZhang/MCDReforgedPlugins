@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Dict
+from typing import TYPE_CHECKING, List
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, conlist
@@ -52,7 +52,7 @@ class PatchBotRequest(BaseBotRequest):
 
 
 class BotsGetResponse(BaseModel):
-    bots: Dict[str, BotModel]
+    bots: List[BotModel]
 
 
 def to_bot_model(bot: Bot) -> BotModel:
@@ -194,10 +194,10 @@ class FastAPIManager:
         self.__plugin.bot_manager.save_data()
 
     async def __get_bots(self) -> BotsGetResponse:
-        bots = {
-            bot.name: to_bot_model(bot)
+        bots = [
+            to_bot_model(bot)
             for bot in self.__bot_manager.bots.values()
-        }
+        ]
         return BotsGetResponse(bots=bots)
 
     async def __post_bots(self, request: PostBotRequest) -> BotModel:
