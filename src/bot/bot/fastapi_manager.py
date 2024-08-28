@@ -153,6 +153,7 @@ class FastAPIManager:
         # name
         if request.name is not None:
             bot.set_name(request.name)
+            self.__plugin.bot_manager.update_list()
 
         # location
         if request.location is not None:
