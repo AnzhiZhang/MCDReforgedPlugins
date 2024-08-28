@@ -32,6 +32,7 @@ class BotModel(BaseModel):
 
 
 class BaseBotRequest(BaseModel):
+    name: str | None = None
     location: LocationModel | None = None
     comment: str | None = None
     actions: List[str] | None = None
@@ -149,6 +150,10 @@ class FastAPIManager:
                     detail=f'Bot "{bot.name}" is not online.'
                 )
 
+        # name
+        if request.name is not None:
+            bot.set_name(request.name)
+
         # location
         if request.location is not None:
             bot.set_location(
@@ -241,6 +246,7 @@ class FastAPIManager:
 
         # check request params
         if (
+                request.name is None and
                 request.location is None and
                 request.comment is None and
                 request.actions is None and
