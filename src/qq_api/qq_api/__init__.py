@@ -121,6 +121,62 @@ def on_load(server: PluginServerInterface, old):
                     '[语音]',
                     event.content
                 )
+                event.content = re.sub(
+                    r'\[CQ:video,file=.*?\]', 
+                    '[视频]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:rps\]', 
+                    '[猜拳]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:dice\]', 
+                    '[掷骰子]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:shake\]', 
+                    '[窗口抖动]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:poke,.*?\]', 
+                    "[戳一戳]", 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:anonymous.*?\]', 
+                    "[匿名消息]", 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:contact,type=qq.*?\]', 
+                    "[推荐好友]", 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:contact,type=group.*?\]', 
+                    "[推荐群]", 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:location,.*?\]', 
+                    "[定位分享]", 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:music,type=.*?\]', 
+                    '[音乐]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:forward,id=.*?\]', 
+                    '[转发消息]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:file(?:,.*?)*\]', 
+                    '[文件]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:redbag,title=.*?\]', 
+                    '[红包]', 
+                    event.content)
+                event.content = re.sub(
+                    r'\[CQ:mface,.*?\]', 
+                    '[表情]', 
+                    event.content)
                 event.content = event.content.replace('CQ:at,qq=', '@')
                 event: MessageEvent
 
