@@ -12,7 +12,7 @@
   "src/minecraft_command_register": "2.13.1",
   "src/more_command_nodes": "1.1.2",
   "src/online_player_api": "1.0.0",
-  "src/qq_api": "1.3.1",
+  "src/qq_api": "1.4.0",
   "src/qq_chat": "2.2.0",
   "src/uuid_api": "0.1.2"
 }
