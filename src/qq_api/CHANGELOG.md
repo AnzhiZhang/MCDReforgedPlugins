@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.3.1...qq_api-v1.4.0) (2024-08-31)
+
+
+### Features
+
+* **qq_api:** Enhance and expand the CQ code conversion process. ([#227](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/227)) ([92f28f0](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/92f28f0abd8c017bd61e3f30afc11cf8d0828d5e))
+
 ## [1.3.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_api-v1.3.0...qq_api-v1.3.1) (2023-07-18)
 
 
