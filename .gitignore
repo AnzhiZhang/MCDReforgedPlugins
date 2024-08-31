@@ -9,7 +9,3 @@ __pycache__/
 
 # dependencies
 /deps/
-
-# plugins data
-/qq_api/QQBridge/logs/
-/qq_api/QQBridge/config.yml
