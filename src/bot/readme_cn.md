@@ -226,7 +226,7 @@ flowchart LR
 
 ## FastAPI MCDR
 
-该插件支持 [FastAPI MCDR](../fastapi_mcdr) 插件，详细接口请查阅源码，或运行后通过 `http://127.0.0.1:8080/docs` 查看 FastAPI 文档。
+该插件支持 [FastAPI MCDR](../fastapi_mcdr) 插件，当安转 FastAPI MCDR 插件后，该插件会自动注册端点，您可以通过 FastAPI 查看接口定义。
 
 Python 包要求：
 
