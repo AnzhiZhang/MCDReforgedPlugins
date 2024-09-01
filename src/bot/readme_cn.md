@@ -233,3 +233,7 @@ Python 包要求：
 ```text
 pydantic>=2.0
 ```
+
+您可以利用该功能实现外部控制，例如一个管理假人的网页：
+
+![管理假人的网页](https://github.com/user-attachments/assets/508689c3-a7d0-4280-ac3d-e9812d32c289)

@@ -233,3 +233,7 @@ Python packages required:
 ```text
 pydantic>=2.0
 ```
+
+You can use this feature to implement external control, such as a web page for managing bots:
+
+![webpage to manage bots](https://github.com/user-attachments/assets/508689c3-a7d0-4280-ac3d-e9812d32c289)
