@@ -34,35 +34,13 @@ class Plugin:
         self.__command_handler = CommandHandler(self)
         self.__event_handler = EventHandler(self)
 
-    def load_fastapi_manager(self):
-        if FastAPIManager is not None:
-            self.__fastapi_manager = FastAPIManager(self)
-        else:
-            if fastapi_error is None:
-                self.server.logger.debug(
-                    "FastAPI libraries is not installed, "
-                    "will not register APIs with FastAPI MCDR."
-                )
-            else:
-                self.server.logger.warning(
-                    "Failed to load FastAPI manager, "
-                    "please check the error message below. "
-                    "If you do not intent to use FastAPI, "
-                    "you may ignore this message.",
-                    exc_info=fastapi_error
-                )
-
-    def unload_fastapi_manager(self):
-        if self.__fastapi_manager is not None:
-            self.__fastapi_manager.unload()
+    @property
+    def server(self):
+        return self.__server
 
     @property
     def fastapi_mcdr(self):
         return self.__server.get_plugin_instance('fastapi_mcdr')
-
-    @property
-    def server(self):
-        return self.__server
 
     @property
     def minecraft_data_api(self):
@@ -102,6 +80,28 @@ class Plugin:
         # save
         if save_flag:
             self.server.save_config_simple(self.__config, CONFIG_FILE_NAME)
+
+    def load_fastapi_manager(self):
+        if FastAPIManager is not None:
+            self.__fastapi_manager = FastAPIManager(self)
+        else:
+            if fastapi_error is None:
+                self.server.logger.debug(
+                    "FastAPI libraries is not installed, "
+                    "will not register APIs with FastAPI MCDR."
+                )
+            else:
+                self.server.logger.warning(
+                    "Failed to load FastAPI manager, "
+                    "please check the error message below. "
+                    "If you do not intent to use FastAPI, "
+                    "you may ignore this message.",
+                    exc_info=fastapi_error
+                )
+
+    def unload_fastapi_manager(self):
+        if self.__fastapi_manager is not None:
+            self.__fastapi_manager.unload()
 
     def parse_name(self, name: str) -> str:
         """
