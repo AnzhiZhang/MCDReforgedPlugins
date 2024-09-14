@@ -2,55 +2,68 @@
 
 [English](readme.md)
 
-> 提供 HTTP API
+> 提供 HTTP API。
+>
+> 允许插件通过挂载 [子应用](https://fastapi.tiangolo.com/zh/advanced/sub-applications/) 的方式，提供统一的接口。
 
 ## 快速开始
 
 总地来说，您需要在您的插件中做两件事：
 
-1. 加载时检查 FastAPI 状态，如已可以接受注册，则直接注册 API。
-1. 直接注册 ACCEPT 事件的监听器，以便可以注册时注册 API。
+1. 加载时检查 FastAPI 状态，如已准备好，则直接挂载子应用。
+2. 注册 COLLECT 事件的监听器，以便准备好时挂载子应用。
 
 具体地说，您需要添加以下代码：
 
 ```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/test")
+async def test():
+    return "Hello, world!"
+
+
 def on_load(server, prev_module):
-    # register if fastapi_mcdr is ready
+    # mount if fastapi_mcdr is ready
     fastapi_mcdr = server.get_plugin_instance('fastapi_mcdr')
     if fastapi_mcdr is not None and fastapi_mcdr.is_ready():
-        register_apis(server)
+        mount_app(server)
 
     # register event listener
     server.register_event_listener(
-        "fastapi_mcdr.accept",
-        register_apis
+        fastapi_mcdr.COLLECT_EVENT,
+        mount_app
     )
 
-def register_apis(server):
+
+def on_unload(server):
     # save plugin id and fastapi_mcdr instance
     id_ = server.get_self_metadata().id
     fastapi_mcdr = server.get_plugin_instance('fastapi_mcdr')
 
-    # register api
-    fastapi_mcdr.add_api_route(
-        id_,
-        path="/test",
-        endpoint=test,
-        response_model=Dict[str, str],
-        methods=["GET"],
-    )
+    # unmount app
+    fastapi_mcdr.unmount(id_)
 
-async def test():
-    return "Hello, world!"
+
+def mount_app(server):
+    # save plugin id and fastapi_mcdr instance
+    id_ = server.get_self_metadata().id
+    fastapi_mcdr = server.get_plugin_instance('fastapi_mcdr')
+
+    # mount app
+    fastapi_mcdr.mount(id_, app)
 ```
 
-访问 <http://localhost:8080/docs> 即可查看 API 文档。
+访问 <http://localhost:8080/docs> 即可查看 API 文档，各插件的子应用文档则需要访问 <http://localhost:8080/plugin_id/docs>。
 
 ## 技术细节
 
 ### 加载
 
-理论上来说，对外提供 HTTP API 应当是一种软依赖，这便是需要检查 FastAPI 状态并同时注册 ACCEPT 事件监听器的原因。下图展示了 FastAPI 插件和自定义插件先后加载的流程图：
+理论上来说，对外提供 HTTP API 应当是一种可选功能，这便是需要检查 FastAPI 状态并同时注册 COLLECT 事件监听器的原因。下图展示了 FastAPI 插件和自定义插件先后加载的流程图：
 
 先加载 FastAPI，再加载自定义插件：
 
@@ -60,7 +73,7 @@ sequenceDiagram
     participant Test
 
     Note right of FastAPI: FastAPI 加载
-    Note right of FastAPI: FastAPI 分发 ACCEPT 事件
+    Note right of FastAPI: FastAPI 分发 COLLECT 事件
 
     Note left of Test: Test 加载
 
@@ -68,9 +81,9 @@ sequenceDiagram
     FastAPI ->> Test: Yes!
     Test ->> FastAPI: is_ready?
     FastAPI ->> Test: Yes!
-    Test ->> FastAPI: 注册 API
+    Test ->> FastAPI: 挂载子应用
 
-    Note left of Test: Test 注册 ACCEPT 事件
+    Note left of Test: Test 注册 COLLECT 事件
 ```
 
 先加载自定义插件，再加载 FastAPI：
@@ -85,12 +98,12 @@ sequenceDiagram
     Test ->> FastAPI: 已加载？
     FastAPI ->> Test: No!
 
-    Note left of Test: Test 注册 ACCEPT 事件
+    Note left of Test: Test 注册 COLLECT 事件
 
     Note right of FastAPI: FastAPI 加载
 
-    FastAPI ->> Test: 分发 ACCEPT 事件
-    Test ->> FastAPI: 注册 API
+    FastAPI ->> Test: 分发 COLLECT 事件
+    Test ->> FastAPI: 挂载子应用
 ```
 
 通过这个设计，即可实现插件的软依赖，且无需考虑插件加载顺序的问题。下图展示了任意插件重载的情况：
@@ -102,8 +115,8 @@ sequenceDiagram
 
     Note right of FastAPI: FastAPI 重载
 
-    FastAPI ->> Test: 分发 ACCEPT 事件
-    Test ->> FastAPI: 注册 API
+    FastAPI ->> Test: 分发 COLLECT 事件
+    Test ->> FastAPI: 挂载子应用
 
     Note left of Test: Test 重载
 
@@ -111,27 +124,40 @@ sequenceDiagram
     FastAPI ->> Test: Yes!
     Test ->> FastAPI: is_ready?
     FastAPI ->> Test: Yes!
-    Test ->> FastAPI: 注册 API
+    Test ->> FastAPI: 挂载子应用
 
-    Note left of Test: Test 注册 ACCEPT 事件
+    Note left of Test: Test 注册 COLLECT 事件
 ```
 
 ## 标准
 
-### ACCEPT 事件
+### COLLECT 事件
 
-事件名：`fastapi_mcdr.accept`
+事件名：`fastapi_mcdr.collect`
 
-该事件的 `PluginEvent` 实例也会以 `ACCEPT_EVENT` 名公开。
+该事件的 `PluginEvent` 实例也会以 `COLLECT_EVENT` 名公开。
 
 ### 公开函数
 
 #### is_ready
 
-插件可以接受注册的状态，如强行注册则会抛出一个 `RuntimeError`。
+插件准备好接受挂载的状态，如强行挂载则会抛出一个 `RuntimeError`。
 
-#### add_api_route
+#### mount
 
-接受的参数几乎与 fastapi 库的 `add_api_route` 函数相同，但是第一个参数 `plugin_id` 应当传入插件的 id，以便注册路径时以插件 id 为前缀。
+参数：
 
-也就是说，如果 id 参数为 `test`，path 参数为 `/test`，则注册的路径为 `/test/test`。
+- `plugin_id`：插件 id。
+- `app`：FastAPI 应用。
+
+子应用会挂载在 `/<plugin_id>` 路径下，文档可以通过访问 `/<plugin_id>/docs` 查看。
+
+参阅：[子应用 - 挂载](https://fastapi.tiangolo.com/zh/advanced/sub-applications/)
+
+#### unmount
+
+参数：
+
+- `plugin_id`：插件 id。
+
+卸载指定插件的子应用。
