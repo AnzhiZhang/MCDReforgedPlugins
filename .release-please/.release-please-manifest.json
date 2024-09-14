@@ -5,7 +5,7 @@
   "src/command_aliases": "1.0.0",
   "src/database_api": "0.1.1",
   "src/dict_command_registration": "1.1.0",
-  "src/fastapi_mcdr": "1.0.0",
+  "src/fastapi_mcdr": "2.0.0",
   "src/gamemode": "1.1.0",
   "src/info": "0.2.0",
   "src/let_me_click_and_send": "1.0.0",
