@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.3...bot-v1.2.4) (2024-09-14)
+
+
+### Bug Fixes
+
+* **bot:** 👽️ use new fastapi_mcdr interface ([a3edb1b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a3edb1b96eb9d8cf6b29a042b2a109dfbb74a43e))
+
 ## [1.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.2...bot-v1.2.3) (2024-08-28)
 
 
