@@ -125,7 +125,6 @@ def unmount(plugin_id: str) -> None:
     """
     # delete routes
     for i, route in enumerate(__app.routes):
-        __mcdr_server.logger.error(type(route))
         if isinstance(route, Mount) and route.path.startswith(f"/{plugin_id}"):
             del __app.routes[i]
             __mcdr_server.logger.debug(f'Plugin "{plugin_id}" unmounted')
