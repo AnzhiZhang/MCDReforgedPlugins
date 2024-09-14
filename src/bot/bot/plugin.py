@@ -35,6 +35,10 @@ class Plugin:
         self.__event_handler = EventHandler(self)
 
     @property
+    def plugin_id(self):
+        return self.__server.get_self_metadata().id
+
+    @property
     def server(self):
         return self.__server
 
