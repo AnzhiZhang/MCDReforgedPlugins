@@ -25,7 +25,7 @@ class BotManager:
 
     @new_thread('loadBot')
     def __load_data(self, prev_module) -> None:
-        # Saved bots
+        # saved bots
         file_data = self.__plugin.server.load_config_simple(
             DATA_FILE_NAME,
             default_config={'botList': {}},
@@ -49,12 +49,13 @@ class BotManager:
             )
             self.__bots[name].set_saved(True)
 
-        # Old bots
+        # old bots
         if prev_module is not None:
             old_self: 'BotManager' = prev_module.plugin.bot_manager
             api = self.__plugin.minecraft_data_api
             online_list = api.get_server_player_list()[2]
             for name in online_list:
+                name = self.__plugin.parse_name(name)
                 if old_self.is_in_list(name):
                     self.__bots[name] = old_self.get_bot(name)
                     self.__bots[name].set_online(True)
@@ -155,20 +156,24 @@ class BotManager:
             self,
             index: int,
             online: bool,
-            saved: bool
+            saved: bool,
+            tag: str = None
     ) -> Tuple[List[Bot], int]:
         """
         List bots with filters.
         :param index: Page index.
         :param online: Include online bots.
         :param saved: Include saved bots.
+        :param tag: Tag, only include bots with this tag if not None.
         :return: A list of bots.
         """
         # Filter bots by online and saved
-        bots = [
-            bot for bot in self.bots.values()
-            if (bot.online and online) or (bot.saved and saved)
-        ]
+        bots = []
+        for bot in self.bots.values():
+            condition = (online and bot.online) or (saved and bot.saved)
+            condition = condition and (tag is None or tag in bot.tags)
+            if condition:
+                bots.append(bot)
 
         # Check index and filter bots to page
         max_index = math.ceil(len(bots) / 10) - 1
@@ -237,8 +242,12 @@ class BotManager:
         else:
             raise BotNotExistsException(name)
 
-    def save(self, name: str, player: str = None,
-             location: Location = None) -> Bot:
+    def save(
+            self,
+            name: str,
+            player: str = None,
+            location: Location = None
+    ) -> Bot:
         """
         Save the data of a bot.
         :param name: Name of the bot.

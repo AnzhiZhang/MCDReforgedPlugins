@@ -13,7 +13,7 @@
 
 `!!bot` View help
 
-`!!bot list [index] [filter]` Show bot list
+`!!bot list [--index <index>] [filters]` Show bot list
 
 `!!bot spawn <name>` Spawn bot
 
@@ -51,9 +51,13 @@ sequenceDiagram
 
 ### list
 
-**index**: Page number of the list
+**--index \<index\>**: Page number, e.g. `--index 1`, default is 0
 
-**filter**: Available options are: `--all`, `--online` or `--saved`, filter bots
+**--online**: Show online bots
+
+**--saved**: Show saved bots
+
+**--tag \<tag\>**: Filter by tag
 
 ### spawn
 
@@ -61,7 +65,7 @@ Spawn bot
 
 ```mermaid
 flowchart TD
-    start([list])
+    start([spawn])
     is_saved{Saved?}
     is_player{Running by Player?}
 
@@ -132,12 +136,10 @@ flowchart LR
     start(!!bot)
 
     start --> list(list)
-    list --> list_index["&lt;index&gt;"]
-    list_index --> list_index_arg["
-        --all
-        --online
-        --saved
-    "]
+    list --> list_index["--index &lt;index&gt;"]
+    list --> list_online[--online]
+    list --> list_saved[--saved]
+    list --> list_tag["--tag &lt;tag&gt;"]
 
     start --> spawn(spawn)
     spawn --> spawn_name("&lt;name&gt;")
@@ -224,10 +226,14 @@ Minimum permission to use corresponding command
 
 ## FastAPI MCDR
 
-This plugin supports [FastAPI MCDR](../fastapi_mcdr) plugin, please refer to the source code for detailed API, or run and view the FastAPI document via `http://127.0.0.1:8080/docs`.
+The plugin supports the [FastAPI MCDR](../fastapi_mcdr) plugin (>=2.0.0). After installing the FastAPI MCDR plugin, the plugin will automatically register endpoints. You can view the API definition through FastAPI.
 
 Python packages required:
 
 ```text
 pydantic>=2.0
 ```
+
+You can use this feature to implement external control, such as a web page for managing bots:
+
+![webpage to manage bots](https://github.com/user-attachments/assets/508689c3-a7d0-4280-ac3d-e9812d32c289)

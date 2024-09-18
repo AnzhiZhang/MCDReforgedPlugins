@@ -1,3 +1,4 @@
+import minecraft_data_api
 from mcdreforged.api.types import PluginServerInterface
 
 from bot.constants import CONFIG_FILE_NAME, DIMENSION
@@ -21,9 +22,6 @@ except Exception as e:
 class Plugin:
     def __init__(self, server: PluginServerInterface, prev_module):
         self.__server = server
-        self.__minecraft_data_api = self.__server.get_plugin_instance(
-            'minecraft_data_api'
-        )
         self.__config = self.__server.load_config_simple(
             CONFIG_FILE_NAME,
             target_class=Config
@@ -36,39 +34,21 @@ class Plugin:
         self.__command_handler = CommandHandler(self)
         self.__event_handler = EventHandler(self)
 
-    def load_fastapi_manager(self):
-        if FastAPIManager is not None:
-            self.__fastapi_manager = FastAPIManager(self)
-        else:
-            if fastapi_error is None:
-                self.server.logger.debug(
-                    "FastAPI libraries is not installed, "
-                    "will not register APIs with FastAPI MCDR."
-                )
-            else:
-                self.server.logger.warning(
-                    "Failed to load FastAPI manager, "
-                    "please check the error message below. "
-                    "If you do not intent to use FastAPI, "
-                    "you may ignore this message.",
-                    exc_info=fastapi_error
-                )
-
-    def unload_fastapi_manager(self):
-        if self.__fastapi_manager is not None:
-            self.__fastapi_manager.unload()
-
     @property
-    def fastapi_mcdr(self):
-        return self.__server.get_plugin_instance('fastapi_mcdr')
+    def plugin_id(self):
+        return self.__server.get_self_metadata().id
 
     @property
     def server(self):
         return self.__server
 
     @property
+    def fastapi_mcdr(self):
+        return self.__server.get_plugin_instance('fastapi_mcdr')
+
+    @property
     def minecraft_data_api(self):
-        return self.__minecraft_data_api
+        return minecraft_data_api
 
     @property
     def config(self):
@@ -104,6 +84,48 @@ class Plugin:
         # save
         if save_flag:
             self.server.save_config_simple(self.__config, CONFIG_FILE_NAME)
+
+    def load_fastapi_manager(self):
+        if FastAPIManager is not None:
+            self.__fastapi_manager = FastAPIManager(self)
+        else:
+            if fastapi_error is None:
+                self.server.logger.debug(
+                    "FastAPI libraries is not installed, "
+                    "will not register APIs with FastAPI MCDR."
+                )
+            else:
+                self.server.logger.warning(
+                    "Failed to load FastAPI manager, "
+                    "please check the error message below. "
+                    "If you do not intent to use FastAPI, "
+                    "you may ignore this message.",
+                    exc_info=fastapi_error
+                )
+
+    def unload_fastapi_manager(self):
+        if self.__fastapi_manager is not None:
+            self.__fastapi_manager.unload()
+
+    def parse_name(self, name: str) -> str:
+        """
+        Parse the name of the bot.
+        :param name: Name of the bot.
+        :return: Parsed bot name string.
+        """
+        # Lowercase
+        name = name.lower()
+
+        # Prefix
+        if not name.startswith(self.config.name_prefix):
+            name = self.config.name_prefix + name
+
+        # Suffix
+        if not name.endswith(self.config.name_suffix):
+            name = name + self.config.name_suffix
+
+        # Return
+        return name
 
     def get_location(self, name: str) -> Location:
         """

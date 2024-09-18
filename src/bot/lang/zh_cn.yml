@@ -3,7 +3,7 @@ bot.help.message.hover: 点击显示假人列表
 bot.help.content: |
   -----------------------------------
   §6!!bot §7查看帮助
-  §6!!bot list [index] [filter]§7显示假人列表
+  §6!!bot list [--index <index>] [filters]§7显示假人列表
   §6!!bot spawn <name> §7上线假人
   §6!!bot kill <name> §7下线假人
   §6!!bot action <name> [index] §7执行假人动作
@@ -13,6 +13,7 @@ bot.help.content: |
   §6!!bot save <name> [position] [facing] [dimension] §7保存假人
   §6!!bot del <name> §7删除保存的假人
   §6!!bot config <name> <option> <value> §7配置假人
+bot.error.permissionDenied: §c权限不足
 bot.error.illegalDimension: §c维度 §6{0} §c不合法！
 bot.error.illegalListIndex: §c错误的列表索引 §6{0}§c！
 bot.error.illegalActionIndex: §c错误的动作索引 §6{0}§c！
@@ -27,7 +28,9 @@ bot.error.botNotSaved: §c假人 §6{0} §c未保存！
 bot.command.spawned: §a假人 §6{0} §a已上线
 bot.command.killed: §a假人 §6{0} §a已下线
 bot.command.action: §a假人 §6{0} §a已执行指令
-bot.command.tag.list: '§a可用标签：§6{0}'
+bot.command.tag.spawnButton: §a点击上线所有假人
+bot.command.tag.killButton: §e点击下线所有假人
+bot.command.tag.listButton: §7点击显示所有假人
 bot.command.tag.spawn: §6{0} §a个具有标签 §6{1} §a的假人已上线
 bot.command.tag.kill: §6{0} §a个具有标签 §6{1} §a的假人已下线
 bot.command.info.configButtonHover: §7点击配置

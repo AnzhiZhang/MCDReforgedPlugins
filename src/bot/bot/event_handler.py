@@ -46,7 +46,7 @@ class EventHandler:
                 info.content
         ):
             # parse name
-            name = plugin.command_handler.parse_name(player)
+            name = plugin.parse_name(player)
             if name != player.lower():
                 message = RText(
                     f'Warning: Bot "{player}" is not named correctly, '
@@ -73,7 +73,7 @@ class EventHandler:
     @event_listener(MCDRPluginEvents.PLAYER_LEFT)
     def on_player_left(server: PluginServerInterface, player: str):
         # parse name
-        name = plugin.command_handler.parse_name(player)
+        name = plugin.parse_name(player)
 
         # remove from list
         if plugin.bot_manager.is_in_list(name):

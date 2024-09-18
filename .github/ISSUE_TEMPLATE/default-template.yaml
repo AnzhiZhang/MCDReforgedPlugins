@@ -1,0 +1,51 @@
+name: Plugin Issue Default Template
+description: Bug Report or Feature Request, etc.
+title: "[Plugin Name] "
+body:
+  - type: markdown
+    id: notice
+    attributes:
+      value: |
+        **Please go to [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions) to ask for help.**
+        
+        Please input your plugin name in the title.
+        
+        **需要帮助请前往 [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions)。**
+        
+        请在标题中输入插件名。
+  - type: input
+    id: plugin-name
+    attributes:
+      label: Plugin Name | 插件名
+      description: Plugin Name, ex. `Advanced Calculator`
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description | 描述
+      description: A clear and precise description of your issue.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots丨截图
+      description: If applicable.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional Information | 附加信息
+      description: If applicable.
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmatiion
+    attributes:
+      label: Confirmation
+      description: Please confirm you have searched in previous [issues](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues) and [discussions](https://github.com/AnzhiZhang/MCDReforgedPlugins/discussions). And your matter is an issue instead of a discussion question.
+      options:
+        - label: I sincerely confirm that I have searched in previous issues to confirm it is not duplicated, and this should be an issue instead of a discussion.
+          required: true

@@ -1,6 +1,7 @@
 from typing import List, Dict, Any
 
-from mcdreforged.api.rtext import RTextTranslation
+import minecraft_data_api as api
+from mcdreforged.api.rtext import RText, RColor
 
 from bot.constants import DIMENSION
 
@@ -33,12 +34,24 @@ class Location:
         return DIMENSION.STR_TRANSLATION[self.dimension]
 
     @property
-    def display_dimension(self) -> RTextTranslation:
+    def display_dimension(self) -> RText:
         """
-        Get RTextTranslation dimension to display.
-        :return: RTextTranslation.
+        Get dimension RText to display.
+        :return: RText.
         """
-        return DIMENSION.DISPLAY_TRANSLATION[self.dimension]
+        # get translation
+        translation: RText = api.get_dimension_translation_text(self.dimension)
+
+        # set color
+        if self.dimension == DIMENSION.OVERWORLD:
+            translation.set_color(RColor.green)
+        elif self.dimension == DIMENSION.THE_NETHER:
+            translation.set_color(RColor.dark_red)
+        elif self.dimension == DIMENSION.THE_END:
+            translation.set_color(RColor.light_purple)
+
+        # return
+        return translation
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> 'Location':

@@ -1,5 +1,57 @@
 # Changelog
 
+## [1.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.3...bot-v1.2.4) (2024-09-14)
+
+
+### Bug Fixes
+
+* **bot:** 👽️ use new fastapi_mcdr interface ([a3edb1b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/a3edb1b96eb9d8cf6b29a042b2a109dfbb74a43e))
+
+## [1.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.2...bot-v1.2.3) (2024-08-28)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix fastapi error code ([0daa16f](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0daa16fb98fdeb42a09e13652c4303f00af1b534))
+* **bot:** 🐛 fix fastapi setting tags ([bb8d6fc](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/bb8d6fc3461f046b344cbca0f5990c03b814676c))
+* **bot:** 🐛 fix fastapi update data ([6ca272c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/6ca272c040d4acb54fde7e7a710079971ece2b91))
+* **bot:** 🐛 fix update bot name in fastapi ([655a1ec](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/655a1ec3124651ad4004583611e617e57c93636b))
+* **bot:** 🐛 fix update name in fatapi ([29ec38b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/29ec38b9d8a873a46c800654c356bb85a038626a))
+* **bot:** 🐛 patching bot name ([cec65ab](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/cec65abaf4d19b072fef071c63d2f5d2c0a40e73))
+* **bot:** 🐛 update BotsGetResponse ([036aa31](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/036aa310944463c3062abd66aa3304de3c0382dc))
+
+## [1.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.1...bot-v1.2.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix http model key names ([009a04d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/009a04dea642beb1b7bb96e7f333ff02ff2076db))
+
+## [1.2.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.0...bot-v1.2.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot http api response ([4aebad6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/4aebad628a2ed9ed44ea9f983c8536a12bfac37f))
+
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.5...bot-v1.2.0) (2024-08-26)
+
+
+### Features
+
+* **bot:** ✨ improve list command ([#218](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/218)) ([3b43b00](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/3b43b006043071420caa768ab39c6447c81874d8))
+* **bot:** ✨ improve tags command ([#218](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/218)) ([8f6a4dd](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/8f6a4dd7bfc20adc9afcbb1992d8232d47f5abf6))
+* **bot:** ✨ update command edit button ([9e4d06d](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9e4d06dd7cfcd30f5247ea9f529f848ee53cfbe6))
+* **bot:** 🥅 catch any other error when loading FastAPIManager ([2314f31](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2314f31fabeefaa876625c9ab03d6ae13d098d62))
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot name during reload ([dfbb517](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/dfbb5174e269d255a51c0173a3e734feb9487a37))
+* **bot:** 👽️ fix minecraft_data_api import issue (fix [#221](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/221)) ([9f198dc](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9f198dccf0a80804436e094fabbb9922919bcd1e))
+* **bot:** 🔇 remove logs ([b60d8c1](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b60d8c19ac3936ff8f14ee67bba503620879db8d))
+* **bot:** 🩹 resolve dimension translation text in 1.19 (resolve [#210](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/210)) ([bf62e74](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/bf62e747940288caa1a86acbefecd2c1af4c4010))
+
 ## [1.1.5](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.1.4...bot-v1.1.5) (2024-07-01)
 
 

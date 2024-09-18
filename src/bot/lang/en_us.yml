@@ -3,7 +3,7 @@ bot.help.message.hover: Click to show bot list
 bot.help.content: |
   -----------------------------------
   §6!!bot §7View help
-  §6!!bot list [index] [filter]§7Show bot list
+  §6!!bot list [--index <index>] [filters]§7Show bot list
   §6!!bot spawn <name> §7Spawn bot
   §6!!bot kill <name> §7Kill bot
   §6!!bot action <name> [index] §7Execute bot action(s)
@@ -13,6 +13,7 @@ bot.help.content: |
   §6!!bot save <name> [position] [facing] [dimension] §7Save bot
   §6!!bot del <name> §7Delete saved bot
   §6!!bot config <name> <option> <value> §7onfig bot
+bot.error.permissionDenied: §cPermission denied
 bot.error.illegalDimension: §cDimension §6{0} §cis illegal!
 bot.error.illegalListIndex: §cError list index §6{0}§c！
 bot.error.illegalActionIndex: §cError action index §6{0}§c！
@@ -27,7 +28,9 @@ bot.error.botNotSaved: §cBot §6{0} is not saved!
 bot.command.spawned: §aBot §6{0} §aspawned
 bot.command.killed: §aBot §6{0} §akilled
 bot.command.action: §aBot §6{0} §aactions run
-bot.command.tag.list: '§aAvailable tags: §6{0}'
+bot.command.tag.spawnButton: §aClick to spawn all bots
+bot.command.tag.killButton: §eClick to kill all bots
+bot.command.tag.listButton: §7Click to list all bots
 bot.command.tag.spawn: §6{0} bots with tag §6{1} §aspawned
 bot.command.tag.kill: §6{0} bots with tag §6{1} §akilled
 bot.command.info.configButtonHover: §7Click to configure
