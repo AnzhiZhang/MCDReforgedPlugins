@@ -25,6 +25,7 @@ class Config(Serializable):
     multi_server: bool = False
     admins: List[int] = [1234565, 1234566]
     sync_group_only_admin: bool = True
+    force_bound: bool = False
 
     # 白名单部分
     whitelist_add_with_bound: bool = False
@@ -200,17 +201,21 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
     # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
     if event.group_id in config.message_sync_groups:
         user_id = str(event.user_id)
+        # 优先级: 是否在绑定列表中 -> 是否提示需要绑定 -> 转发到游戏中
         if user_id in data.keys():
-            # 管理员提示为绿色ID
-            if user_id in config.admins:
-                server.say(f"§7[QQ] §a[{data[user_id]}]§7 {event.content}")
-            else:
-                server.say(f"§7[QQ] [{data[user_id]}] {event.content}")
-        else:
-            reply_with_server_name(
+            nickname = data[user_id]
+        elif config.force_bound:
+            return reply_with_server_name(
                 event,
                 f"[CQ:at,qq={user_id}] 无法转发您的消息，请通过/bound <Player>绑定游戏ID"
             )
+        else:
+            nickname = event.sender['nickname']
+        # 管理员提示为绿色ID
+        if user_id in config.admins:
+            server.say(f"§7[QQ] §a[{nickname}]§7 {event.content}")
+        else:
+            server.say(f"§7[QQ] [{nickname}] {event.content}")
 
 
 def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
