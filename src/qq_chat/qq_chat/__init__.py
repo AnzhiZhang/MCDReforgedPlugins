@@ -204,11 +204,6 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
         # 优先级: 是否在绑定列表中 -> 是否提示需要绑定 -> 转发到游戏中
         if user_id in data.keys():
             nickname = data[user_id]
-        elif config.force_bound:
-            return reply_with_server_name(
-                event,
-                f"[CQ:at,qq={user_id}] 无法转发您的消息，请通过/bound <Player>绑定游戏ID"
-            )
         else:
             nickname = event.sender['nickname']
         # 管理员提示为绿色ID
