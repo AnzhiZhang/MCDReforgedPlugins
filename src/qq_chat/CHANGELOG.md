@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.2.0...qq_chat-v2.3.0) (2024-09-25)
+
+
+### Features
+
+* **qq_chat:** :sparkles: 'force_bound' config && unbound msg from sync group could be forward to mc ([0506aba](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0506aba3114c7ec1071e845d21f1f3c7155ddb01))
+
+
+### Bug Fixes
+
+* **qq_chat:** :fire: remove 'force_bound' config ([1d4b2ac](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/1d4b2ac8a05f57a7357559395fe8847d784d16fa))
+
 ## [2.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.1.0...qq_chat-v2.2.0) (2024-08-01)
 
 
