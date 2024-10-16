@@ -57,6 +57,9 @@
     },
     "src/uuid_api": {
       "package-name": "uuid_api"
+    },
+    "src/im_api": {
+      "package-name": "im_api"
     }
   }
 }
