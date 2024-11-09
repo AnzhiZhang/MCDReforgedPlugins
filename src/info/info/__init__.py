@@ -41,7 +41,7 @@ def get_server_info(server: ServerInterface) -> RTextList:
         return f'{average(*psutil.cpu_percent(percpu=True))}%'
 
     def get_cpu_brand():
-        return cpuinfo.get_cpu_info()['brand_raw']
+        return cpuinfo.get_cpu_info().get('brand_raw', 'N/A')
 
     def get_memory_use():
         used = psutil.virtual_memory().used
