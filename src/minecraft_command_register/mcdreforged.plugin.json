@@ -1,6 +1,6 @@
 {
   "id": "minecraft_command_register",
-  "version": "2.13.1",
+  "version": "2.13.2",
   "name": "Minecraft Command Register",
   "description": {
     "en_us": "Register MCDReforged commands in Minecraft",
@@ -12,6 +12,6 @@
   ],
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/minecraft_command_register",
   "dependencies": {
-    "mcdreforged": "2.13.1"
+    "mcdreforged": "2.13.2"
   }
 }
