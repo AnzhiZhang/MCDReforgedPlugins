@@ -54,10 +54,13 @@ def get_server_info(server: ServerInterface) -> RTextList:
     def get_world_size():
         def get_dir_size(dir_name):
             s = 0
-            for root, dirs, files in os.walk(os.path.join('server', dir_name)):
-                s += sum(
-                    [os.path.getsize(os.path.join(root, name)) for name in
-                     files])
+            path = os.path.join(
+                server.get_mcdr_config().get('working_directory', '.'),
+                dir_name
+            )
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    s += os.path.getsize(os.path.join(root, name))
             return s
 
         size = 0
