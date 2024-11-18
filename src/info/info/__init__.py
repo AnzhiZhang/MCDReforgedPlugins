@@ -10,6 +10,7 @@ from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
 from mcdreforged.api.utils import Serializable
 
+psi = ServerInterface.psi()
 
 class Config(Serializable):
     world_names: List[str] = ['world']
@@ -54,7 +55,7 @@ def get_server_info(server: ServerInterface) -> RTextList:
     def get_world_size():
         def get_dir_size(dir_name):
             s = 0
-            for root, dirs, files in os.walk(os.path.join('server', dir_name)):
+            for root, dirs, files in os.walk(os.path.join(psi.get_mcdr_config()["working_directory"], dir_name)):
                 s += sum(
                     [os.path.getsize(os.path.join(root, name)) for name in
                      files])
