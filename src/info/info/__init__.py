@@ -15,7 +15,6 @@ psi = ServerInterface.psi()
 class Config(Serializable):
     world_names: List[str] = ['world']
 
-
 config: Config
 
 
