@@ -55,29 +55,29 @@ class Node:
         }
 
 
-def read_registered_command(server: PluginServerInterface):
+def read_registered_commands(server: PluginServerInterface):
     # return if server is not startup
     if not server.is_server_startup():
         return
 
     # get tree data
     root_nodes = mcdr_server.command_manager.root_nodes
-    json_data = {'data': []}
+    data = {'data': []}
     for key, value in root_nodes.items():
         plugin_command_holder: PluginCommandHolder = value[0]
-        json_data['data'].append(Node(key, plugin_command_holder.node).dict)
+        data['data'].append(Node(key, plugin_command_holder.node).dict)
 
     # return
-    return json_data
+    return data
 
 
 def register(server: PluginServerInterface):
-    json_data = read_registered_command(server)
+    data = read_registered_commands(server)
     server.logger.debug(
         f'Register commands to minecraft, tree:'
-        f'\n{json.dumps(json_data, indent=4)}'
+        f'\n{json.dumps(data, indent=4)}'
     )
-    server.execute(f'mcdr register {json.dumps(json_data)}')
+    server.execute(f'mcdr register {json.dumps(data)}')
 
 
 def on_load(server: PluginServerInterface, prev_module):
