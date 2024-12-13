@@ -8,6 +8,7 @@ from mcdreforged.plugin.plugin_registry import PluginCommandHolder
 
 mcdr_server: MCDReforgedServer
 
+mcdr_cmd_data = None
 
 class NodeTypes(Enum):
     LITERAL = Literal
@@ -56,6 +57,8 @@ class Node:
 
 
 def register(server: PluginServerInterface):
+    # Other plugins can access the finally returned json_data by `from minecraft_command_register import mcdr_cmd_data`.
+    global mcdr_cmd_data
     # return if server is not startup
     if not server.is_server_startup():
         return
@@ -73,6 +76,7 @@ def register(server: PluginServerInterface):
         f'\n{json.dumps(json_data, indent=4)}'
     )
     server.execute(f'mcdr register {json.dumps(json_data)}')
+    mcdr_cmd_data = json_data
     return json_data
 
 
