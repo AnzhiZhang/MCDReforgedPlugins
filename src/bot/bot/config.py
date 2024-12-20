@@ -8,6 +8,7 @@ class Config(Serializable):
     force_gamemode: bool = False
     name_prefix: str = 'bot_'
     name_suffix: str = ''
+    post_join_delay: int = 0
     permissions: Dict[str, int] = {
         'list': 1,
         'spawn': 1,

@@ -220,6 +220,12 @@ Default: None
 
 Suffix of bot name
 
+### post_join_delay
+
+Default: `0`
+
+Delay time (seconds) for processing after bot joined. If you are using a non-vanilla server, you may need to adjust this value.
+
 ### permissions
 
 Minimum permission to use corresponding command

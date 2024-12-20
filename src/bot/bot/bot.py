@@ -1,3 +1,4 @@
+import time
 from typing import TYPE_CHECKING, List, Dict, Any
 
 from mcdreforged.api.decorator import new_thread
@@ -212,6 +213,10 @@ class Bot:
 
         # update online status
         self.set_online(True)
+
+        # delay
+        if self.__plugin.config.post_join_delay > 0:
+            time.sleep(self.__plugin.config.post_join_delay)
 
         # set gamemode
         if self.saved or self.__plugin.config.force_gamemode:
