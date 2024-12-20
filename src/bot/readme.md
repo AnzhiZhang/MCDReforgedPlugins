@@ -125,6 +125,8 @@ flowchart TD
 
 Delete saved bot
 
+After deletion, the bot will be backed up to the `botBin.json` file in the data directory. If you delete it by mistake, you can use it for manual recovery.
+
 ### config
 
 Config bot
