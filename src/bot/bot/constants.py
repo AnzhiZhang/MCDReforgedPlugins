@@ -1,5 +1,6 @@
 CONFIG_FILE_NAME = 'config.json'
 DATA_FILE_NAME = 'botList.json'
+BIN_FILE_NAME = 'botBin.json'
 
 
 class DIMENSION:

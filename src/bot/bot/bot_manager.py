@@ -1,4 +1,5 @@
 import math
+import datetime
 from typing import TYPE_CHECKING, Dict, List, Tuple
 
 from mcdreforged.api.decorator import new_thread
@@ -6,7 +7,7 @@ from mcdreforged.api.decorator import new_thread
 from bot.bot import Bot
 from bot.exceptions import *
 from bot.location import Location
-from bot.constants import DATA_FILE_NAME
+from bot.constants import DATA_FILE_NAME, BIN_FILE_NAME
 
 if TYPE_CHECKING:
     from bot.plugin import Plugin
@@ -74,6 +75,25 @@ class BotManager:
                 ]
             },
             DATA_FILE_NAME
+        )
+
+    def save_bin(self, bot: Bot) -> None:
+        # read
+        bots = self.__plugin.server.load_config_simple(
+            BIN_FILE_NAME,
+            default_config={'botList': []},
+            echo_in_console=False
+        )['botList']
+
+        # add to list
+        data = bot.saving_data
+        data['deleted_at'] = datetime.datetime.now(datetime.UTC).isoformat()
+        bots.append(data)
+
+        # save
+        self.__plugin.server.save_config_simple(
+            {"botList": bots},
+            BIN_FILE_NAME
         )
 
     def update_list(self) -> None:
@@ -311,6 +331,7 @@ class BotManager:
             bot.set_saved(False)
             self.update_list()
             self.save_data()
+            self.save_bin(bot)
             return bot
         else:
             raise BotNotSavedException(name)
