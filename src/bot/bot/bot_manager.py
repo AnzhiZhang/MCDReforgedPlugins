@@ -29,7 +29,7 @@ class BotManager:
         # saved bots
         file_data = self.__plugin.server.load_config_simple(
             DATA_FILE_NAME,
-            default_config={'botList': {}},
+            default_config={'botList': []},
             echo_in_console=False
         )['botList']
         for bot_data in file_data:
