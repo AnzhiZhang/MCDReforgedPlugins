@@ -1,5 +1,3 @@
-from mcdreforged.api.rtext import RTextTranslation, RColor
-
 CONFIG_FILE_NAME = 'config.json'
 DATA_FILE_NAME = 'botList.json'
 
