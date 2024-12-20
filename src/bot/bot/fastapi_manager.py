@@ -196,7 +196,8 @@ class FastAPIManager:
 
                 # log
                 self.__logger.debug(
-                    f'Created "{name}" with PostBotRequest({request})'
+                    f'[FastAPI] Created "{name}" '
+                    f'with PostBotRequest({request})'
                 )
 
                 # return
@@ -241,7 +242,8 @@ class FastAPIManager:
 
                 # log
                 self.__logger.debug(
-                    f'Patched "{name}" with PatchBotRequest({request})'
+                    f'[FastAPI] Patched "{name}" '
+                    f'with PatchBotRequest({request})'
                 )
 
                 # return
@@ -257,7 +259,7 @@ class FastAPIManager:
             name = self.__plugin.parse_name(bot_name)
             try:
                 self.__bot_manager.delete(name)
-                self.__logger.debug(f'Deleted "{name}"')
+                self.__logger.debug(f'[FastAPI] Deleted "{name}"')
                 return None
             except BotNotExistsException:
                 raise HTTPException(
