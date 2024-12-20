@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.4...bot-v1.3.0) (2024-12-20)
+
+
+### Features
+
+* **bot:** ✨ bot bin (resolve [#238](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/238)) ([d99865a](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/d99865ae16af8dc343b77efbada4f8b00e12205a))
+* **bot:** ✨ new config post_join_delay ([c5c01bc](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/c5c01bc3c82ca0a32dead3c52e1b533dd5c5695c))
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix default bot list ([f61a6a6](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f61a6a6792b5f1edcd4a15929a4d1dea92ce845b))
+* **bot:** 🔊 update fastapi manager logs ([e27ea82](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/e27ea822a0e4bf049c64f86ca881e709e8f8d947))
+
 ## [1.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.3...bot-v1.2.4) (2024-09-14)
 
 
