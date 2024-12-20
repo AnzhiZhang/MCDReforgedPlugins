@@ -1,0 +1,11 @@
+{
+  "id": "im_api",
+  "version": "0.0.0",
+  "name": "IMAPI",
+  "description": {
+    "en_us": "Connect Minecraft and QQ",
+    "zh_cn": "跨平台即时通信API"
+  },
+  "author": ["Andy Zhang", "Aimerny"],
+  "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/qq_api"
+}
