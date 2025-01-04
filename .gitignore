@@ -9,3 +9,5 @@ __pycache__/
 
 # dependencies
 /deps/
+local_sync.sh
+.DS_Store
