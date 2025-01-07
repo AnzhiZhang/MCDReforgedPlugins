@@ -1,2 +1,0 @@
-aiocqhttp>=1.4.4
-aiohttp>=3.8.0

@@ -4,7 +4,9 @@ from typing import List, Dict
 from mcdreforged.api.all import *
 from enum import Enum, unique
 
+from im_api.drivers.base import Platform
 from im_api.models.parser import Event, Message
+from im_api.models.request import MessageType, SendMessageRequest, ChannelInfo
 
 
 class Config(Serializable):
@@ -166,10 +168,9 @@ def on_user_info(server: PluginServerInterface, info):
 # im_api event listener
 # -------------------------
 
-def on_message(server: PluginServerInterface, platform: str, message: Message):
-    if platform != "qq":
+def on_message(server: PluginServerInterface, platform: Platform, message: Message):
+    if platform != Platform.QQ:
         return
-
     # 判断指令是否需要处理，如果是多服模式，只处理设置了此服的用户
     need_process = (
             config.multi_server is False
@@ -182,7 +183,6 @@ def on_message(server: PluginServerInterface, platform: str, message: Message):
 
     # is command?
     content = message.content
-    print(content)
     is_command = False
     prefix = None
     for prefix in config.command_prefix:
@@ -243,9 +243,7 @@ def on_qq_command(
         need_process: bool
 ):
     # Event did not trigger
-    print(message)
     event_type = parse_event_type(message)
-    print(event_type)
     if event_type == EventType.NONE:
         return
 
@@ -318,19 +316,34 @@ def execute(server: PluginServerInterface, message: Message, command: str):
     reply_with_server_name(message, f"已执行: {command}")
 
 
-def reply(event: Event, message: str):
+def reply(message: Message, content: str):
     """回复消息"""
-    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", event.channel["id"], message), {"message_type": event.channel["type"]}))
+    request = SendMessageRequest(
+        platforms=[Platform.QQ],
+        channel=ChannelInfo(id=message.channel["id"], type=message.channel["type"]),
+        content=content
+    )
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
-def reply_with_server_name(message: Message, msg: str):
+def reply_with_server_name(message: Message, content: str):
     """带服务器名称回复消息"""
-    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", message.channel["id"], f"[{config.server_name}] {msg}"), {"message_type": message.channel["type"]}))
+    request = SendMessageRequest(
+        platforms=[Platform.QQ],
+        channel=ChannelInfo(id=message.channel["id"], type=message.channel["type"]),
+        content=f"[{config.server_name}] {content}"
+    )
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
 def send_msg_to_all_groups(message: str):
     """发送消息到所有群"""
-    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", main_group, message), {"message_type": "group"}))
+    request = SendMessageRequest(
+        platforms=[Platform.QQ],
+        channel=ChannelInfo(id=main_group, type=MessageType.CHANNEL),
+        content=message
+    )
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
 def send_msg_to_main_groups(message: str):
@@ -338,19 +351,34 @@ def send_msg_to_main_groups(message: str):
     # 如没有配置主群，不发送
     if main_group == 0:
         return
-    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", main_group, message), {"message_type": "group"}))
+    request = SendMessageRequest(
+        platforms=[Platform.QQ],
+        channel=ChannelInfo(id=main_group, type=MessageType.CHANNEL),
+        content=message
+    )
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
 def send_msg_to_manage_groups(message: str):
     """发送消息到管理群"""
     for group in config.manage_groups:
-        server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", group, message), {"message_type": "group"}))
+        request = SendMessageRequest(
+            platforms=[Platform.QQ],
+            channel=ChannelInfo(id=main_group, type=MessageType.CHANNEL),
+            content=message
+        )
+        server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
 def send_msg_to_message_sync_groups(message: str):
     """发送消息到同步群"""
     for group in config.message_sync_groups:
-        server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", group, message), {"message_type": "group"}))
+        request = SendMessageRequest(
+            platforms=[Platform.QQ],
+            channel=ChannelInfo(id=main_group, type=MessageType.CHANNEL),
+            content=message
+        )
+        server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
 
 
 def parse_event_type(message: Message) -> EventType:
@@ -367,7 +395,6 @@ def parse_event_type(message: Message) -> EventType:
     is_admin = user_id in config.admins
 
     # 主群
-    print(type(channel_id), type(main_group), main_group == channel_id)
     if channel_id == main_group:
         if is_admin:
             return EventType.GROUP_MAIN_ADMIN_CHAT
