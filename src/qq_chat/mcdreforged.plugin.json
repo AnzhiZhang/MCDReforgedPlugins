@@ -12,7 +12,7 @@
   ],
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/qq_api",
   "dependencies": {
-    "qq_api": "^1.2.0",
+    "im_api": "^0.1.0",
     "online_player_api": "^1.0.0"
   }
 }

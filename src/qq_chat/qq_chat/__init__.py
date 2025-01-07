@@ -1,29 +1,26 @@
 import re
 from typing import List, Dict
-from asyncio import AbstractEventLoop
 
-from qq_api import MessageEvent
-from aiocqhttp import CQHttp, Event
-from mcdreforged.api.command import *
-from mcdreforged.api.utils import Serializable
-from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.all import *
 from enum import Enum, unique
+
+from im_api.models.parser import Event, Message
 
 
 class Config(Serializable):
     # 服务器主群
-    main_group: List[int] = [123456]
+    main_group: List[str] = ['123456']
 
     # 服务器管理群
-    manage_groups: List[int] = [1234563, 1234564]
+    manage_groups: List[str] = ['1234563', '1234564']
 
     # 服务器消息同步群
-    message_sync_groups: List[int] = [1234567, 1234568]
+    message_sync_groups: List[str] = ['1234567', '1234568']
     server_name: str = "survival"
 
     # 是否开启群组服消息拦截
     multi_server: bool = False
-    admins: List[int] = [1234565, 1234566]
+    admins: List[str] = ['1234565', '1234566']
     sync_group_only_admin: bool = True
     force_bound: bool = False
 
@@ -81,9 +78,8 @@ NOT_ADMIN_EVENT_TYPES = [
 config: Config
 data: dict
 user_cache: dict
-final_bot: CQHttp
-event_loop: AbstractEventLoop
 main_group: int
+server: PluginServerInterface = None
 
 group_help = """命令帮助如下:
 /list 获取在线玩家列表
@@ -121,8 +117,9 @@ whitelist_help = """/whitelist add <target> 添加白名单成员
 # MCDR event listener
 # -------------------------
 
-def on_load(server: PluginServerInterface, old):
-    global config, data, final_bot, event_loop, main_group, user_cache
+def on_load(mcdr_server: PluginServerInterface, old):
+    global config, data, main_group, user_cache, server
+    server = mcdr_server
     config = server.load_config_simple(target_class=Config)
     all_data = server.load_config_simple(
         "data.json",
@@ -134,9 +131,6 @@ def on_load(server: PluginServerInterface, old):
     # 存储群组服操作该服务器的用户信息
     user_cache = all_data["user_cache"]
 
-    qq_api = server.get_plugin_instance("qq_api")
-    final_bot = qq_api.get_bot()
-    event_loop = qq_api.get_event_loop()
     main_group = parse_main_group()
 
     def qq(src, ctx):
@@ -151,8 +145,8 @@ def on_load(server: PluginServerInterface, old):
     server.register_command(
         Literal("!!qq").then(GreedyText("message").runs(qq))
     )
-    server.register_event_listener("qq_api.on_message", on_message)
-    server.register_event_listener("qq_api.on_notice", on_notice)
+    server.register_event_listener("im_api.message", on_message)
+    server.register_event_listener("im_api.event", on_notice)
 
 
 def on_server_startup(server: PluginServerInterface):
@@ -169,23 +163,26 @@ def on_user_info(server: PluginServerInterface, info):
 
 
 # -------------------------
-# qq_api event listener
+# im_api event listener
 # -------------------------
 
-def on_message(server: PluginServerInterface, bot: CQHttp,
-               event: MessageEvent):
+def on_message(server: PluginServerInterface, platform: str, message: Message):
+    if platform != "qq":
+        return
+
     # 判断指令是否需要处理，如果是多服模式，只处理设置了此服的用户
     need_process = (
             config.multi_server is False
             or (
                     config.multi_server is True
-                    and str(event.user_id) in user_cache.keys()
-                    and user_cache[str(event.user_id)] is True
+                    and str(message.user["id"]) in user_cache.keys()
+                    and user_cache[str(message.user["id"])] is True
             )
     )
 
     # is command?
-    content = event.content
+    content = message.content
+    print(content)
     is_command = False
     prefix = None
     for prefix in config.command_prefix:
@@ -196,32 +193,34 @@ def on_message(server: PluginServerInterface, bot: CQHttp,
 
     # if it's a command, process it and stop here
     if is_command:
-        return on_qq_command(server, bot, event, prefix, need_process)
+        return on_qq_command(server, message, prefix, need_process)
 
     # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
-    if event.group_id in config.message_sync_groups:
-        user_id = str(event.user_id)
+    if message.channel["id"] in config.message_sync_groups:
+        user_id = str(message.user["id"])
         # 优先级: 是否在绑定列表中 -> 是否提示需要绑定 -> 转发到游戏中
         if user_id in data.keys():
             nickname = data[user_id]
         else:
-            nickname = event.sender['nickname']
+            nickname = message.user["name"]
         # 管理员提示为绿色ID
         if user_id in config.admins:
-            server.say(f"§7[QQ] §a[{nickname}]§7 {event.content}")
+            server.say(f"§7[QQ] §a[{nickname}]§7 {message.content}")
         else:
-            server.say(f"§7[QQ] [{nickname}] {event.content}")
+            server.say(f"§7[QQ] [{nickname}] {message.content}")
 
 
-def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
+def on_notice(server: PluginServerInterface, platform: str, event: Event):
+    if platform != "qq":
+        return
+
     # 只看主群的成员
-    if event.group_id != main_group:
+    if event.channel["id"] != main_group:
         return
 
     # Remove whitelist with leave
-    is_group_decrease = (event.detail_type == "group_decrease")
-    if is_group_decrease and config.whitelist_remove_with_leave:
-        user_id = str(event.user_id)
+    if event.type == "guild.member.leave" and config.whitelist_remove_with_leave:
+        user_id = str(event.user["id"])
         if user_id in data.keys():
             command = f"whitelist remove {data[user_id]}"
             server.execute(command)
@@ -239,22 +238,23 @@ def on_notice(server: PluginServerInterface, bot: CQHttp, event: Event):
 
 def on_qq_command(
         server: PluginServerInterface,
-        bot: CQHttp,
-        event: MessageEvent,
+        message: Message,
         command_prefix: str,
         need_process: bool
 ):
     # Event did not trigger
-    event_type = parse_event_type(event)
+    print(message)
+    event_type = parse_event_type(message)
+    print(event_type)
     if event_type == EventType.NONE:
         return
 
     # parse command
-    command = parse_command_list(event.content, command_prefix)
+    command = parse_command_list(message.content, command_prefix)
 
     # /server 设置操作服务器指令，检测到set需要做处理
     if command[0] == "server":
-        server_command_handle(server, event, command, event_type)
+        server_command_handle(server, message, command, event_type)
 
     # 无需处理直接返回
     if not need_process:
@@ -262,25 +262,25 @@ def on_qq_command(
 
     # /help 指令
     if command[0] == "help":
-        help_command_handle(server, event, event_type)
+        help_command_handle(server, message, event_type)
     # /list 指令
     elif command[0] == "list":
-        list_command_handle(server, event)
+        list_command_handle(server, message)
     # /bound 绑定指令
     elif command[0] == "bound":
-        bound_command_handle(server, event, command, event_type)
+        bound_command_handle(server, message, command, event_type)
     # /mc 发送消息指令
     elif command[0] == "mc":
-        mc_command_handle(server, event, command, event_type)
+        mc_command_handle(server, message, command, event_type)
     # /whitelist 操作白名单
     elif command[0] == "whitelist":
-        whitelist_command_handle(server, event, command, event_type)
+        whitelist_command_handle(server, message, command, event_type)
     # /command 执行原版指令
     elif command[0] == "command":
-        command_command_handle(server, event, command, event_type)
+        command_command_handle(server, message, command, event_type)
     # /mcdr 执行MCDR指令
     elif command[0] == "mcdr":
-        mcdr_command_handle(server, event, command, event_type)
+        mcdr_command_handle(server, message, command, event_type)
 
 
 # -------------------------
@@ -288,441 +288,360 @@ def on_qq_command(
 # -------------------------
 
 def parse_command_list(msg: str, prefix: str):
+    """解析命令列表"""
     # 如果prefix长度大于1，与实际指令之间需要加空格
     if len(prefix) > 1:
-        command = msg.split(" ")
-        if len(command) == 1 and command[0] == prefix:
-            # 只有指令前缀，则当做help
-            return ["help"]
-        else:
-            # 去掉前缀，保留指令本身
-            return command[1:]
+        msg = msg[len(prefix) + 1:]
     else:
-        return msg[1:].split(" ")
+        msg = msg[len(prefix):]
+    return msg.split()
 
 
 def parse_main_group():
+    """解析主群"""
     if len(config.main_group) == 0:
-        return None
-    else:
-        # 若填多个只取第一个
-        return config.main_group[0]
+        return 0
+    return config.main_group[0]
 
 
 def save_data(server: PluginServerInterface):
-    server.save_config_simple(
-        {
-            "data": data,
-            "user_cache": user_cache
-        },
-        "data.json"
-    )
+    """保存数据"""
+    server.save_config_simple({
+        "data": data,
+        "user_cache": user_cache
+    }, "data.json")
 
 
-def execute(server: PluginServerInterface, event: MessageEvent, command: str):
-    if server.is_rcon_running():
-        result = server.rcon_query(command)
-        if result == "":
-            result = "该指令没有返回值"
-    else:
-        server.execute(command)
-        result = "由于未启用 RCON，没有返回结果"
-    reply_with_server_name(event, result)
+def execute(server: PluginServerInterface, message: Message, command: str):
+    """执行命令"""
+    server.execute(command)
+    reply_with_server_name(message, f"已执行: {command}")
 
 
 def reply(event: Event, message: str):
-    event_loop.create_task(final_bot.send(event, message))
+    """回复消息"""
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", event.channel["id"], message), {"message_type": event.channel["type"]}))
 
 
-def reply_with_server_name(event: MessageEvent, msg: str):
-    if config.multi_server:
-        reply(event, f"[{config.server_name}] {msg}")
-    else:
-        reply(event, msg)
+def reply_with_server_name(message: Message, msg: str):
+    """带服务器名称回复消息"""
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", message.channel["id"], f"[{config.server_name}] {msg}"), {"message_type": message.channel["type"]}))
 
 
 def send_msg_to_all_groups(message: str):
-    send_msg_to_manage_groups(message)
-    send_msg_to_main_groups(message)
-    send_msg_to_message_sync_groups(message)
+    """发送消息到所有群"""
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", main_group, message), {"message_type": "group"}))
 
 
 def send_msg_to_main_groups(message: str):
+    """发送消息到主群"""
     # 如没有配置主群，不发送
-    if main_group is None:
+    if main_group == 0:
         return
-    event_loop.create_task(
-        final_bot.send_group_msg(group_id=main_group, message=message)
-    )
+    server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", main_group, message), {"message_type": "group"}))
 
 
 def send_msg_to_manage_groups(message: str):
-    for i in config.manage_groups:
-        event_loop.create_task(
-            final_bot.send_group_msg(group_id=i, message=message)
-        )
+    """发送消息到管理群"""
+    for group in config.manage_groups:
+        server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", group, message), {"message_type": "group"}))
 
 
 def send_msg_to_message_sync_groups(message: str):
-    for i in config.message_sync_groups:
-        event_loop.create_task(
-            final_bot.send_group_msg(group_id=i, message=message)
-        )
+    """发送消息到同步群"""
+    for group in config.message_sync_groups:
+        server.dispatch_event(LiteralEvent("im_api.send_message"), (("qq", group, message), {"message_type": "group"}))
 
 
-def parse_event_type(event: MessageEvent) -> EventType:
+def parse_event_type(message: Message) -> EventType:
+    """解析事件类型"""
     # 私聊
-    if event.detail_type == "private":
-        if event.user_id in config.admins:
+    if message.channel["type"] == "private":
+        if str(message.user["id"]) in config.admins:
             return EventType.PRIVATE_ADMIN_CHAT
-        else:
-            return EventType.PRIVATE_NOT_ADMIN_CHAT
+        return EventType.PRIVATE_NOT_ADMIN_CHAT
+
     # 群聊
-    elif event.detail_type == "group":
-        if event.group_id == main_group:
-            if event.user_id in config.admins:
-                return EventType.GROUP_MAIN_ADMIN_CHAT
-            else:
-                return EventType.GROUP_MAIN_NOT_ADMIN_CHAT
-        elif event.group_id in config.manage_groups:
-            return EventType.GROUP_MANAGE_CHAT
-        elif event.group_id in config.message_sync_groups:
-            # 如果开启仅管理员选项，则默认全都具有admin权限
-            if config.sync_group_only_admin:
-                return EventType.GROUP_MSG_SYNC_ADMIN_CHAT
-            if event.user_id in config.admins:
-                return EventType.GROUP_MSG_SYNC_ADMIN_CHAT
-            else:
-                return EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT
-        else:
-            return EventType.NONE
+    channel_id = message.channel["id"]
+    user_id = str(message.user["id"])
+    is_admin = user_id in config.admins
+
+    # 主群
+    print(type(channel_id), type(main_group), main_group == channel_id)
+    if channel_id == main_group:
+        if is_admin:
+            return EventType.GROUP_MAIN_ADMIN_CHAT
+        return EventType.GROUP_MAIN_NOT_ADMIN_CHAT
+
+    # 同步群
+    if channel_id in config.message_sync_groups:
+        if is_admin:
+            return EventType.GROUP_MSG_SYNC_ADMIN_CHAT
+        return EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT
+
+    # 管理群
+    if channel_id in config.manage_groups:
+        return EventType.GROUP_MANAGE_CHAT
+
+    return EventType.NONE
 
 
 # -------------------------
 #  command handle
 # -------------------------
 
-def server_command_handle(server: PluginServerInterface, event: MessageEvent,
-                          command: List[str], event_type: EventType):
-    """
-    Server command handle.
-    User can choose to connect a server or switch to another server.
-    To use this command, the config "multi_server" must be set to True.
-
-    When user type /server without any arguments:
-        If user is not connected to any server, reply with this server's name.
-        If user is connected to this server, say already connected to this.
-        If user is connected to another server, ignore that command.
-
-    When user type /server <server_name>:
-        If user is already connected to this server, reply it's connected.
-        If user is connecting this server, reply and save status.
-        If user is connecting another server, save this status and ignore.
-    """
-    # 检查是否开启多服务器配置
-    if not config.multi_server:
-        reply(
-            event,
-            f"[{config.server_name}] 服务器并未开启多服务器配置，server 功能暂不开放"
-        )
+def server_command_handle(server: PluginServerInterface, message: Message,
+                      command: List[str], event_type: EventType):
+    """处理服务器命令"""
+    if len(command) == 1:
+        reply_with_server_name(message, f"当前服务器: {config.server_name}")
         return
 
-    # save status of is user connected to this server
-    user_id = str(event.user_id)
-    is_on_this_server = user_cache.get(user_id)
-
-    # 输入 /server 查询当前连接到了哪个服务器(不规范的操作可能导致连接多个)
-    if len(command) == 1:
-        # 已连接到此服务器
-        if is_on_this_server is True:
-            reply(event, f"当前已连接到 [{config.server_name}]")
-
-        # 未连接到此服务器
-        elif is_on_this_server is False:
-            pass
-
-        # 未连接到任何服务器
-        elif is_on_this_server is None:
-            reply(event, f"您可以连接到 [{config.server_name}]")
-
-    # 输入 /server <server_name> 连接到指定服务器
-    elif len(command) == 2:
-        new_server_name = command[1]
-
-        # 已经连接到此服务器
-        if new_server_name == config.server_name and is_on_this_server:
-            reply(
-                event,
-                f"[CQ:at,qq={event.user_id}] 你已经连接到 [{new_server_name}] 了！"
-            )
-
-        # 连接到当前服务器
-        elif new_server_name == config.server_name and not is_on_this_server:
+    if command[1] == "set":
+        if config.multi_server:
+            user_id = str(message.user["id"])
             user_cache[user_id] = True
             save_data(server)
-            reply(
-                event,
-                f"[CQ:at,qq={event.user_id}] 聊天服务器已连接至 [{new_server_name}]"
-            )
-
-        # 连接到其他服务器
+            reply_with_server_name(message, f"已设置操作服务器为 {config.server_name}")
         else:
-            user_cache[user_id] = False
-            save_data(server)
+            reply_with_server_name(message, "未开启多服模式")
 
 
 def help_command_handle(
         server: PluginServerInterface,
-        event: MessageEvent,
+        message: Message,
         event_type: EventType
 ):
-    if event_type in [EventType.NONE, EventType.PRIVATE_NOT_ADMIN_CHAT]:
-        return
-    elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
-                        EventType.GROUP_MAIN_ADMIN_CHAT,
-                        EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT]:
-        reply(event, group_help)
-    elif event_type in [EventType.PRIVATE_ADMIN_CHAT,
-                        EventType.GROUP_MANAGE_CHAT,
-                        EventType.GROUP_MSG_SYNC_ADMIN_CHAT]:
-        reply(event, admin_help)
+    """处理帮助命令"""
+    if event_type in ADMIN_EVENT_TYPES:
+        reply(message, admin_help)
+    else:
+        reply(message, group_help)
 
 
-def list_command_handle(server: PluginServerInterface, event: MessageEvent):
-    if not config.commands["list"]:
+def list_command_handle(server: PluginServerInterface, message: Message):
+    """处理列表命令"""
+    if config.commands["list"] is False:
+        reply_with_server_name(message, "该指令已禁用")
         return
+
     online_player_api = server.get_plugin_instance("online_player_api")
-    players = online_player_api.get_player_list()
+    if online_player_api is None:
+        reply_with_server_name(message, "未安装 online_player_api")
+        return
 
-    # init groups
-    regex_rules: Dict[str, re.Pattern] = {
-        group: re.compile(regex)
-        for group, regex in config.player_list_regex.items()
-    }
-    groups: Dict[str, List[str]] = {
-        group: []
-        for group in config.player_list_regex.keys()
-    }
-    groups["其它"] = []
+    online_players = online_player_api.get_player_list()
+    if len(online_players) == 0:
+        reply_with_server_name(message, "当前没有玩家在线")
+        return
 
-    # sort players
-    for player in players:
-        for group, value in regex_rules.items():
-            if value.match(player):
-                groups[group].append(player)
+    # 分类玩家
+    player_list = {}
+    for player in online_players:
+        for name, regex in config.player_list_regex.items():
+            if re.match(regex, player):
+                if name not in player_list:
+                    player_list[name] = []
+                player_list[name].append(player)
                 break
-        else:
-            groups["其它"].append(player)
 
-    # remote empty groups
-    new_groups = {}
-    for group, players in groups.items():
-        if len(players) != 0:
-            new_groups[group] = players
-
-    # generate message
-    players_count = sum([len(players) for players in new_groups.values()])
-    message = f"在线玩家共{players_count}人"
-    if len(new_groups) != 0:
-        message += "，玩家列表：\n"
-    for group, players in new_groups.items():
-        message += f"--{group}--\n"
-        for player in players:
-            message += f"{player}\n"
-
-    reply_with_server_name(event, message)
+    # 生成消息
+    msg = []
+    for name, players in player_list.items():
+        msg.append(f"{name} ({len(players)}): {', '.join(players)}")
+    reply_with_server_name(message, "\n".join(msg))
 
 
-def bound_command_handle(server: PluginServerInterface, event: MessageEvent,
-                         command: List[str], event_type: EventType):
+def bound_command_handle(server: PluginServerInterface, message: Message,
+                     command: List[str], event_type: EventType):
+    """处理绑定命令"""
     # 管理权限
     if event_type in ADMIN_EVENT_TYPES:
+        # 查看帮助
         if len(command) == 1:
-            reply(event, bound_help)
-        elif len(command) == 2:
-            if command[1] == "list":
-                bound_list = [f"{a} - {b}" for a, b in data.items()]
-                reply_msg = "已绑定的成员列表\n"
-                for i in range(0, len(bound_list)):
-                    reply_msg += f"{i + 1}. {bound_list[i]}\n"
-                reply_msg = "还没有人绑定" if reply_msg == "" else reply_msg
-                reply_with_server_name(event, reply_msg)
+            reply(message, bound_help)
+            return
+
+        # 查看绑定列表
+        if command[1] == "list":
+            msg = []
+            for user_id, player_name in data.items():
+                msg.append(f"{user_id}: {player_name}")
+            reply_with_server_name(message, "\n".join(msg))
+            return
+
+        # 查询绑定ID
+        if command[1] == "check":
+            if len(command) < 3:
+                reply_with_server_name(message, "请输入QQ号")
+                return
+            user_id = command[2]
+            if user_id in data.keys():
+                reply_with_server_name(message, f"{user_id} 已绑定 {data[user_id]}")
             else:
-                return bound_qq_to_player(server, event, command[1])
-        elif len(command) == 3 and command[1] == "check":
-            qq_number = parse_at_message(command[2])
-            if qq_number in data:
-                reply_with_server_name(
-                    event,
-                    f"{qq_number} 绑定的ID是{data[qq_number]}"
-                )
-            else:
-                reply_with_server_name(event, f"{qq_number} 未绑定")
-        elif len(command) == 3 and command[1] == "unbound":
-            qq_number = parse_at_message(command[2])
-            if qq_number in data:
-                del data[qq_number]
+                reply_with_server_name(message, f"{user_id} 未绑定")
+            return
+
+        # 解除绑定
+        if command[1] == "unbound":
+            if len(command) < 3:
+                reply_with_server_name(message, "请输入QQ号")
+                return
+            user_id = command[2]
+            if user_id in data.keys():
+                player_name = data[user_id]
+                del data[user_id]
                 save_data(server)
-                reply_with_server_name(event, f"已解除 {qq_number} 绑定的ID")
+                reply_with_server_name(message, f"已解除 {user_id} 与 {player_name} 的绑定")
             else:
-                reply_with_server_name(event, f"{qq_number} 未绑定")
-        elif len(command) == 3 and parse_at_message(command[1]).isdigit():
-            data[parse_at_message(command[1])] = command[2]
-            save_data(server)
-            reply_with_server_name(event, "已成功绑定")
-            after_bound(
-                server,
-                event,
-                parse_at_message(command[1]),
-                command[2]
-            )
+                reply_with_server_name(message, f"{user_id} 未绑定")
+            return
 
-    # 非管理权限
-    elif event_type in [EventType.GROUP_MAIN_NOT_ADMIN_CHAT,
-                        EventType.GROUP_MSG_SYNC_NOT_ADMIN_CHAT]:
-        bound_qq_to_player(server, event, command[1])
-
-
-def parse_at_message(node: str) -> str:
-    pattern = r'\[@([^\]]+)\]'
-    match = re.search(pattern, node)
-    if match:
-        return match.group(1)
-    else:
-        return node
-
-
-def bound_qq_to_player(server, event, player_name):
-    user_id = str(event.user_id)
-    if user_id in data.keys():
-        _id = data[user_id]
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={user_id}] 您已绑定ID: {_id}, 请联系管理员修改"
-        )
-    else:
+        # 绑定新ID
+        if len(command) < 3:
+            reply_with_server_name(message, "请输入QQ号和ID")
+            return
+        user_id = command[1]
+        player_name = command[2]
         data[user_id] = player_name
         save_data(server)
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={user_id}] 已成功绑定到{player_name}"
-        )
-        after_bound(server, event, user_id, player_name)
+        after_bound(server, message, user_id, player_name)
+        return
 
-
-def after_bound(server, event, user_id, player_name):
-    if config.whitelist_add_with_bound:
-        if config.whitelist_add_cmd_template is None or config.whitelist_add_cmd_template == '':
-            server.execute(f"whitelist add {player_name}")
+    # 非管理权限
+    if len(command) == 1:
+        user_id = str(message.user["id"])
+        if user_id in data.keys():
+            reply_with_server_name(message, f"你已经绑定了 {data[user_id]}")
         else:
-            cmd = config.whitelist_add_cmd_template.format(player_name)
-            if config.whitelist_add_cmd_template.startswith("!!"):
-                server.execute_command(cmd)
-            else:
-                server.execute(cmd)
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={user_id}] 已将您添加到服务器白名单"
-        )
+            reply_with_server_name(message, "请输入要绑定的ID")
+        return
+
+    # 绑定QQ号到玩家名
+    bound_qq_to_player(server, message, command[1])
 
 
 def mc_command_handle(
         server: PluginServerInterface,
-        event: MessageEvent,
+        message: Message,
         command: List[str],
         event_type: EventType
 ):
-    if (
-            config.commands["mc"] is False
-            or event_type == EventType.NONE
-    ):
+    """处理mc命令"""
+    if config.commands["mc"] is False:
+        reply_with_server_name(message, "该指令已禁用")
         return
 
-    # 非管理不允许私聊机器人发送消息,发送消息需在群聊中
-    if event_type not in [EventType.PRIVATE_NOT_ADMIN_CHAT]:
-        user_id = str(event.user_id)
-        if user_id in data.keys():
-            # 管理员提示为绿色ID
-            if user_id in config.admins:
-                server.say(f"§7[QQ] §a<{data[user_id]}>§7 {event.content[4:]}")
-            else:
-                server.say(f"§7[QQ] <{data[user_id]}> {event.content[4:]}")
-        else:
-            reply_with_server_name(
-                event,
-                f"[CQ:at,qq={user_id}] 无法转发您的消息, 请通过/bound <Player>绑定游戏ID"
-            )
+    if len(command) == 1:
+        reply_with_server_name(message, "请输入要发送的消息")
+        return
+
+    # 获取昵称
+    user_id = str(message.user["id"])
+    if user_id in data.keys():
+        nickname = data[user_id]
+    else:
+        nickname = message.user["name"]
+
+    # 发送消息
+    msg = " ".join(command[1:])
+    if event_type in ADMIN_EVENT_TYPES:
+        server.say(f"§7[QQ] §a[{nickname}]§7 {msg}")
+    else:
+        server.say(f"§7[QQ] [{nickname}] {msg}")
 
 
 def whitelist_command_handle(
         server: PluginServerInterface,
-        event: MessageEvent,
+        message: Message,
         command: List[str],
         event_type: EventType
 ):
-    if event_type == EventType.NONE:
-        return
-    # 非管理禁止操作白名单
+    """处理白名单命令"""
     if event_type not in ADMIN_EVENT_TYPES:
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
-        )
-    else:
-        if len(command) == 1:
-            reply(event, whitelist_help)
-        elif command[1] in ["add", "remove", "list", "on", "off", "reload"]:
-            execute(server, event, event.content)
-        else:
-            reply(event, "错误的指令，请使用/whitelist查看指令帮助!")
-
-
-def mcdr_command_handle(server: PluginServerInterface, event: MessageEvent,
-                        command: List[str], event_type: EventType):
-    if event_type == EventType.NONE:
+        reply_with_server_name(message, "你没有权限使用该指令")
         return
 
-    # not admin
-    if event_type not in ADMIN_EVENT_TYPES:
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令!"
-        )
-    else:
-        if not config.commands["mcdr"]:
-            reply_with_server_name(
-                event,
-                "未开启MCDR指令控制，请在配置文件指令中开启mcdr!"
-            )
-        else:
-            if len(command) > 1:
-                cmd = " ".join(command[1:])
-                if cmd.startswith("!!"):
-                    cmd = cmd[2:]
-                server.execute_command("!!" + cmd)
-                reply_with_server_name(event, f"已执行MCDR指令 >> !!{cmd}")
-            else:
-                reply_with_server_name(event, "请输入MCDR指令!")
-
-
-def command_command_handle(server: PluginServerInterface, event: MessageEvent,
-                           command: List[str], event_type: EventType):
-    if event_type == EventType.NONE:
+    if len(command) == 1:
+        reply(message, whitelist_help)
         return
 
-    # not admin
+    execute(server, message, " ".join(command))
+
+
+def mcdr_command_handle(server: PluginServerInterface, message: Message,
+                    command: List[str], event_type: EventType):
+    """处理mcdr命令"""
+    if config.commands["mcdr"] is False:
+        reply_with_server_name(message, "该指令已禁用")
+        return
+
     if event_type not in ADMIN_EVENT_TYPES:
-        reply_with_server_name(
-            event,
-            f"[CQ:at,qq={event.user_id}] 你不是管理员，无权执行此命令！"
-        )
-    else:
-        if not config.commands["command"]:
-            reply_with_server_name(
-                event,
-                "未开启原版指令控制，请在配置文件指令中开启！"
-            )
-        else:
-            cmd = " ".join(command[1:])
-            cmd = cmd.replace("&#91;", "[").replace("&#93;", "]")
-            execute(server, event, cmd)
+        reply_with_server_name(message, "你没有权限使用该指令")
+        return
+
+    if len(command) == 1:
+        reply_with_server_name(message, "请输入要执行的指令")
+        return
+
+    # 执行指令
+    command = " ".join(command[1:])
+    if not command.startswith("!!"):
+        command = "!!" + command
+    execute(server, message, command)
+
+
+def command_command_handle(server: PluginServerInterface, message: Message,
+                       command: List[str], event_type: EventType):
+    """处理command命令"""
+    if config.commands["command"] is False:
+        reply_with_server_name(message, "该指令已禁用")
+        return
+
+    if event_type not in ADMIN_EVENT_TYPES:
+        reply_with_server_name(message, "你没有权限使用该指令")
+        return
+
+    if len(command) == 1:
+        reply_with_server_name(message, "请输入要执行的指令")
+        return
+
+    # 执行指令
+    execute(server, message, " ".join(command[1:]))
+
+
+def bound_qq_to_player(server, message: Message, player_name):
+    """绑定QQ号到玩家名"""
+    user_id = str(message.user["id"])
+    # 检查是否已经绑定
+    if user_id in data.keys():
+        reply_with_server_name(message, f"你已经绑定了 {data[user_id]}")
+        return
+
+    # 检查玩家名是否已被绑定
+    for bound_user_id, bound_player_name in data.items():
+        if bound_player_name == player_name:
+            reply_with_server_name(message, f"{player_name} 已被 {bound_user_id} 绑定")
+            return
+
+    # 绑定
+    data[user_id] = player_name
+    save_data(server)
+    after_bound(server, message, user_id, player_name)
+
+
+def after_bound(server, message: Message, user_id: str, player_name: str):
+    """绑定后的操作"""
+    reply_with_server_name(message, f"已绑定 {player_name}")
+
+    # 添加白名单
+    if config.whitelist_add_with_bound:
+        command = config.whitelist_add_cmd_template.format(player_name)
+        server.execute(command)
+        reply_with_server_name(message, f"已添加 {player_name} 到白名单")
+
+    # 设置操作服务器
+    if config.multi_server:
+        user_cache[user_id] = True
+        save_data(server)
+        reply_with_server_name(message, f"已设置操作服务器为 {config.server_name}")
