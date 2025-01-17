@@ -5,7 +5,7 @@ from mcdreforged.api.all import *
 from enum import Enum, unique
 
 from im_api.drivers.base import Platform
-from im_api.models.parser import Event, Message
+from im_api.models.message import Event, Message
 from im_api.models.request import MessageType, SendMessageRequest, ChannelInfo
 
 
@@ -176,8 +176,8 @@ def on_message(server: PluginServerInterface, platform: Platform, message: Messa
             config.multi_server is False
             or (
                     config.multi_server is True
-                    and str(message.user["id"]) in user_cache.keys()
-                    and user_cache[str(message.user["id"])] is True
+                    and str(message.user.id) in user_cache.keys()
+                    and user_cache[str(message.user.id)] is True
             )
     )
 
@@ -196,13 +196,13 @@ def on_message(server: PluginServerInterface, platform: Platform, message: Messa
         return on_qq_command(server, message, prefix, need_process)
 
     # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
-    if message.channel["id"] in config.message_sync_groups:
-        user_id = str(message.user["id"])
+    if message.channel.id in config.message_sync_groups:
+        user_id = str(message.user.id)
         # 优先级: 是否在绑定列表中 -> 是否提示需要绑定 -> 转发到游戏中
         if user_id in data.keys():
             nickname = data[user_id]
         else:
-            nickname = message.user["name"]
+            nickname = message.user.name
         # 管理员提示为绿色ID
         if user_id in config.admins:
             server.say(f"§7[QQ] §a[{nickname}]§7 {message.content}")
@@ -211,16 +211,16 @@ def on_message(server: PluginServerInterface, platform: Platform, message: Messa
 
 
 def on_notice(server: PluginServerInterface, platform: str, event: Event):
-    if platform != "qq":
+    if platform != Platform.QQ:
         return
-
+    server.logger.info(f"qq_chat: on_notice: {event}")
     # 只看主群的成员
-    if event.channel["id"] != main_group:
+    if event.channel.id != main_group:
         return
 
     # Remove whitelist with leave
     if event.type == "guild.member.leave" and config.whitelist_remove_with_leave:
-        user_id = str(event.user["id"])
+        user_id = str(event.user.id)
         if user_id in data.keys():
             command = f"whitelist remove {data[user_id]}"
             server.execute(command)
@@ -312,15 +312,21 @@ def save_data(server: PluginServerInterface):
 
 def execute(server: PluginServerInterface, message: Message, command: str):
     """执行命令"""
-    server.execute(command)
-    reply_with_server_name(message, f"已执行: {command}")
+    if server.is_rcon_running():
+        result = server.rcon_query(command)
+        if result == "":
+            result = "该指令没有返回值"
+    else:
+        server.execute(command)
+        result = "由于未启用 RCON，没有返回结果"
+    reply_with_server_name(message, result)
 
 
 def reply(message: Message, content: str):
     """回复消息"""
     request = SendMessageRequest(
         platforms=[Platform.QQ],
-        channel=ChannelInfo(id=message.channel["id"], type=message.channel["type"]),
+        channel=ChannelInfo(id=message.channel.id, type=message.channel.type),
         content=content
     )
     server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
@@ -330,7 +336,7 @@ def reply_with_server_name(message: Message, content: str):
     """带服务器名称回复消息"""
     request = SendMessageRequest(
         platforms=[Platform.QQ],
-        channel=ChannelInfo(id=message.channel["id"], type=message.channel["type"]),
+        channel=ChannelInfo(id=message.channel.id, type=message.channel.type),
         content=f"[{config.server_name}] {content}"
     )
     server.dispatch_event(LiteralEvent("im_api.send_message"), (request,))
@@ -384,14 +390,14 @@ def send_msg_to_message_sync_groups(message: str):
 def parse_event_type(message: Message) -> EventType:
     """解析事件类型"""
     # 私聊
-    if message.channel["type"] == "private":
-        if str(message.user["id"]) in config.admins:
+    if message.channel.type == "private":
+        if str(message.user.id) in config.admins:
             return EventType.PRIVATE_ADMIN_CHAT
         return EventType.PRIVATE_NOT_ADMIN_CHAT
 
     # 群聊
-    channel_id = message.channel["id"]
-    user_id = str(message.user["id"])
+    channel_id = message.channel.id
+    user_id = str(message.user.id)
     is_admin = user_id in config.admins
 
     # 主群
@@ -426,7 +432,7 @@ def server_command_handle(server: PluginServerInterface, message: Message,
 
     if command[1] == "set":
         if config.multi_server:
-            user_id = str(message.user["id"])
+            user_id = str(message.user.id)
             user_cache[user_id] = True
             save_data(server)
             reply_with_server_name(message, f"已设置操作服务器为 {config.server_name}")
@@ -537,7 +543,7 @@ def bound_command_handle(server: PluginServerInterface, message: Message,
 
     # 非管理权限
     if len(command) == 1:
-        user_id = str(message.user["id"])
+        user_id = str(message.user.id)
         if user_id in data.keys():
             reply_with_server_name(message, f"你已经绑定了 {data[user_id]}")
         else:
@@ -564,11 +570,11 @@ def mc_command_handle(
         return
 
     # 获取昵称
-    user_id = str(message.user["id"])
+    user_id = str(message.user.id)
     if user_id in data.keys():
         nickname = data[user_id]
     else:
-        nickname = message.user["name"]
+        nickname = message.user.name
 
     # 发送消息
     msg = " ".join(command[1:])
@@ -639,7 +645,7 @@ def command_command_handle(server: PluginServerInterface, message: Message,
 
 def bound_qq_to_player(server, message: Message, player_name):
     """绑定QQ号到玩家名"""
-    user_id = str(message.user["id"])
+    user_id = str(message.user.id)
     # 检查是否已经绑定
     if user_id in data.keys():
         reply_with_server_name(message, f"你已经绑定了 {data[user_id]}")
