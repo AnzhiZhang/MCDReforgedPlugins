@@ -20,10 +20,9 @@ class Config(Serializable):
     message_sync_groups: List[str] = ['1234567', '1234568']
     server_name: str = "survival"
 
-    # 是否开启群组服消息拦截
-    multi_server: bool = False
     admins: List[str] = ['1234565', '1234566']
     sync_group_only_admin: bool = True
+    # 是否开启群组服消息拦截
     force_bound: bool = False
 
     # 白名单部分
@@ -171,15 +170,6 @@ def on_user_info(server: PluginServerInterface, info):
 def on_message(server: PluginServerInterface, platform: Platform, message: Message):
     if platform != Platform.QQ:
         return
-    # 判断指令是否需要处理，如果是多服模式，只处理设置了此服的用户
-    need_process = (
-            config.multi_server is False
-            or (
-                    config.multi_server is True
-                    and str(message.user.id) in user_cache.keys()
-                    and user_cache[str(message.user.id)] is True
-            )
-    )
 
     # is command?
     content = message.content
@@ -193,7 +183,7 @@ def on_message(server: PluginServerInterface, platform: Platform, message: Messa
 
     # if it's a command, process it and stop here
     if is_command:
-        return on_qq_command(server, message, prefix, need_process)
+        return on_qq_command(server, message, prefix)
 
     # 非 command，目前只支持 msg_sync 群中直接发送消息到服务器
     if message.channel.id in config.message_sync_groups:
@@ -239,8 +229,7 @@ def on_notice(server: PluginServerInterface, platform: str, event: Event):
 def on_qq_command(
         server: PluginServerInterface,
         message: Message,
-        command_prefix: str,
-        need_process: bool
+        command_prefix: str
 ):
     # Event did not trigger
     event_type = parse_event_type(message)
@@ -249,15 +238,6 @@ def on_qq_command(
 
     # parse command
     command = parse_command_list(message.content, command_prefix)
-
-    # /server 设置操作服务器指令，检测到set需要做处理
-    if command[0] == "server":
-        server_command_handle(server, message, command, event_type)
-
-    # 无需处理直接返回
-    if not need_process:
-        return
-
     # /help 指令
     if command[0] == "help":
         help_command_handle(server, message, event_type)
@@ -422,23 +402,6 @@ def parse_event_type(message: Message) -> EventType:
 # -------------------------
 #  command handle
 # -------------------------
-
-def server_command_handle(server: PluginServerInterface, message: Message,
-                      command: List[str], event_type: EventType):
-    """处理服务器命令"""
-    if len(command) == 1:
-        reply_with_server_name(message, f"当前服务器: {config.server_name}")
-        return
-
-    if command[1] == "set":
-        if config.multi_server:
-            user_id = str(message.user.id)
-            user_cache[user_id] = True
-            save_data(server)
-            reply_with_server_name(message, f"已设置操作服务器为 {config.server_name}")
-        else:
-            reply_with_server_name(message, "未开启多服模式")
-
 
 def help_command_handle(
         server: PluginServerInterface,
@@ -672,9 +635,3 @@ def after_bound(server, message: Message, user_id: str, player_name: str):
         command = config.whitelist_add_cmd_template.format(player_name)
         server.execute(command)
         reply_with_server_name(message, f"已添加 {player_name} 到白名单")
-
-    # 设置操作服务器
-    if config.multi_server:
-        user_cache[user_id] = True
-        save_data(server)
-        reply_with_server_name(message, f"已设置操作服务器为 {config.server_name}")
