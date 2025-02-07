@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.3.0...qq_chat-v3.0.0) (2025-02-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **qq_chat:** :tada: 2.0 using new IM API ([#240](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/240))
+
+### Features
+
+* **qq_chat:** :tada: 2.0 using new IM API ([#240](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/240)) ([3e2c8cf](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/3e2c8cf5b8aa54d02ae50016cae790d2509e718f))
+
 ## [2.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.2.0...qq_chat-v2.3.0) (2024-09-25)
 
 
