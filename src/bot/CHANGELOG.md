@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.3.0...bot-v1.3.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* **bot:** 🐛 fix bot load error when fastapi libraries installed (fix [#260](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/260)) ([2c4815c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2c4815c635f6b3972fb7cf9207cf454a4d9ac489))
+
 ## [1.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/bot-v1.2.4...bot-v1.3.0) (2024-12-20)
 
 
