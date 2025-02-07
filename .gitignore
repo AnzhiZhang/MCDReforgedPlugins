@@ -1,3 +1,7 @@
+# MacOS
+local_sync.sh
+.DS_Store
+
 # .idea
 /.idea/
 
