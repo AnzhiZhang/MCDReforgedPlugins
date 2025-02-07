@@ -86,12 +86,12 @@ class Plugin:
             self.server.save_config_simple(self.__config, CONFIG_FILE_NAME)
 
     def load_fastapi_manager(self):
-        if FastAPIManager is not None:
+        if FastAPIManager is not None and self.fastapi_mcdr is not None:
             self.__fastapi_manager = FastAPIManager(self)
         else:
             if fastapi_error is None:
                 self.server.logger.debug(
-                    "FastAPI libraries is not installed, "
+                    "FastAPI MCDR is not installed, "
                     "will not register APIs with FastAPI MCDR."
                 )
             else:
