@@ -122,15 +122,6 @@ def on_load(mcdr_server: PluginServerInterface, old):
     global config, data, main_group, user_cache, server
     server = mcdr_server
     config = server.load_config_simple(target_class=Config)
-    all_data = server.load_config_simple(
-        "data.json",
-        default_config={"data": {}, "user_cache": {}},
-        echo_in_console=False
-    )
-    # 存储用户bound信息
-    data = all_data["data"]
-    # 存储群组服操作该服务器的用户信息
-    user_cache = all_data["user_cache"]
 
     main_group = parse_main_group()
 
@@ -584,7 +575,7 @@ def mcdr_command_handle(server: PluginServerInterface, message: Message,
     command = " ".join(command[1:])
     if not command.startswith("!!"):
         command = "!!" + command
-    execute(server, message, command)
+    server.execute_command(server, message, command)
 
 
 def command_command_handle(server: PluginServerInterface, message: Message,
