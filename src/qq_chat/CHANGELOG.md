@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v3.0.0...qq_chat-v3.0.1) (2025-02-10)
+
+
+### Bug Fixes
+
+* **qq_chat:** fix mcdr command && remove data config ([0d35abe](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/0d35abe4fbd76921f56fdb640e226446379335bb))
+
 ## [3.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v2.3.0...qq_chat-v3.0.0) (2025-02-07)
 
 
