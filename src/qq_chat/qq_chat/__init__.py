@@ -122,6 +122,13 @@ def on_load(mcdr_server: PluginServerInterface, old):
     global config, data, main_group, user_cache, server
     server = mcdr_server
     config = server.load_config_simple(target_class=Config)
+    all_data = server.load_config_simple(
+        "data.json",
+        default_config={"data": {}},
+        echo_in_console=False
+    )
+    # 存储用户bound信息
+    data = all_data["data"]
 
     main_group = parse_main_group()
 
