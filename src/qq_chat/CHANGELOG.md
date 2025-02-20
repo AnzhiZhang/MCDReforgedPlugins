@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v3.0.1...qq_chat-v3.0.2) (2025-02-20)
+
+
+### Bug Fixes
+
+* **qq_chat:** fix bound ([e4dc035](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/e4dc03590e8a8e0bf66b0e41b5eb34a736bdd8f0))
+
 ## [3.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/qq_chat-v3.0.0...qq_chat-v3.0.1) (2025-02-10)
 
 
