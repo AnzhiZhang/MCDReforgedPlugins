@@ -1,4 +1,4 @@
-from bot.plugin import Plugin
+from .plugin import Plugin
 
 plugin: Plugin
 
