@@ -113,7 +113,8 @@ def offline_uuid(name) -> UUID | None:
     if r is None:
         return None
     else:
-        return UUID(r['offlineuuid'])
+        uuid = r.get('offlineuuid', None)
+        return UUID(uuid) if uuid is not None else None
 
 
 def get_try(url) -> dict | None:
