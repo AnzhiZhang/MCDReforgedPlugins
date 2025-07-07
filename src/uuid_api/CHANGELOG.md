@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/uuid_api-v0.1.2...uuid_api-v1.0.0) (2025-07-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **uuid_api:** enhance online mode handling and usercache integration
+
+### Features
+
+* **uuid_api:** add commands ([2792e79](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2792e79f01c6d42e541f3a20d8eb66b11c5b3415))
+* **uuid_api:** enhance online mode handling and usercache integration ([2b01298](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/2b0129845446a08f20d8c9b4d1d46188d25b85ca))
+
+
+### Bug Fixes
+
+* **uuid_api:** handle None case in offline_uuid return value ([3b21a54](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/3b21a541cf003710f6663d3de8ae874144b3fef0))
+
 ## [0.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/uuid_api-v0.1.1...uuid_api-v0.1.2) (2023-07-18)
 
 
