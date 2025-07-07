@@ -1,17 +1,47 @@
-# UUIDAPI
+# UUID API
 
-> 玩家UUIDAPI
+> Player UUID API
 
-## 依赖的Python模块
+## Required Python Modules
 
 - requests
 
-## 使用方法
+## Usage
 
-使用 `get_uuid(name: str)` 获取玩家UUID, 未查到返回 `None`
+```python
+get_uuid(name: str) -> UUID | None
+```
 
-你不需要考虑服务器正盗版问题, 会自己判断
+Returns `None` if the player is not found.
 
-如果使用了 `BungeeCord` 并开启了正版验证, 或实际的UUID与 `server.properties` 中的 `online-mode` 并不匹配
+Example:
 
-将插件的 `manual_mode` 手动模式设置为一个布尔值即可覆盖 `server.properties` 的在线模式
+```python
+uuid_api = server.get_plugin_instance('uuid_api')
+uuid = uuid_api.get_uuid('Steve')
+server.logger.warning(uuid)
+```
+
+## Configuration
+
+### use_usercache
+
+Default: `true`
+
+Whether to use data from the `usercache.json` file as a cache to retrieve player UUIDs.
+
+### override_online_mode
+
+Default: `false`
+
+Whether to override the `online-mode` setting in `server.properties`.
+
+If set to `true`, the plugin will ignore the `online-mode` setting in `server.properties` and instead use the value specified in `override_online_mode_value`.
+
+If you're using a proxy server such as BungeeCord or Velocity with online-mode enabled, or if the actual UUIDs do not match the server's `online-mode` setting, enabling this option ensures the plugin correctly handles online mode.
+
+### override_online_mode_value
+
+Default: `true`
+
+When `override_online_mode` is set to `true`, this value determines whether the plugin treats the server as running in online mode.
