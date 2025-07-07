@@ -45,3 +45,7 @@ server.logger.warning(uuid)
 默认值: `true`
 
 如果 `override_online_mode` 设置为 `true`，则此值将决定插件是否认为服务器处于在线模式。
+
+## 鸣谢
+
+部分代码改编自 <https://github.com/gubaiovo/MCDR_uuid_api_remake>

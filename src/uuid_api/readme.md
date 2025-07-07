@@ -45,3 +45,7 @@ If you're using a proxy server such as BungeeCord or Velocity with online-mode e
 Default: `true`
 
 When `override_online_mode` is set to `true`, this value determines whether the plugin treats the server as running in online mode.
+
+## Acknowledgements
+
+Some code are adapted from <https://github.com/gubaiovo/MCDR_uuid_api_remake>
