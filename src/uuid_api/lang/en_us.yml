@@ -1,0 +1,11 @@
+uuid_api:
+  help.message: UUID API Management
+  help.message.hover: Click to show help
+  help.content: |
+    -----------------------------------
+    §6!!uar help§r Show help message
+    §6!!uar <name>§r Get UUID
+    -----------------------------------
+  error:
+    not_console: §cThis command can only be used in the console
+    not_found: §cNo player name found for this UUID

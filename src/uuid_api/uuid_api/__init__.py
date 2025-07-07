@@ -3,7 +3,9 @@ import json
 import requests
 from uuid import UUID
 
-from mcdreforged.api.types import PluginServerInterface
+from mcdreforged.api.command import *
+from mcdreforged.api.rtext import RAction
+from mcdreforged.api.types import PluginServerInterface, CommandSource
 from mcdreforged.api.utils import Serializable
 
 PROPERTIES_FILE_PATH = os.path.join('server', 'server.properties')
@@ -14,6 +16,7 @@ class Config(Serializable):
     use_usercache: bool = True
     override_online_mode: bool = False
     override_online_mode_value: bool = True
+    enable_commands: bool = False
 
 
 config: Config
@@ -52,6 +55,16 @@ def on_load(server: PluginServerInterface, old):
     # load uuids from usercache.json if enabled
     if config.use_usercache:
         read_usercache()
+
+    # register commands
+    if config.enable_commands:
+        server.register_help_message(
+            '!!uuid',
+            rtr('help.message')
+            .c(RAction.run_command, '!!uuid')
+            .h(rtr('help.message.hover'))
+        )
+        register_commands(server)
 
 
 def get_online_mode() -> bool | None:
@@ -143,3 +156,44 @@ def get_uuid(name: str) -> UUID | None:
 
     # return the uuid
     return uuid
+
+
+# -------------------------
+# Commands
+# -------------------------
+
+def register_commands(server):
+    """
+    Register commands for the plugin.
+    """
+    builder = SimpleCommandBuilder()
+    builder.command('!!uuid', get_help)
+    builder.command('!!uuid help', get_help)
+    builder.command('!!uuid <name>', get_uuid_in_console)
+    builder.arg('name', Text)
+    builder.register(server)
+
+
+def rtr(key, *args):
+    return PluginServerInterface.get_instance().rtr(f"uuid_api.{key}", *args)
+
+
+def get_help(source: CommandSource):
+    source.reply(rtr("help.content"))
+
+
+def get_uuid_in_console(source: CommandSource, context: CommandContext):
+    # check if the command is run in console
+    if not source.is_console:
+        source.reply(rtr("error.not_console"))
+        return
+
+    # get uuid
+    name = context['name']
+    uuid = get_uuid(name)
+
+    # reply with the uuid or error message
+    if uuid is None:
+        source.reply(rtr("error.not_found", name))
+    else:
+        source.reply(f'§a{name} -> {uuid}')

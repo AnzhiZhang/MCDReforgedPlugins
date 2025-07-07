@@ -1,0 +1,11 @@
+uuid_api:
+  help.message: UUID API 管理
+  help.message.hover: 点击显示帮助
+  help.content: |
+    -----------------------------------
+    §6!!uuid help§r 查看帮助
+    §6!!uuid <name>§r 获取 UUID
+    -----------------------------------
+  error:
+    not_console: §c该命令只能在控制台使用
+    not_found: §c未找到对应的玩家名
