@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 from math import ceil, floor
-from typing import Optional, Any
+from typing import Optional, Any, Set
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
@@ -48,6 +48,14 @@ class Config(Serializable):
     tp: int = 1
     back: int = 1
 
+    class RangeLimit(Serializable):
+        check_interval: int = 0
+        x: int = 50
+        y: int = 50
+        z: int = 50
+
+    range_limit: RangeLimit = RangeLimit()
+
 
 config: Config
 data: dict
@@ -60,6 +68,9 @@ def nether_to_overworld(x, z):
 
 def overworld_to_nether(x, z):
     return floor(float(x) / 8 + 0.5), floor(float(z) / 8 + 0.5)
+
+
+monitor_players: Set[str] = set()
 
 
 def on_load(server: PluginServerInterface, old):
@@ -78,6 +89,47 @@ def on_load(server: PluginServerInterface, old):
 
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
+    @new_thread("check_player_pos")
+    def check_player_pos():
+        while True:
+            time.sleep(config.range_limit.check_interval)
+            # copy 用于防止竞争冒险
+            for player in monitor_players.copy():
+                center = data.get(player, {}).get("pos", None)
+                if center is None:
+                    continue
+                center = [round(float(x)) for x in center]
+                pos = minecraft_data_api.get_player_info(player, "Pos")
+                pos = [float(x) for x in pos]
+
+                radius = [
+                    config.range_limit.x,
+                    config.range_limit.y,
+                    config.range_limit.z,
+                ]
+
+                valid_ranges = [
+                    (center[i] - radius[i], center[i] + radius[i])
+                    if radius[i] > 0
+                    else None
+                    for i in range(3)
+                ]
+
+                need_teleport = False
+                for i in range(3):
+                    if valid_ranges[i] is None:
+                        continue
+                    if pos[i] < valid_ranges[i][0]:
+                        need_teleport = True
+                        pos[i] = valid_ranges[i][0] + 0.5
+                    elif pos[i] > valid_ranges[i][1]:
+                        need_teleport = True
+                        pos[i] = valid_ranges[i][1] - 0.5
+
+                if need_teleport:
+                    server.execute(f"tp {player} {pos[0]} {pos[1]} {pos[2]}")
+                    server.tell(player, "§c您已超出活动范围，已被自动传送回活动范围内")
+
     @new_thread('Gamemode switch mode')
     def change_mode(src, ctx):
         if src.is_console:
@@ -86,9 +138,12 @@ def on_load(server: PluginServerInterface, old):
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
+            if not src.has_permission(config.tp):
+                monitor_players.add(player)
         elif player in data.keys():
             use_time = ceil((time.time() - data[player]['time']) / 60)
             server.tell(player, f'§a您使用了§e{use_time}min')
+            monitor_players.discard(player)
             spec_to_sur(server, player)
 
     @new_thread('Gamemode tp')
@@ -234,6 +289,11 @@ def on_load(server: PluginServerInterface, old):
                 f'execute in {dim} run tp {src.player} {" ".join(pos)}'
             )
             src.reply('§a已将您传送至上个地点')
+
+    if config.range_limit.check_interval > 0 and (
+        config.range_limit.x > 0 or config.range_limit.y > 0 or config.range_limit.z > 0
+    ):
+        check_player_pos()
 
     # spec literals
     spec_literals = ['!!spec']
