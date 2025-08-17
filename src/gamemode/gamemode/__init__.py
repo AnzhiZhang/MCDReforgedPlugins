@@ -2,6 +2,8 @@
 import time
 from math import ceil, floor
 from typing import Optional, Any
+from os import path
+import json
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
@@ -28,28 +30,44 @@ HUMDIMS = {
     'minecraft:the_end': '末地'
 }
 
-DEFAULT_CONFIG = {
-    'spec': 1,
-    'spec_other': 2,
-    'tp': 1,
-    'back': 1
-}
-
 HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 §6!!spec <player> §7切换他人模式
 §6!!tp [dimension] [position] §7传送至指定地点
 §6!!back §7返回上个地点'''
 
 
-class Config(Serializable):
+class ConfigV1(Serializable):
     short_command: bool = True
     spec: int = 1
     spec_other: int = 2
     tp: int = 1
     back: int = 1
 
+    config_version: int = 1
 
-config: Config
+    def migrate_to_config_v2(self) -> "ConfigV2":
+        config_v2 = ConfigV2()
+        config_v2.short_command.enabled = self.short_command
+        config_v2.permissions.spec = self.spec
+        config_v2.permissions.spec_other = self.spec_other
+        config_v2.permissions.tp = self.tp
+        config_v2.permissions.back = self.back
+        return config_v2
+
+class ConfigV2(Serializable):
+    class Permissions(Serializable):
+        spec: int = 1
+        spec_other: int = 2
+        tp: int = 1
+        back: int = 1
+    class ShortCommand(Serializable):
+        enabled: bool = False
+
+    config_version: int = 2
+    permissions: Permissions = Permissions()
+    short_command: ShortCommand = ShortCommand()
+
+config: ConfigV2
 data: dict
 minecraft_data_api: Optional[Any]
 
@@ -64,11 +82,7 @@ def overworld_to_nether(x, z):
 
 def on_load(server: PluginServerInterface, old):
     global config, data, minecraft_data_api
-    config = server.load_config_simple(
-        'config.json',
-        default_config=DEFAULT_CONFIG,
-        target_class=Config
-    )
+    config = load_config(server)
     data = server.load_config_simple(
         'data.json',
         default_config={'data': {}},
@@ -226,13 +240,13 @@ def on_load(server: PluginServerInterface, old):
 
     # spec literals
     spec_literals = ['!!spec']
-    if config.short_command:
+    if config.short_command.enabled:
         spec_literals.append('!s')
 
     # register
     server.register_command(
         Literal(spec_literals)
-        .requires(lambda src: src.has_permission(config.spec))
+        .requires(lambda src: src.has_permission(config.permissions.spec))
         .runs(change_mode)
         .then(
             Literal('help')
@@ -241,14 +255,14 @@ def on_load(server: PluginServerInterface, old):
         .then(
             Text('player')
             .requires(
-                lambda src: src.has_permission(config.spec_other)
+                lambda src: src.has_permission(config.permissions.spec_other)
             )
             .runs(change_mode)
         )
     )
     server.register_command(
         Literal('!!tp')
-        .requires(lambda src: src.has_permission(config.tp))
+        .requires(lambda src: src.has_permission(config.permissions.tp))
         .then(
             Text('param1')
             .runs(tp).  # !!tp <dimension> -- param1 = dimension
@@ -269,7 +283,7 @@ def on_load(server: PluginServerInterface, old):
     )
     server.register_command(
         Literal('!!back')
-        .requires(lambda src: src.has_permission(config.back))
+        .requires(lambda src: src.has_permission(config.permissions.back))
         .runs(back)
     )
 
@@ -319,6 +333,51 @@ def check_player_online_and_get_player_correct_name(player):
         if player.lower() == a_online_player.lower():
             return a_online_player
     return False
+
+
+
+def load_config(server: PluginServerInterface) -> "ConfigV2":
+    """
+    Load config file with automatic version migration
+    """
+    # Did not use PluginServerInterface.load_config_simple due to its excessive limitations,
+    # and instead implemented manual reading. After extensive testing, version migration 
+    # couldn't be achieved through the API (not unusable but would require double file
+    # reading, wasting I/O resources).
+    #
+    # Key limitations encountered:
+    # - Either `default_config` or `target_class` must be provided (both cannot be None)
+    # - Automatically deletes keys present in config file but missing in `default_config`,
+    #   making it impossible to pass `default_config={}` for pure file reading
+    # - Certain edge cases cause file overwriting even when `data_processor` returns False,
+    #   leading to potential config loss
+
+    config_file_path = path.join(server.get_data_folder(), 'config.json')
+    # create a config file if none exists
+    if not path.isfile(config_file_path):
+        config_v2 = ConfigV2()
+        server.save_config_simple(config_v2, 'config.json')
+        return config_v2
+    # try to read config file
+    try:
+        with open(config_file_path, 'r', encoding='utf-8') as f:
+            raw_data = json.load(f)
+    except Exception as e:
+        server.logger.error(f"配置文件读取失败: {e}，正在使用默认配置 (不会覆盖保存原有配置, 以免丢失配置. 请修复或删除 {config_file_path})")
+        return ConfigV2()
+    # get config file version, `v1` if none
+    config_version = raw_data.get('config_version', 1)
+    if config_version == 1:
+        # migrate to v2
+        config_v1 = ConfigV1.deserialize(raw_data)
+        config_v2 = config_v1.migrate_to_config_v2()
+        server.save_config_simple(config_v2, 'config.json')
+        return config_v2
+    elif config_version == 2:
+        return ConfigV2.deserialize(raw_data)
+    else:
+        server.logger.warning(f"未知配置版本 {config_version}，正在使用默认配置")
+        return ConfigV2()
 
 
 def on_player_joined(server, player, info):
