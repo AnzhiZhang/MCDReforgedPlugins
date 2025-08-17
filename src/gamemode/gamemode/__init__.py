@@ -74,6 +74,7 @@ class ConfigV2(Serializable):
     config_version: int = 2
     permissions: Permissions = Permissions()
     short_command: ShortCommand = ShortCommand()
+    data_save_path: str = ''
 
 @dataclass
 class Coordinate:
@@ -98,7 +99,8 @@ def on_load(server: PluginServerInterface, old):
     global config, data, minecraft_data_api
     config = load_config(server)
     data = server.load_config_simple(
-        'data.json',
+        'data.json' if config.data_save_path == '' else config.data_save_path,
+        in_data_folder=(config.data_save_path == ''),
         default_config={'data': {}},
         echo_in_console=False
     )['data']
@@ -285,7 +287,10 @@ def on_load(server: PluginServerInterface, old):
 
 
 def save_data(server: PluginServerInterface):
-    server.save_config_simple({'data': data}, 'data.json')
+    server.save_config_simple({'data': data},
+        'data.json' if config.data_save_path == '' else config.data_save_path,
+        in_data_folder=(config.data_save_path == '') 
+    )
 
 
 def sur_to_spec(server, player):
