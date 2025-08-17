@@ -79,10 +79,16 @@ def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
     @new_thread('Gamemode switch mode')
-    def change_mode(src, ctx):
+    def change_mode(src: PlayerCommandSource, ctx):
         if src.is_console:
             return src.reply('§c仅允许玩家使用')
-        player = src.player if ctx == {} else ctx['player']
+        player = src.player
+        # is spec_other (!!spec Steve)
+        if not ctx == {}:
+            # Check if the player exists and correct the capitalization of the player name
+            player = check_player_online_and_get_player_correct_name(ctx['player'])
+            if (player == False):
+                return src.reply(f'§c指定的玩家 §d{ctx['player']}§c 不在线或不存在')
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
@@ -296,6 +302,23 @@ def spec_to_sur(server, player):
     server.execute(f'gamemode survival {player}')
     del data[player]
     save_data(server)
+
+
+def check_player_online_and_get_player_correct_name(player):
+    """
+    Check if a player with the given name (case-insensitive) is online,
+    returning the correctly-cased name if online, otherwise `False`.
+
+    :param minecraft_data_api: Minecraft data api
+    :param player: Case-insensitive player name
+    
+    :return: Correctly-cased player name if online, False if offline
+    """
+    all_online_players = minecraft_data_api.get_server_player_list()[2]
+    for a_online_player in all_online_players:
+        if player.lower() == a_online_player.lower():
+            return a_online_player
+    return False
 
 
 def on_player_joined(server, player, info):
