@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
+import threading
 from math import ceil, floor
-from typing import Optional, Any, Literal, Text
+from typing import Optional, Any, Literal, Text, Set, Callable
 from dataclasses import dataclass
 from os import path
 import json
@@ -10,6 +11,33 @@ from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 from mcdreforged.api.utils import Serializable
+
+
+class LoopManager:
+    def __init__(self, run_function: Callable, interval: int):
+        self.run_function = run_function
+        self.interval = interval
+        self._stop_event = threading.Event()
+        self.thread = None
+
+    def start(self):
+        def loop():
+            while not self._stop_event.wait(self.interval):
+                self.run_function()
+
+        # If a thread is already running, stop it before starting a new one
+        if self.thread is not None and self.thread.is_alive():
+            self.stop()
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        if self.thread is not None:
+            self._stop_event.set()
+            self.thread.join()
+            self.thread = None
+            self._stop_event.clear()
+
 
 DIMENSIONS = {
     '0': 'minecraft:overworld',
@@ -30,6 +58,7 @@ HUMDIMS = {
     'minecraft:the_nether': '下界',
     'minecraft:the_end': '末地'
 }
+
 
 HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
 §6!!spec <player> §7切换他人模式
@@ -72,11 +101,17 @@ class ConfigV2(Serializable):
     class ShortCommand(Serializable):
         enabled: bool = False
         command: str = "!s"
+    class RangeLimit(Serializable):
+        check_interval: int = 0
+        x: int = 50
+        y: int = 50
+        z: int = 50
 
     config_version: int = 2
     permissions: Permissions = Permissions()
     short_command: ShortCommand = ShortCommand()
     data_save_path: str = ''
+    range_limit: RangeLimit = RangeLimit()
 
 @dataclass
 class Coordinate:
@@ -86,7 +121,9 @@ class Coordinate:
 
 config: ConfigV2
 data: dict
+monitor_players: Set[str] = set()
 minecraft_data_api: Optional[Any]
+loop_manager: Optional[LoopManager]
 
 
 def nether_to_overworld(x, z):
@@ -98,7 +135,7 @@ def overworld_to_nether(x, z):
 
 
 def on_load(server: PluginServerInterface, old):
-    global config, data, minecraft_data_api
+    global config, data, minecraft_data_api, loop_manager
     config = load_config(server)
     data = server.load_config_simple(
         'data.json' if config.data_save_path == '' else config.data_save_path,
@@ -110,10 +147,48 @@ def on_load(server: PluginServerInterface, old):
 
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
+    def check_player_pos():
+        radius = [
+            config.range_limit.x,
+            config.range_limit.y,
+            config.range_limit.z
+        ]
+        for player in monitor_players.copy():
+            center = [x for x in data[player]['pos']]
+            pos = minecraft_data_api.get_player_info(player, 'Pos')
+            if pos is None:
+                server.logger.warning(
+                    f'无法获取玩家 {player} 的位置，可能是玩家不在线'
+                )
+                continue
+
+            valid_ranges = [
+                (center[i] - radius[i], center[i] + radius[i])
+                if radius[i] > 0
+                else None
+                for i in range(3)
+            ]
+
+            need_teleport = False
+            for i in range(3):
+                if valid_ranges[i] is None:
+                    continue
+                if pos[i] < valid_ranges[i][0]:
+                    need_teleport = True
+                    pos[i] = valid_ranges[i][0] + 0.5
+                elif pos[i] > valid_ranges[i][1]:
+                    need_teleport = True
+                    pos[i] = valid_ranges[i][1] - 0.5
+
+            if need_teleport:
+                server.execute(f'tp {player} {pos[0]} {pos[1]} {pos[2]}')
+                server.tell(
+                    player,
+                    '§c您已超出活动范围，已被自动传送回活动范围内'
+                )
+
     @new_thread('Gamemode switch mode')
-    def change_mode(src: PlayerCommandSource, ctx):
-        if src.is_console:
-            return src.reply('§c仅允许玩家使用')
+    def change_mode(src: PlayerCommandSource, ctx: CommandContext):
         player = src.player
         # is spec_other (!!spec Steve)
         if not ctx == {}:
@@ -124,14 +199,18 @@ def on_load(server: PluginServerInterface, old):
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
+            if not src.has_permission(config.permissions.tp):
+                monitor_players.add(player)
         elif player in data.keys():
             use_time = ceil((time.time() - data[player]['time']) / 60)
             server.tell(player, f'§a您使用了§e{use_time}min')
             spec_to_sur(server, player)
+            if player in monitor_players:
+                monitor_players.discard(player)
 
     @new_thread('Gamemode tp')
-    def tp(src: PlayerCommandSource, ctx):
-        def coordValid(coord: str):
+    def tp(src: PlayerCommandSource, ctx: CommandContext):
+        def is_coord_valid(coord: str):
             """
             Check if the given coordinate is valid
             """
@@ -146,8 +225,6 @@ def on_load(server: PluginServerInterface, old):
                 return True
             return False
 
-        if src.is_console:
-            return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
 
@@ -166,6 +243,7 @@ def on_load(server: PluginServerInterface, old):
         to_player = ''
         to_coordinate = Coordinate()
         to_coordinate_dim = ''
+
 
         player_original_pos = minecraft_data_api.get_player_coordinate(src.player)
         player_original_dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))]
@@ -208,7 +286,7 @@ def on_load(server: PluginServerInterface, old):
                 to_coordinate.z = 0
 
         elif len(params) == 3:  # only position: e.g. !!tp x y z
-            if (not coordValid(params[0])) or (not coordValid(params[1])) or (not coordValid(params[2])):
+            if (not is_coord_valid(params[0])) or (not is_coord_valid(params[1])) or (not is_coord_valid(params[2])):
                 return src.reply('§c坐标不合法')
             if (params[0] == '~' and params[1] == '~' and params[2] == '~'):
                 return src.reply('§c原地 tp 是吧 (doge)')
@@ -222,6 +300,8 @@ def on_load(server: PluginServerInterface, old):
                 return src.reply('§c没有此维度')
             if (player_original_dim == DIMENSIONS[params[0]] and params[1] == '~' and params[2] == '~' and params[3] == '~'):
                 return src.reply('§c原地 tp 是吧 (doge)')
+            if (not is_coord_valid(params[1])) or (not is_coord_valid(params[2])) or (not is_coord_valid(params[3])):
+                return src.reply('§c坐标不合法')
             
             tp_type = "to_coordinate"
             to_coordinate_dim = DIMENSIONS[params[0]]
@@ -245,8 +325,6 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
-        if src.is_console:
-            return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             return src.reply('§c您只能在旁观模式下传送')
         back_to_dim = data[src.player]['back']['dim']
@@ -261,15 +339,41 @@ def on_load(server: PluginServerInterface, old):
         )
         src.reply('§a已将您传送至上个地点')
 
+    # enable range check
+    range_check_enabled = (
+            config.range_limit.check_interval > 0 and
+            (
+                    config.range_limit.x > 0 or
+                    config.range_limit.y > 0 or
+                    config.range_limit.z > 0
+            )
+    )
+    if range_check_enabled:
+        loop_manager = LoopManager(
+            check_player_pos,
+            config.range_limit.check_interval
+        )
+        loop_manager.start()
+
+        # load monitored players
+        for player in data.keys():
+            if server.get_permission_level(player) < config.permissions.tp:
+                monitor_players.add(player)
+
     # spec literals
     spec_literals = ['!!spec']
+
     if config.short_command.enabled:
         spec_literals.append(config.short_command.command)
 
     # register
     server.register_command(
         Literal(spec_literals)
-        .requires(lambda src: src.has_permission(config.permissions.spec))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(
+            Requirements.has_permission(config.permissions.spec),
+            lambda: '§c权限不足'
+        )
         .runs(change_mode)
         .then(
             Literal('help')
@@ -278,14 +382,19 @@ def on_load(server: PluginServerInterface, old):
         .then(
             Text('player')
             .requires(
-                lambda src: src.has_permission(config.permissions.spec_other)
+                Requirements.has_permission(config.permissions.spec_other),
+                lambda: '§c权限不足'
             )
             .runs(change_mode)
         )
     )
     server.register_command(
         Literal('!!tp')
-        .requires(lambda src: src.has_permission(config.permissions.tp))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(
+            Requirements.has_permission(config.permissions.tp),
+            lambda: '§c权限不足'
+        )
         .then(
             Text('param1')
             .runs(tp).  # !!tp <dimension | player> -- param1 = dimension or player name
@@ -306,7 +415,11 @@ def on_load(server: PluginServerInterface, old):
     )
     server.register_command(
         Literal('!!back')
-        .requires(lambda src: src.has_permission(config.permissions.back))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(
+            Requirements.has_permission(config.permissions.back),
+            lambda: '§c权限不足'
+        )
         .runs(back)
     )
 
@@ -411,6 +524,20 @@ def load_config(server: PluginServerInterface) -> "ConfigV2":
         return ConfigV2()
 
 
-def on_player_joined(server, player, info):
+def on_player_joined(server: PluginServerInterface, player, info):
     if player in data.keys():
         server.execute(f'gamemode spectator {player}')
+        if server.get_permission_level(player) < config.permissions.tp:
+            monitor_players.add(player)
+
+
+def on_player_left(server: PluginServerInterface, player):
+    if player in data.keys():
+        monitor_players.discard(player)
+
+
+def on_unload(server: PluginServerInterface):
+    global loop_manager
+    if loop_manager is not None:
+        loop_manager.stop()
+        loop_manager = None

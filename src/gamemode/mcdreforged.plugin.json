@@ -1,6 +1,6 @@
 {
   "id": "gamemode",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "name": "Gamemode",
   "description": {
     "en_us": "Change to spectator mode for observe, teleport to origin position when change back to survival mode",
@@ -9,6 +9,7 @@
   "author": "Andy Zhang",
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/gamemode",
   "dependencies": {
+    "mcdreforged": "^2.7.0",
     "minecraft_data_api": ">=1.4"
   }
 }
