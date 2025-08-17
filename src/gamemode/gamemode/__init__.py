@@ -31,11 +31,17 @@ HUMDIMS = {
     'minecraft:the_end': '末地'
 }
 
-HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
+HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
 §6!!spec <player> §7切换他人模式
-§6!!tp [dimension] [position] §7传送至指定地点
+§6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
+§6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
 §6!!back §7返回上个地点'''
 
+HELP_MESSAGE_WITH_SHORT_COMMAND = '''§6!!spec §7或§6 {0} §7切换旁观/生存
+§6!!spec <player> §7或§6 {0} <player> §7切换他人模式
+§6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
+§6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
+§6!!back §7返回上个地点'''
 
 class ConfigV1(Serializable):
     short_command: bool = True
@@ -63,6 +69,7 @@ class ConfigV2(Serializable):
         back: int = 1
     class ShortCommand(Serializable):
         enabled: bool = False
+        command: str = "!s"
 
     config_version: int = 2
     permissions: Permissions = Permissions()
@@ -230,7 +237,7 @@ def on_load(server: PluginServerInterface, old):
     # spec literals
     spec_literals = ['!!spec']
     if config.short_command.enabled:
-        spec_literals.append('!s')
+        spec_literals.append(config.short_command.command)
 
     # register
     server.register_command(
@@ -239,7 +246,7 @@ def on_load(server: PluginServerInterface, old):
         .runs(change_mode)
         .then(
             Literal('help')
-            .runs(lambda src: src.reply(HELP_MESSAGE))
+            .runs(lambda src: src.reply(HELP_MESSAGE_WITH_SHORT_COMMAND.format(config.short_command.command) if config.short_command.enabled else HELP_MESSAGE))
         )
         .then(
             Text('player')
