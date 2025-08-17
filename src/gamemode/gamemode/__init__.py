@@ -1,12 +1,40 @@
 # -*- coding: utf-8 -*-
 import time
+import threading
 from math import ceil, floor
-from typing import Optional, Any
+from typing import Optional, Any, Set, Callable
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 from mcdreforged.api.utils import Serializable
+
+
+class LoopManager:
+    def __init__(self, run_function: Callable, interval: int):
+        self.run_function = run_function
+        self.interval = interval
+        self._stop_event = threading.Event()
+        self.thread = None
+
+    def start(self):
+        def loop():
+            while not self._stop_event.wait(self.interval):
+                self.run_function()
+
+        # If a thread is already running, stop it before starting a new one
+        if self.thread is not None and self.thread.is_alive():
+            self.stop()
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        if self.thread is not None:
+            self._stop_event.set()
+            self.thread.join()
+            self.thread = None
+            self._stop_event.clear()
+
 
 DIMENSIONS = {
     '0': 'minecraft:overworld',
@@ -48,10 +76,20 @@ class Config(Serializable):
     tp: int = 1
     back: int = 1
 
+    class RangeLimit(Serializable):
+        check_interval: int = 0
+        x: int = 50
+        y: int = 50
+        z: int = 50
+
+    range_limit: RangeLimit = RangeLimit()
+
 
 config: Config
 data: dict
+monitor_players: Set[str] = set()
 minecraft_data_api: Optional[Any]
+loop_manager: Optional[LoopManager]
 
 
 def nether_to_overworld(x, z):
@@ -63,7 +101,7 @@ def overworld_to_nether(x, z):
 
 
 def on_load(server: PluginServerInterface, old):
-    global config, data, minecraft_data_api
+    global config, data, minecraft_data_api, loop_manager
     config = server.load_config_simple(
         'config.json',
         default_config=DEFAULT_CONFIG,
@@ -78,16 +116,60 @@ def on_load(server: PluginServerInterface, old):
 
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
+    def check_player_pos():
+        radius = [
+            config.range_limit.x,
+            config.range_limit.y,
+            config.range_limit.z
+        ]
+        for player in monitor_players.copy():
+            center = [x for x in data[player]['pos']]
+            pos = minecraft_data_api.get_player_info(player, 'Pos')
+            if pos is None:
+                server.logger.warning(
+                    f'无法获取玩家 {player} 的位置，可能是玩家不在线'
+                )
+                continue
+
+            valid_ranges = [
+                (center[i] - radius[i], center[i] + radius[i])
+                if radius[i] > 0
+                else None
+                for i in range(3)
+            ]
+
+            need_teleport = False
+            for i in range(3):
+                if valid_ranges[i] is None:
+                    continue
+                if pos[i] < valid_ranges[i][0]:
+                    need_teleport = True
+                    pos[i] = valid_ranges[i][0] + 0.5
+                elif pos[i] > valid_ranges[i][1]:
+                    need_teleport = True
+                    pos[i] = valid_ranges[i][1] - 0.5
+
+            if need_teleport:
+                server.execute(f'tp {player} {pos[0]} {pos[1]} {pos[2]}')
+                server.tell(
+                    player,
+                    '§c您已超出活动范围，已被自动传送回活动范围内'
+                )
+
     @new_thread('Gamemode switch mode')
     def change_mode(src: PlayerCommandSource, ctx: CommandContext):
         player = src.player if ctx == {} else ctx['player']
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
+            if not src.has_permission(config.tp):
+                monitor_players.add(player)
         elif player in data.keys():
             use_time = ceil((time.time() - data[player]['time']) / 60)
             server.tell(player, f'§a您使用了§e{use_time}min')
             spec_to_sur(server, player)
+            if player in monitor_players:
+                monitor_players.discard(player)
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx: CommandContext):
@@ -233,6 +315,22 @@ def on_load(server: PluginServerInterface, old):
             )
             src.reply('§a已将您传送至上个地点')
 
+    # enable range check
+    range_check_enabled = (
+            config.range_limit.check_interval > 0 and
+            (
+                    config.range_limit.x > 0 or
+                    config.range_limit.y > 0 or
+                    config.range_limit.z > 0
+            )
+    )
+    if range_check_enabled:
+        loop_manager = LoopManager(
+            check_player_pos,
+            config.range_limit.check_interval
+        )
+        loop_manager.start()
+
     # spec literals
     spec_literals = ['!!spec']
     if config.short_command:
@@ -323,6 +421,20 @@ def spec_to_sur(server, player):
     save_data(server)
 
 
-def on_player_joined(server, player, info):
+def on_player_joined(server: PluginServerInterface, player, info):
     if player in data.keys():
         server.execute(f'gamemode spectator {player}')
+        if server.get_permission_level(player) < config.tp:
+            monitor_players.add(player)
+
+
+def on_player_left(server: PluginServerInterface, player):
+    if player in data.keys():
+        monitor_players.discard(player)
+
+
+def on_unload(server: PluginServerInterface):
+    global loop_manager
+    if loop_manager is not None:
+        loop_manager.stop()
+        loop_manager = None
