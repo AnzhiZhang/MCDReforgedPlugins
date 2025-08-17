@@ -135,6 +135,8 @@ def on_load(server: PluginServerInterface, old):
             """
             Check if the given coordinate is valid
             """
+            if coord == '~':
+                return True
             if coord.count('-') > 1 or coord.count('.') > 1 or coord.startswith(
                     '.') or coord.endswith('.'):
                 return False
@@ -206,21 +208,26 @@ def on_load(server: PluginServerInterface, old):
                 to_coordinate.z = 0
 
         elif len(params) == 3:  # only position: e.g. !!tp x y z
-            if not coordValid(params[0]):
+            if (not coordValid(params[0])) or (not coordValid(params[1])) or (not coordValid(params[2])):
                 return src.reply('§c坐标不合法')
+            if (params[0] == '~' and params[1] == '~' and params[2] == '~'):
+                return src.reply('§c原地 tp 是吧 (doge)')
             to_coordinate_dim = player_original_dim
-            to_coordinate.x = float(params[0])
-            to_coordinate.y = float(params[1])
-            to_coordinate.z = float(params[2])
+            to_coordinate.x = float(params[0] if params[0] != '~' else player_original_pos.x)
+            to_coordinate.y = float(params[1] if params[1] != '~' else player_original_pos.y)
+            to_coordinate.z = float(params[2] if params[2] != '~' else player_original_pos.z)
 
         elif len(params) == 4:  # dimension + position: e.g. !!tp the_end x y z
             if params[0] not in DIMENSIONS.keys():
                 return src.reply('§c没有此维度')
-
+            if (player_original_dim == DIMENSIONS[params[0]] and params[1] == '~' and params[2] == '~' and params[3] == '~'):
+                return src.reply('§c原地 tp 是吧 (doge)')
+            
+            tp_type = "to_coordinate"
             to_coordinate_dim = DIMENSIONS[params[0]]
-            to_coordinate.x = float(params[1])
-            to_coordinate.y = float(params[2])
-            to_coordinate.z = float(params[3])
+            to_coordinate.x = float(params[1] if params[1] != '~' else player_original_pos.x)
+            to_coordinate.y = float(params[2] if params[2] != '~' else player_original_pos.y)
+            to_coordinate.z = float(params[3] if params[3] != '~' else player_original_pos.z)
 
         data[src.player]['back'] = {
             'dim': player_original_dim,
@@ -283,14 +290,14 @@ def on_load(server: PluginServerInterface, old):
             Text('param1')
             .runs(tp).  # !!tp <dimension | player> -- param1 = dimension or player name
             then(
-                Float('param2')
+                Text('param2')
                 .then(
-                    Float('param3')
+                    Text('param3')
                     # !!tp <x> <y> <z> -- param1 = x, param2 = y, param3 = z
                     .runs(tp)
                     .then(
                         # !!tp <dimension> <x> <y> <z> -- param1 = dimension, param2 = x, param3 = y, param4 = z
-                        Float('param4')
+                        Text('param4')
                         .runs(tp)
                     )
                 )
