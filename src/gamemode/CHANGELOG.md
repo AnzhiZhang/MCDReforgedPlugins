@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.1.0...gamemode-v1.2.0) (2025-08-17)
+
+
+### Features
+
+* **gamemode:** range limit ([304a078](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/304a078a3addd0213bd1804bdb819f4beef25eab))
+* **gamemode:** update command requirements ([b0a7b91](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b0a7b91fb51bbe6982ac3a02d23deaffa86d753d))
+
+
+### Bug Fixes
+
+* **gamemode:** load monitored players on load ([5b73651](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/5b7365145433a2b7c7f89aac52c204059c96b56e))
+
 ## [1.1.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.0.1...gamemode-v1.1.0) (2023-12-26)
 
 
