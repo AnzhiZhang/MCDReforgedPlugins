@@ -91,9 +91,13 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx: CommandContext):
-        def coordValid(a):
-            if a.count('-') > 1 or a.count('.') > 1 or a.startswith(
-                    '.') or a.endswith('.'):
+        def is_coord_valid(a):
+            if (
+                    a.count('-') > 1 or
+                    a.count('.') > 1 or
+                    a.startswith('.') or
+                    a.endswith('.')
+            ):
                 return False
             a = a.replace('-', '')
             a = a.replace('.', '')
@@ -164,7 +168,7 @@ def on_load(server: PluginServerInterface, old):
                 humpos = '0 80 0'
 
         elif len(params) == 3:  # only position
-            if not coordValid(params[0]):
+            if not is_coord_valid(params[0]):
                 src.reply('§c坐标不合法')
             else:
                 dim = DIMENSIONS[
@@ -211,7 +215,7 @@ def on_load(server: PluginServerInterface, old):
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
         if src.player not in data.keys():
-            return src.reply('§c您只能在旁观模式下传送')
+            src.reply('§c您只能在旁观模式下传送')
         else:
             dim = data[src.player]['back']['dim']
             pos = [str(x) for x in data[src.player]['back']['pos']]
