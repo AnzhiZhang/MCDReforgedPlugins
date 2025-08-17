@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 from math import ceil, floor
-from typing import Optional, Any
+from typing import Optional, Any, Literal, Text
+from dataclasses import dataclass
 from os import path
 import json
 
@@ -67,6 +68,12 @@ class ConfigV2(Serializable):
     permissions: Permissions = Permissions()
     short_command: ShortCommand = ShortCommand()
 
+@dataclass
+class Coordinate:
+    x: float = 0
+    y: float = 0
+    z: float = 0
+
 config: ConfigV2
 data: dict
 minecraft_data_api: Optional[Any]
@@ -113,13 +120,16 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx):
-        def coordValid(a):
-            if a.count('-') > 1 or a.count('.') > 1 or a.startswith(
-                    '.') or a.endswith('.'):
+        def coordValid(coord: str):
+            """
+            Check if the given coordinate is valid
+            """
+            if coord.count('-') > 1 or coord.count('.') > 1 or coord.startswith(
+                    '.') or coord.endswith('.'):
                 return False
-            a = a.replace('-', '')
-            a = a.replace('.', '')
-            if a.isdigit():
+            coord = coord.replace('-', '')
+            coord = coord.replace('.', '')
+            if coord.isdigit():
                 return True
             return False
 
@@ -139,85 +149,65 @@ def on_load(server: PluginServerInterface, old):
                     if ctx.get('param4', '') != '':
                         params.append(ctx['param4'])
 
-        dim = ''
-        pos = ''
-        humpos = ''
+        to_coordinate = Coordinate()
+        to_coordinate_dim = ''
 
         player_original_pos = minecraft_data_api.get_player_coordinate(src.player)
         player_original_dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))]
 
         if len(params) == 1:  # only dimension
             if params[0] not in DIMENSIONS.keys():
-                src.reply('§c没有此维度')
+                return src.reply('§c没有此维度')
             elif DIMENSIONS[params[0]] == player_original_dim:
-                src.reply('§c您正在此维度！')
+                # player is already in the target dimension
+                return src.reply('§c您正在此维度！')
             elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (player_original_dim == 'minecraft:overworld'):
-                dim = DIMENSIONS[params[0]]
-                orgpos = [
-                    str(x) for x in player_original_pos
-                ]
-                newposx, newposz = overworld_to_nether(orgpos[0], orgpos[2])
-                pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
-                humpos = ' '.join(
-                    (str(newposx), str(int(float(orgpos[1]))), str(newposz))
-                )
+                # The player is in the Overworld and wishes to tp to the corresponding coordinates in the Nether
+                to_coordinate_dim = DIMENSIONS[params[0]]
+                newposx, newposz = overworld_to_nether(player_original_pos.x, player_original_pos.z)
+                to_coordinate.x = float(newposx)
+                to_coordinate.y = float(player_original_pos.y)
+                to_coordinate.z = float(newposz)
             elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (player_original_dim == 'minecraft:the_nether'):
-                dim = DIMENSIONS[params[0]]
-                orgpos = [
-                    str(x) for x in player_original_pos
-                ]
-                newposx, newposz = nether_to_overworld(orgpos[0], orgpos[2])
-                pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
-                humpos = ' '.join(
-                    (str(newposx), str(int(float(orgpos[1]))), str(newposz))
-                )
+                # The player is in the Nether and wishes to tp to the corresponding coordinates in the Overworld
+                to_coordinate_dim = DIMENSIONS[params[0]]
+                newposx, newposz = nether_to_overworld(player_original_pos.x, player_original_pos.z)
+                to_coordinate.x = float(newposx)
+                to_coordinate.y = float(player_original_pos.y)
+                to_coordinate.z = float(newposz)
             else:
-                dim = DIMENSIONS[params[0]]
-                pos = '0 80 0'
-                humpos = '0 80 0'
+                # normal tp
+                to_coordinate_dim = DIMENSIONS[params[0]]
+                to_coordinate.x = 0
+                to_coordinate.y = 80
+                to_coordinate.z = 0
 
-        elif len(params) == 3:  # only position
+        elif len(params) == 3:  # only position: e.g. !!tp x y z
             if not coordValid(params[0]):
-                src.reply('§c坐标不合法')
-            else:
-                dim = player_original_dim
-                pos = ' '.join(
-                    (
-                        str(float(params[0])),
-                        str(params[1]),
-                        str(params[2])
-                    )
-                )
-                humpos = ' '.join(
-                    (
-                        str(int(float(params[0]))),
-                        str(int(params[1])),
-                        str(int(params[2]))
-                    )
-                )
+                return src.reply('§c坐标不合法')
+            to_coordinate_dim = player_original_dim
+            to_coordinate.x = float(params[0])
+            to_coordinate.y = float(params[1])
+            to_coordinate.z = float(params[2])
 
-        elif len(params) == 4:  # dimension + position
+        elif len(params) == 4:  # dimension + position: e.g. !!tp the_end x y z
             if params[0] not in DIMENSIONS.keys():
-                src.reply('§c没有此维度')
-            else:
-                dim = DIMENSIONS[params[0]]
+                return src.reply('§c没有此维度')
 
-            pos = ' '.join((str(params[1]), str(params[2]), str(params[3])))
-            humpos = ' '.join(
-                (str(int(params[1])), str(int(params[2])), str(int(params[3])))
-            )
+            to_coordinate_dim = DIMENSIONS[params[0]]
+            to_coordinate.x = float(params[1])
+            to_coordinate.y = float(params[2])
+            to_coordinate.z = float(params[3])
 
-        if dim != '' and pos != '' and params != '':
-            data[src.player]['back'] = {
-                'dim': DIMENSIONS[
-                    minecraft_data_api.get_player_info(src.player, 'Dimension')
-                ],
-                'pos': minecraft_data_api.get_player_info(src.player, 'Pos')
-            }
-            save_data(server)
-            server.execute(f'execute in {dim} run tp {src.player} {pos}')
-            humdim = HUMDIMS[dim]
-            src.reply(f'§a传送至§e{humdim}§a, 坐标§e{humpos}')
+        data[src.player]['back'] = {
+            'dim': player_original_dim,
+            'pos': player_original_pos,
+        }
+        save_data(server)
+        server.execute(f'execute in {to_coordinate_dim} run tp {src.player} {to_coordinate.x} {to_coordinate.y} {to_coordinate.z}')
+        human_readable_dim = HUMDIMS[to_coordinate_dim]
+        human_readable_pos = ' '.join([str(int(to_coordinate.x)), str(int(to_coordinate.y)), str(int(to_coordinate.z))])
+        src.reply(f'§a传送至§e{human_readable_dim}§a，坐标 §e{human_readable_pos}')
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
@@ -225,18 +215,17 @@ def on_load(server: PluginServerInterface, old):
             return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             return src.reply('§c您只能在旁观模式下传送')
-        else:
-            dim = data[src.player]['back']['dim']
-            pos = [str(x) for x in data[src.player]['back']['pos']]
-            data[src.player]['back'] = {
-                'dim': DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))],
-                'pos': minecraft_data_api.get_player_coordinate(src.player)
-            }
-            save_data(server)
-            server.execute(
-                f'execute in {dim} run tp {src.player} {" ".join(pos)}'
-            )
-            src.reply('§a已将您传送至上个地点')
+        back_to_dim = data[src.player]['back']['dim']
+        back_to_pos = [str(x) for x in data[src.player]['back']['pos']]
+        data[src.player]['back'] = {
+            'dim': DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))],
+            'pos': minecraft_data_api.get_player_coordinate(src.player)
+        }
+        save_data(server)
+        server.execute(
+            f'execute in {back_to_dim} run tp {src.player} {" ".join(back_to_pos)}'
+        )
+        src.reply('§a已将您传送至上个地点')
 
     # spec literals
     spec_literals = ['!!spec']
