@@ -33,12 +33,14 @@ HUMDIMS = {
 
 HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
 §6!!spec <player> §7切换他人模式
+§6!!tp <player> §7传送至指定玩家
 §6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
 §6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
 §6!!back §7返回上个地点'''
 
 HELP_MESSAGE_WITH_SHORT_COMMAND = '''§6!!spec §7或§6 {0} §7切换旁观/生存
 §6!!spec <player> §7或§6 {0} <player> §7切换他人模式
+§6!!tp <player> §7传送至指定玩家
 §6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
 §6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
 §6!!back §7返回上个地点'''
@@ -158,20 +160,30 @@ def on_load(server: PluginServerInterface, old):
                     if ctx.get('param4', '') != '':
                         params.append(ctx['param4'])
 
+        tp_type: Literal["to_player", "to_coordinate"] = 'to_coordinate'
+        to_player = ''
         to_coordinate = Coordinate()
         to_coordinate_dim = ''
 
         player_original_pos = minecraft_data_api.get_player_coordinate(src.player)
         player_original_dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))]
 
-        if len(params) == 1:  # only dimension
+        if len(params) == 1:  # only dimension, or player name: e.g. !!tp the_end / !!tp Steve
             if params[0] not in DIMENSIONS.keys():
-                return src.reply('§c没有此维度')
+                # Not a dimension, may be a player
+                player = check_player_online_and_get_player_correct_name(params[0])
+                if (player == False):
+                    # Not a dimension, and not a player
+                    return src.reply(f'§c指定的 §d{params[0]}§c 既不是维度，也不是一个在线的玩家')
+                # is player
+                tp_type = "to_player"
+                to_player = player
             elif DIMENSIONS[params[0]] == player_original_dim:
                 # player is already in the target dimension
                 return src.reply('§c您正在此维度！')
             elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (player_original_dim == 'minecraft:overworld'):
                 # The player is in the Overworld and wishes to tp to the corresponding coordinates in the Nether
+                tp_type = "to_coordinate"
                 to_coordinate_dim = DIMENSIONS[params[0]]
                 newposx, newposz = overworld_to_nether(player_original_pos.x, player_original_pos.z)
                 to_coordinate.x = float(newposx)
@@ -179,6 +191,7 @@ def on_load(server: PluginServerInterface, old):
                 to_coordinate.z = float(newposz)
             elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (player_original_dim == 'minecraft:the_nether'):
                 # The player is in the Nether and wishes to tp to the corresponding coordinates in the Overworld
+                tp_type = "to_coordinate"
                 to_coordinate_dim = DIMENSIONS[params[0]]
                 newposx, newposz = nether_to_overworld(player_original_pos.x, player_original_pos.z)
                 to_coordinate.x = float(newposx)
@@ -186,6 +199,7 @@ def on_load(server: PluginServerInterface, old):
                 to_coordinate.z = float(newposz)
             else:
                 # normal tp
+                tp_type = "to_coordinate"
                 to_coordinate_dim = DIMENSIONS[params[0]]
                 to_coordinate.x = 0
                 to_coordinate.y = 80
@@ -213,10 +227,14 @@ def on_load(server: PluginServerInterface, old):
             'pos': player_original_pos,
         }
         save_data(server)
-        server.execute(f'execute in {to_coordinate_dim} run tp {src.player} {to_coordinate.x} {to_coordinate.y} {to_coordinate.z}')
-        human_readable_dim = HUMDIMS[to_coordinate_dim]
-        human_readable_pos = ' '.join([str(int(to_coordinate.x)), str(int(to_coordinate.y)), str(int(to_coordinate.z))])
-        src.reply(f'§a传送至§e{human_readable_dim}§a，坐标 §e{human_readable_pos}')
+        if (tp_type == "to_player"):
+            server.execute(f'tp {src.player} {to_player}')
+            src.reply(f'§a已传送至玩家 §e{to_player}')
+        else: # to_coordinate
+            server.execute(f'execute in {to_coordinate_dim} run tp {src.player} {to_coordinate.x} {to_coordinate.y} {to_coordinate.z}')
+            human_readable_dim = HUMDIMS[to_coordinate_dim]
+            human_readable_pos = ' '.join([str(int(to_coordinate.x)), str(int(to_coordinate.y)), str(int(to_coordinate.z))])
+            src.reply(f'§a传送至§e{human_readable_dim}§a，坐标 §e{human_readable_pos}')
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
@@ -263,7 +281,7 @@ def on_load(server: PluginServerInterface, old):
         .requires(lambda src: src.has_permission(config.permissions.tp))
         .then(
             Text('param1')
-            .runs(tp).  # !!tp <dimension> -- param1 = dimension
+            .runs(tp).  # !!tp <dimension | player> -- param1 = dimension or player name
             then(
                 Float('param2')
                 .then(
