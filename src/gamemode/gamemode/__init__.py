@@ -79,13 +79,7 @@ def on_load(server: PluginServerInterface, old):
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
     @new_thread('Gamemode switch mode')
-    def change_mode(src, ctx):
-        # console
-        if src.is_console:
-            src.reply('§c仅允许玩家使用')
-            return
-
-        # player
+    def change_mode(src: PlayerCommandSource, ctx: CommandContext):
         player = src.player if ctx == {} else ctx['player']
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
@@ -96,7 +90,7 @@ def on_load(server: PluginServerInterface, old):
             spec_to_sur(server, player)
 
     @new_thread('Gamemode tp')
-    def tp(src: PlayerCommandSource, ctx):
+    def tp(src: PlayerCommandSource, ctx: CommandContext):
         def coordValid(a):
             if a.count('-') > 1 or a.count('.') > 1 or a.startswith(
                     '.') or a.endswith('.'):
@@ -107,8 +101,6 @@ def on_load(server: PluginServerInterface, old):
                 return True
             return False
 
-        if src.is_console:
-            return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
 
@@ -218,8 +210,6 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
-        if src.is_console:
-            return src.reply('§c仅允许玩家使用')
         if src.player not in data.keys():
             return src.reply('§c您只能在旁观模式下传送')
         else:
@@ -247,7 +237,11 @@ def on_load(server: PluginServerInterface, old):
     # register
     server.register_command(
         Literal(spec_literals)
-        .requires(lambda src: src.has_permission(config.spec))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(
+            Requirements.has_permission(config.spec),
+            lambda: '§c权限不足'
+        )
         .runs(change_mode)
         .then(
             Literal('help')
@@ -256,14 +250,16 @@ def on_load(server: PluginServerInterface, old):
         .then(
             Text('player')
             .requires(
-                lambda src: src.has_permission(config.spec_other)
+                Requirements.has_permission(config.spec_other),
+                lambda: '§c权限不足'
             )
             .runs(change_mode)
         )
     )
     server.register_command(
         Literal('!!tp')
-        .requires(lambda src: src.has_permission(config.tp))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(Requirements.has_permission(config.tp), lambda: '§c权限不足')
         .then(
             Text('param1')
             .runs(tp).  # !!tp <dimension> -- param1 = dimension
@@ -284,7 +280,11 @@ def on_load(server: PluginServerInterface, old):
     )
     server.register_command(
         Literal('!!back')
-        .requires(lambda src: src.has_permission(config.back))
+        .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
+        .requires(
+            Requirements.has_permission(config.back),
+            lambda: '§c权限不足'
+        )
         .runs(back)
     )
 
