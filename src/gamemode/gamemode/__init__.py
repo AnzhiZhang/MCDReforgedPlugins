@@ -70,11 +70,11 @@ HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 
 
 class Config(Serializable):
-    short_command: bool = True
-    spec: int = 1
-    spec_other: int = 2
-    tp: int = 1
-    back: int = 1
+    class Permissions(Serializable):
+        spec: int = 1
+        spec_other: int = 2
+        tp: int = 1
+        back: int = 1
 
     class RangeLimit(Serializable):
         check_interval: int = 0
@@ -82,6 +82,8 @@ class Config(Serializable):
         y: int = 50
         z: int = 50
 
+    enable_short_command: bool = True
+    permissions: Permissions = Permissions()
     range_limit: RangeLimit = RangeLimit()
 
 
@@ -162,7 +164,7 @@ def on_load(server: PluginServerInterface, old):
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
-            if not src.has_permission(config.tp):
+            if not src.has_permission(config.permissions.tp):
                 monitor_players.add(player)
         elif player in data.keys():
             use_time = ceil((time.time() - data[player]['time']) / 60)
@@ -333,12 +335,12 @@ def on_load(server: PluginServerInterface, old):
 
         # load monitored players
         for player in data.keys():
-            if server.get_permission_level(player) < config.tp:
+            if server.get_permission_level(player) < config.permissions.tp:
                 monitor_players.add(player)
 
     # spec literals
     spec_literals = ['!!spec']
-    if config.short_command:
+    if config.enable_short_command:
         spec_literals.append('!s')
 
     # register
@@ -346,7 +348,7 @@ def on_load(server: PluginServerInterface, old):
         Literal(spec_literals)
         .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
         .requires(
-            Requirements.has_permission(config.spec),
+            Requirements.has_permission(config.permissions.spec),
             lambda: '§c权限不足'
         )
         .runs(change_mode)
@@ -357,7 +359,7 @@ def on_load(server: PluginServerInterface, old):
         .then(
             Text('player')
             .requires(
-                Requirements.has_permission(config.spec_other),
+                Requirements.has_permission(config.permissions.spec_other),
                 lambda: '§c权限不足'
             )
             .runs(change_mode)
@@ -366,7 +368,10 @@ def on_load(server: PluginServerInterface, old):
     server.register_command(
         Literal('!!tp')
         .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
-        .requires(Requirements.has_permission(config.tp), lambda: '§c权限不足')
+        .requires(
+            Requirements.has_permission(config.permissions.tp),
+            lambda: '§c权限不足'
+        )
         .then(
             Text('param1')
             .runs(tp).  # !!tp <dimension> -- param1 = dimension
@@ -389,7 +394,7 @@ def on_load(server: PluginServerInterface, old):
         Literal('!!back')
         .requires(Requirements.is_player(), lambda: '§c仅允许玩家使用')
         .requires(
-            Requirements.has_permission(config.back),
+            Requirements.has_permission(config.permissions.back),
             lambda: '§c权限不足'
         )
         .runs(back)
@@ -429,7 +434,7 @@ def spec_to_sur(server, player):
 def on_player_joined(server: PluginServerInterface, player, info):
     if player in data.keys():
         server.execute(f'gamemode spectator {player}')
-        if server.get_permission_level(player) < config.tp:
+        if server.get_permission_level(player) < config.permissions.tp:
             monitor_players.add(player)
 
 
