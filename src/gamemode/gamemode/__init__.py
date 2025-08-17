@@ -80,8 +80,12 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode switch mode')
     def change_mode(src, ctx):
+        # console
         if src.is_console:
-            return src.reply('§c仅允许玩家使用')
+            src.reply('§c仅允许玩家使用')
+            return
+
+        # player
         player = src.player if ctx == {} else ctx['player']
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
