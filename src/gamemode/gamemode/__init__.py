@@ -123,39 +123,28 @@ def on_load(server: PluginServerInterface, old):
         pos = ''
         humpos = ''
 
+        player_original_pos = minecraft_data_api.get_player_coordinate(src.player)
+        player_original_dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))]
+
         if len(params) == 1:  # only dimension
             if params[0] not in DIMENSIONS.keys():
                 src.reply('§c没有此维度')
-            elif DIMENSIONS[params[0]] == DIMENSIONS[
-                minecraft_data_api.get_player_info(src.player, 'Dimension')
-            ]:
+            elif DIMENSIONS[params[0]] == player_original_dim:
                 src.reply('§c您正在此维度！')
-            elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (
-                    DIMENSIONS[
-                        minecraft_data_api.get_player_info(
-                            src.player, 'Dimension'
-                        )
-                    ] == 'minecraft:overworld'):
+            elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (player_original_dim == 'minecraft:overworld'):
                 dim = DIMENSIONS[params[0]]
                 orgpos = [
-                    str(x) for x in
-                    minecraft_data_api.get_player_info(src.player, 'Pos')
+                    str(x) for x in player_original_pos
                 ]
                 newposx, newposz = overworld_to_nether(orgpos[0], orgpos[2])
                 pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
                 humpos = ' '.join(
                     (str(newposx), str(int(float(orgpos[1]))), str(newposz))
                 )
-            elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (
-                    DIMENSIONS[
-                        minecraft_data_api.get_player_info(
-                            src.player, 'Dimension'
-                        )
-                    ] == 'minecraft:the_nether'):
+            elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (player_original_dim == 'minecraft:the_nether'):
                 dim = DIMENSIONS[params[0]]
                 orgpos = [
-                    str(x) for x in
-                    minecraft_data_api.get_player_info(src.player, 'Pos')
+                    str(x) for x in player_original_pos
                 ]
                 newposx, newposz = nether_to_overworld(orgpos[0], orgpos[2])
                 pos = ' '.join((str(newposx), orgpos[1], str(newposz)))
@@ -171,9 +160,7 @@ def on_load(server: PluginServerInterface, old):
             if not coordValid(params[0]):
                 src.reply('§c坐标不合法')
             else:
-                dim = DIMENSIONS[
-                    minecraft_data_api.get_player_info(src.player, 'Dimension')
-                ]
+                dim = player_original_dim
                 pos = ' '.join(
                     (
                         str(float(params[0])),
@@ -222,12 +209,8 @@ def on_load(server: PluginServerInterface, old):
             dim = data[src.player]['back']['dim']
             pos = [str(x) for x in data[src.player]['back']['pos']]
             data[src.player]['back'] = {
-                'dim': DIMENSIONS[
-                    minecraft_data_api.get_player_info(
-                        src.player, 'Dimension'
-                    )
-                ],
-                'pos': minecraft_data_api.get_player_info(src.player, 'Pos')
+                'dim': DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))],
+                'pos': minecraft_data_api.get_player_coordinate(src.player)
             }
             save_data(server)
             server.execute(
@@ -290,8 +273,8 @@ def save_data(server: PluginServerInterface):
 
 
 def sur_to_spec(server, player):
-    dim = DIMENSIONS[minecraft_data_api.get_player_info(player, 'Dimension')]
-    pos = minecraft_data_api.get_player_info(player, 'Pos')
+    dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(player))]
+    pos = minecraft_data_api.get_player_coordinate(player)
     data[player] = {
         'dim': dim,
         'pos': pos,
