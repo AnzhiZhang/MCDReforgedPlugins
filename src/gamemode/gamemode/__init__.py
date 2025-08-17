@@ -56,13 +56,6 @@ HUMDIMS = {
     'minecraft:the_end': '末地'
 }
 
-DEFAULT_CONFIG = {
-    'spec': 1,
-    'spec_other': 2,
-    'tp': 1,
-    'back': 1
-}
-
 HELP_MESSAGE = '''§6!!spec §7旁观/生存切换
 §6!!spec <player> §7切换他人模式
 §6!!tp [dimension] [position] §7传送至指定地点
@@ -106,7 +99,6 @@ def on_load(server: PluginServerInterface, old):
     global config, data, minecraft_data_api, loop_manager
     config = server.load_config_simple(
         'config.json',
-        default_config=DEFAULT_CONFIG,
         target_class=Config
     )
     data = server.load_config_simple(
