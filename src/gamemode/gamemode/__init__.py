@@ -321,9 +321,11 @@ def save_data(server: PluginServerInterface):
 def sur_to_spec(server, player):
     dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(player))]
     pos = minecraft_data_api.get_player_coordinate(player)
+    rotation = minecraft_data_api.get_player_info(player, 'Rotation')
     data[player] = {
         'dim': dim,
         'pos': pos,
+        'rotation': rotation,
         'time': time.time(),
         'back': {
             'dim': dim,
@@ -339,6 +341,9 @@ def spec_to_sur(server, player):
     pos = [str(x) for x in data[player]['pos']]
     server.execute(
         'execute in {} run tp {} {}'.format(dim, player, ' '.join(pos)))
+    if 'rotation' in data[player]:
+        rotation = data[player]['rotation']
+        server.execute(f'rotate {player} {str(rotation[0])} {str(rotation[1])}')
     server.execute(f'gamemode survival {player}')
     del data[player]
     save_data(server)
