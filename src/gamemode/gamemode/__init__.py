@@ -331,6 +331,11 @@ def on_load(server: PluginServerInterface, old):
         )
         loop_manager.start()
 
+        # load monitored players
+        for player in data.keys():
+            if server.get_permission_level(player) < config.tp:
+                monitor_players.add(player)
+
     # spec literals
     spec_literals = ['!!spec']
     if config.short_command:
