@@ -161,9 +161,7 @@ def is_coord_valid(coord: str):
 
 
 def load_config(server: PluginServerInterface) -> "LatestConfig":
-    """
-    Load config file with migration.
-    """
+    """Load config file with migration."""
     # create a config file if none exists
     config_file_path = os.path.join(server.get_data_folder(), CONFIG_FILE_NAME)
     if not os.path.isfile(config_file_path):
