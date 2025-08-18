@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import os
 import json
 import time
@@ -154,24 +155,9 @@ def is_coord_valid(coord: str):
     if coord == '~':
         return True
 
-    # invalid formats
-    if (
-            coord.startswith('.') or
-            coord.endswith('.') or
-            coord.count('.') > 1 or
-            coord.count('-') > 1 or
-            (coord.count('-') > 0 and not coord.startswith('-'))
-    ):
-        return False
-
-    # remove non-digit characters and check if it's a digit
-    coord = coord.replace('-', '')
-    coord = coord.replace('.', '')
-    if coord.isdigit():
-        return True
-
-    # fall back to false
-    return False
+    # number
+    pattern = re.compile(r'^-?(?:\d+(\.\d*)?|\.\d+)$')
+    return pattern.match(coord) is not None
 
 
 def load_config(server: PluginServerInterface) -> "LatestConfig":
