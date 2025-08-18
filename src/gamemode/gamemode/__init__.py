@@ -128,7 +128,7 @@ config: ConfigV2
 data: dict
 monitor_players: Set[str] = set()
 minecraft_data_api: Optional[Any]
-loop_manager: Optional[LoopManager]
+loop_manager: Optional[LoopManager] = None
 
 
 def nether_to_overworld(x, z):
