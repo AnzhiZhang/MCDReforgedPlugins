@@ -445,9 +445,9 @@ def on_load(server: PluginServerInterface, old):
 
             # invalid coordinates
             if (
-                    (not is_coord_valid(params[0])) or
                     (not is_coord_valid(params[1])) or
-                    (not is_coord_valid(params[2]))
+                    (not is_coord_valid(params[2])) or
+                    (not is_coord_valid(params[3]))
             ):
                 src.reply('§c坐标不合法')
                 return
