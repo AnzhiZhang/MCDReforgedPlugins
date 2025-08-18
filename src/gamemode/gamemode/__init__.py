@@ -469,7 +469,7 @@ def on_load(server: PluginServerInterface, old):
             # current position
             if (
                     current_dim == normalize_dimension(params[0]) and
-                    params[0] == '~' and params[1] == '~' and params[2] == '~'
+                    params[1] == '~' and params[2] == '~' and params[3] == '~'
             ):
                 src.reply('§c原地 tp 是吧 (doge)')
                 return
