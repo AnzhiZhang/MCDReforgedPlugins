@@ -168,6 +168,18 @@ def is_coord_valid(coord: str):
     return pattern.match(coord) is not None
 
 
+def is_coord_in_range(x: float, y: float, z: float):
+    """Check if coordinates are in range"""
+    # Destinated position's <x> or <z> exceeds the range of
+    # [-30000000, 30000000), or <y> exceeds the range of
+    # [-20000000, 20000000) will cause tp to fail
+    return (
+        x <= 30000000 and x > -30000000 and
+        y <= 20000000 and y > -20000000 and
+        z <= 30000000 and z > -30000000
+    )
+
+
 def has_dimension(dim: str):
     """Check if a dimension exists."""
     return dim in DIMENSIONS.keys()
@@ -419,7 +431,8 @@ def on_load(server: PluginServerInterface, old):
             if (
                     (not is_coord_valid(params[0])) or
                     (not is_coord_valid(params[1])) or
-                    (not is_coord_valid(params[2]))
+                    (not is_coord_valid(params[2])) or
+                    (not is_coord_in_range(float(params[0]), float(params[1]), float(params[2])))
             ):
                 src.reply('§c坐标不合法')
                 return
@@ -447,7 +460,8 @@ def on_load(server: PluginServerInterface, old):
             if (
                     (not is_coord_valid(params[1])) or
                     (not is_coord_valid(params[2])) or
-                    (not is_coord_valid(params[3]))
+                    (not is_coord_valid(params[3])) or
+                    (not is_coord_in_range(float(params[1]), float(params[2]), float(params[3])))
             ):
                 src.reply('§c坐标不合法')
                 return
