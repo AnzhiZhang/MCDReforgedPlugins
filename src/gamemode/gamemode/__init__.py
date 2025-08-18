@@ -386,7 +386,7 @@ def on_load(server: PluginServerInterface, old):
                     DIMENSIONS[params[0]] == 'minecraft:overworld' and
                     current_dim == 'minecraft:the_nether'
             ):
-                tp_type = "to_coordinate"
+                tp_data.tp_type = "to_coordinate"
                 tp_data.dimension = DIMENSIONS[params[0]]
                 overworld_x, overworld_z = nether_to_overworld(
                     current_pos.x, current_pos.z
@@ -396,7 +396,7 @@ def on_load(server: PluginServerInterface, old):
                 tp_data.z = overworld_z
             # default position in the target dimension
             else:
-                tp_type = "to_coordinate"
+                tp_data.tp_type = "to_coordinate"
                 tp_data.dimension = DIMENSIONS[params[0]]
                 tp_data.x = 0
                 tp_data.y = 80
@@ -419,7 +419,7 @@ def on_load(server: PluginServerInterface, old):
                 return
 
             # convert to coordinate
-            tp_type = "to_coordinate"
+            tp_data.tp_type = "to_coordinate"
             tp_data.dimension = current_dim
             tp_data.x = float(params[0] if params[0] != '~' else current_pos.x)
             tp_data.y = float(params[1] if params[1] != '~' else current_pos.y)
@@ -450,7 +450,7 @@ def on_load(server: PluginServerInterface, old):
                 return
 
             # convert to coordinate
-            tp_type = "to_coordinate"
+            tp_data.tp_type = "to_coordinate"
             tp_data.dimension = DIMENSIONS[params[0]]
             tp_data.x = float(params[1] if params[1] != '~' else current_pos.x)
             tp_data.y = float(params[2] if params[2] != '~' else current_pos.y)
@@ -464,10 +464,10 @@ def on_load(server: PluginServerInterface, old):
         save_data(server)
 
         # teleport the player
-        if tp_type == "to_player":
+        if tp_data.tp_type == "to_player":
             server.execute(f'tp {src.player} {tp_data.player}')
             src.reply(f'§a已传送至玩家 §e{tp_data.player}')
-        elif tp_type == "to_coordinate":
+        elif tp_data.tp_type == "to_coordinate":
             server.execute(
                 f'execute in {tp_data.dimension} '
                 f'run tp {src.player} {tp_data.x} {tp_data.y} {tp_data.z}'
