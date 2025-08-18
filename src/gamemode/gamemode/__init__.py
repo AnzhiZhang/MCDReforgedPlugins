@@ -178,6 +178,51 @@ def is_coord_valid(coord: str):
     # fall back to false
     return False
 
+
+def load_config(server: PluginServerInterface) -> "LatestConfig":
+    """
+    Load config file with migration.
+    """
+    # create a config file if none exists
+    config_file_path = os.path.join(server.get_data_folder(), CONFIG_FILE_NAME)
+    if not os.path.isfile(config_file_path):
+        return server.load_config_simple(
+            CONFIG_FILE_NAME, target_class=LatestConfig
+        )
+
+    # read the config file
+    try:
+        with open(config_file_path, 'r', encoding='utf-8') as f:
+            raw_data = json.load(f)
+    except Exception as e:
+        server.logger.exception("配置文件读取失败")
+        raise e
+
+    # get the config version
+    version = raw_data.get('version', 1)
+
+    # latest config version
+    if version == CONFIG_LATEST_VERSION:
+        return server.load_config_simple(
+            CONFIG_FILE_NAME, target_class=LatestConfig
+        )
+
+    # load config based on the version
+    target_class = CONFIG_VERSION_MAP.get(version, None)
+    if target_class is None:
+        server.logger.error(f"未知配置文件版本：{version}")
+        raise RuntimeError(f"Unknown config version: {version}")
+    current_config = server.load_config_simple(
+        CONFIG_FILE_NAME, target_class=target_class
+    )
+
+    # migrate
+    while current_config.version < CONFIG_LATEST_VERSION:
+        current_config = current_config.migrate()
+    server.save_config_simple(current_config, CONFIG_FILE_NAME)
+    return current_config
+
+
 def on_load(server: PluginServerInterface, old):
     global config, data, loop_manager, minecraft_data_api, online_player_api
     config = load_config(server)
@@ -467,6 +512,25 @@ def on_load(server: PluginServerInterface, old):
     )
 
 
+def on_player_joined(server: PluginServerInterface, player, info):
+    if player in data.keys():
+        server.execute(f'gamemode spectator {player}')
+        if server.get_permission_level(player) < config.permissions.tp:
+            monitor_players.add(player)
+
+
+def on_player_left(server: PluginServerInterface, player):
+    if player in data.keys():
+        monitor_players.discard(player)
+
+
+def on_unload(server: PluginServerInterface):
+    global loop_manager
+    if loop_manager is not None:
+        loop_manager.stop()
+        loop_manager = None
+
+
 def save_data(server: PluginServerInterface):
     server.save_config_simple(
         {'data': data},
@@ -502,66 +566,3 @@ def spec_to_sur(server, player):
     server.execute(f'gamemode survival {player}')
     del data[player]
     save_data(server)
-
-
-def load_config(server: PluginServerInterface) -> "LatestConfig":
-    """
-    Load config file with migration.
-    """
-    # create a config file if none exists
-    config_file_path = os.path.join(server.get_data_folder(), CONFIG_FILE_NAME)
-    if not os.path.isfile(config_file_path):
-        return server.load_config_simple(
-            CONFIG_FILE_NAME, target_class=LatestConfig
-        )
-
-    # read the config file
-    try:
-        with open(config_file_path, 'r', encoding='utf-8') as f:
-            raw_data = json.load(f)
-    except Exception as e:
-        server.logger.exception("配置文件读取失败")
-        raise e
-
-    # get the config version
-    version = raw_data.get('version', 1)
-
-    # latest config version
-    if version == CONFIG_LATEST_VERSION:
-        return server.load_config_simple(
-            CONFIG_FILE_NAME, target_class=LatestConfig
-        )
-
-    # load config based on the version
-    target_class = CONFIG_VERSION_MAP.get(version, None)
-    if target_class is None:
-        server.logger.error(f"未知配置文件版本：{version}")
-        raise RuntimeError(f"Unknown config version: {version}")
-    current_config = server.load_config_simple(
-        CONFIG_FILE_NAME, target_class=target_class
-    )
-
-    # migrate
-    while current_config.version < CONFIG_LATEST_VERSION:
-        current_config = current_config.migrate()
-    server.save_config_simple(current_config, CONFIG_FILE_NAME)
-    return current_config
-
-
-def on_player_joined(server: PluginServerInterface, player, info):
-    if player in data.keys():
-        server.execute(f'gamemode spectator {player}')
-        if server.get_permission_level(player) < config.permissions.tp:
-            monitor_players.add(player)
-
-
-def on_player_left(server: PluginServerInterface, player):
-    if player in data.keys():
-        monitor_players.discard(player)
-
-
-def on_unload(server: PluginServerInterface):
-    global loop_manager
-    if loop_manager is not None:
-        loop_manager.stop()
-        loop_manager = None
