@@ -39,13 +39,6 @@ class LoopManager:
             self._stop_event.clear()
 
 
-@dataclass
-class Coordinate:
-    x: float = 0
-    y: float = 0
-    z: float = 0
-
-
 class BaseConfig(Serializable):
     version: int
 
@@ -143,12 +136,12 @@ minecraft_data_api: Optional[Any] = None
 online_player_api: Optional[Any] = None
 
 
-def nether_to_overworld(x, z):
+def nether_to_overworld(x, z) -> tuple[int, int]:
     """Convert nether coordinates to overworld coordinates."""
     return int(float(x)) * 8, int(float(z)) * 8
 
 
-def overworld_to_nether(x, z):
+def overworld_to_nether(x, z) -> tuple[int, int]:
     """Convert overworld coordinates to nether coordinates."""
     return floor(float(x) / 8 + 0.5), floor(float(z) / 8 + 0.5)
 
@@ -301,12 +294,22 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx: CommandContext):
+        @dataclass
+        class TeleportData:
+            tp_type: Literal["to_player", "to_coordinate"]
+            player: str = ''
+            dimension: str = ''
+            x: str | int | float = 0
+            y: str | int | float = 0
+            z: str | int | float = 0
+
+        # spec mode only
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
             return
 
+        # parse params
         params = []
-
         if ctx.get('param1', '') != '':
             params.append(ctx['param1'])
             if ctx.get('param2', '') != '':
@@ -316,90 +319,155 @@ def on_load(server: PluginServerInterface, old):
                     if ctx.get('param4', '') != '':
                         params.append(ctx['param4'])
 
-        tp_type: Literal["to_player", "to_coordinate"] = 'to_coordinate'
-        to_player = ''
-        to_coordinate = Coordinate()
-        to_coordinate_dim = ''
+        # tp data
+        tp_data = TeleportData(
+            tp_type='to_coordinate',
+            player='',
+            dimension='',
+            x=0,
+            y=0,
+            z=0
+        )
 
+        # get current position and dimension
+        current_pos = minecraft_data_api.get_player_coordinate(
+            src.player
+        )
+        current_dim = DIMENSIONS[
+            str(minecraft_data_api.get_player_dimension(src.player))
+        ]
 
-        player_original_pos = minecraft_data_api.get_player_coordinate(src.player)
-        player_original_dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))]
-
-        if len(params) == 1:  # only dimension, or player name: e.g. !!tp the_end / !!tp Steve
+        # only dimension, or player name
+        # e.g. !!tp the_end / !!tp Steve
+        if len(params) == 1:
+            # not a dimension, validate if it's an online player name
             if params[0] not in DIMENSIONS.keys():
-                # not a dimension, validate if it's an online player name
                 player = params[0]
                 if not online_player_api.is_online(player):
-                    return src.reply(
+                    src.reply(
                         f'§c指定的 §e{params[0]} §c既不是维度，也不是一个在线的玩家'
                     )
+                    return
                 else:
-                    tp_type = "to_player"
-                    to_player = player
-            elif DIMENSIONS[params[0]] == player_original_dim:
-                # player is already in the target dimension
-                return src.reply('§c您正在此维度！')
-            elif (DIMENSIONS[params[0]] == 'minecraft:the_nether') and (player_original_dim == 'minecraft:overworld'):
-                # The player is in the Overworld and wishes to tp to the corresponding coordinates in the Nether
+                    tp_data.tp_type = "to_player"
+                    tp_data.player = player
+            # player is already in the target dimension
+            elif DIMENSIONS[params[0]] == current_dim:
+                src.reply('§c您正在此维度！')
+                return
+            # The player is in the Overworld and wishes to tp to the corresponding coordinates in the Nether
+            elif (
+                    DIMENSIONS[params[0]] == 'minecraft:the_nether' and
+                    current_dim == 'minecraft:overworld'
+            ):
+                tp_data.tp_type = "to_coordinate"
+                tp_data.dimension = DIMENSIONS[params[0]]
+                nether_x, nether_z = overworld_to_nether(
+                    current_pos.x, current_pos.z
+                )
+                tp_data.x = nether_x
+                tp_data.y = current_pos.y
+                tp_data.z = nether_z
+            # The player is in the Nether and wishes to tp to the corresponding coordinates in the Overworld
+            elif (
+                    DIMENSIONS[params[0]] == 'minecraft:overworld' and
+                    current_dim == 'minecraft:the_nether'
+            ):
                 tp_type = "to_coordinate"
-                to_coordinate_dim = DIMENSIONS[params[0]]
-                newposx, newposz = overworld_to_nether(player_original_pos.x, player_original_pos.z)
-                to_coordinate.x = float(newposx)
-                to_coordinate.y = float(player_original_pos.y)
-                to_coordinate.z = float(newposz)
-            elif (DIMENSIONS[params[0]] == 'minecraft:overworld') and (player_original_dim == 'minecraft:the_nether'):
-                # The player is in the Nether and wishes to tp to the corresponding coordinates in the Overworld
-                tp_type = "to_coordinate"
-                to_coordinate_dim = DIMENSIONS[params[0]]
-                newposx, newposz = nether_to_overworld(player_original_pos.x, player_original_pos.z)
-                to_coordinate.x = float(newposx)
-                to_coordinate.y = float(player_original_pos.y)
-                to_coordinate.z = float(newposz)
+                tp_data.dimension = DIMENSIONS[params[0]]
+                overworld_x, overworld_z = nether_to_overworld(
+                    current_pos.x, current_pos.z
+                )
+                tp_data.x = overworld_x
+                tp_data.y = current_pos.y
+                tp_data.z = overworld_z
+            # default position in the target dimension
             else:
-                # normal tp
                 tp_type = "to_coordinate"
-                to_coordinate_dim = DIMENSIONS[params[0]]
-                to_coordinate.x = 0
-                to_coordinate.y = 80
-                to_coordinate.z = 0
+                tp_data.dimension = DIMENSIONS[params[0]]
+                tp_data.x = 0
+                tp_data.y = 80
+                tp_data.z = 0
 
-        elif len(params) == 3:  # only position: e.g. !!tp x y z
-            if (not is_coord_valid(params[0])) or (not is_coord_valid(params[1])) or (not is_coord_valid(params[2])):
-                return src.reply('§c坐标不合法')
-            if (params[0] == '~' and params[1] == '~' and params[2] == '~'):
-                return src.reply('§c原地 tp 是吧 (doge)')
-            to_coordinate_dim = player_original_dim
-            to_coordinate.x = float(params[0] if params[0] != '~' else player_original_pos.x)
-            to_coordinate.y = float(params[1] if params[1] != '~' else player_original_pos.y)
-            to_coordinate.z = float(params[2] if params[2] != '~' else player_original_pos.z)
+        # only position: e.g. !!tp x y z
+        elif len(params) == 3:
+            # invalid coordinates
+            if (
+                    (not is_coord_valid(params[0])) or
+                    (not is_coord_valid(params[1])) or
+                    (not is_coord_valid(params[2]))
+            ):
+                src.reply('§c坐标不合法')
+                return
 
-        elif len(params) == 4:  # dimension + position: e.g. !!tp the_end x y z
-            if params[0] not in DIMENSIONS.keys():
-                return src.reply('§c没有此维度')
-            if (player_original_dim == DIMENSIONS[params[0]] and params[1] == '~' and params[2] == '~' and params[3] == '~'):
-                return src.reply('§c原地 tp 是吧 (doge)')
-            if (not is_coord_valid(params[1])) or (not is_coord_valid(params[2])) or (not is_coord_valid(params[3])):
-                return src.reply('§c坐标不合法')
-            
+            # current position
+            if params[0] == '~' and params[1] == '~' and params[2] == '~':
+                src.reply('§c原地 tp 是吧 (doge)')
+                return
+
+            # convert to coordinate
             tp_type = "to_coordinate"
-            to_coordinate_dim = DIMENSIONS[params[0]]
-            to_coordinate.x = float(params[1] if params[1] != '~' else player_original_pos.x)
-            to_coordinate.y = float(params[2] if params[2] != '~' else player_original_pos.y)
-            to_coordinate.z = float(params[3] if params[3] != '~' else player_original_pos.z)
+            tp_data.dimension = current_dim
+            tp_data.x = float(params[0] if params[0] != '~' else current_pos.x)
+            tp_data.y = float(params[1] if params[1] != '~' else current_pos.y)
+            tp_data.z = float(params[2] if params[2] != '~' else current_pos.z)
 
+        # dimension + position: e.g. !!tp the_end x y z
+        elif len(params) == 4:
+            # invalid dimension
+            if params[0] not in DIMENSIONS.keys():
+                src.reply('§c没有此维度')
+                return
+
+            # invalid coordinates
+            if (
+                    (not is_coord_valid(params[0])) or
+                    (not is_coord_valid(params[1])) or
+                    (not is_coord_valid(params[2]))
+            ):
+                src.reply('§c坐标不合法')
+                return
+
+            # current position
+            if (
+                    current_dim == DIMENSIONS[params[0]] and
+                    params[0] == '~' and params[1] == '~' and params[2] == '~'
+            ):
+                src.reply('§c原地 tp 是吧 (doge)')
+                return
+
+            # convert to coordinate
+            tp_type = "to_coordinate"
+            tp_data.dimension = DIMENSIONS[params[0]]
+            tp_data.x = float(params[1] if params[1] != '~' else current_pos.x)
+            tp_data.y = float(params[2] if params[2] != '~' else current_pos.y)
+            tp_data.z = float(params[3] if params[3] != '~' else current_pos.z)
+
+        # update back position
         data[src.player]['back'] = {
-            'dim': player_original_dim,
-            'pos': player_original_pos,
+            'dim': current_dim,
+            'pos': current_pos,
         }
         save_data(server)
-        if (tp_type == "to_player"):
-            server.execute(f'tp {src.player} {to_player}')
-            src.reply(f'§a已传送至玩家 §e{to_player}')
-        else: # to_coordinate
-            server.execute(f'execute in {to_coordinate_dim} run tp {src.player} {to_coordinate.x} {to_coordinate.y} {to_coordinate.z}')
-            human_readable_dim = HUMDIMS[to_coordinate_dim]
-            human_readable_pos = ' '.join([str(int(to_coordinate.x)), str(int(to_coordinate.y)), str(int(to_coordinate.z))])
-            src.reply(f'§a传送至§e{human_readable_dim}§a，坐标 §e{human_readable_pos}')
+
+        # teleport the player
+        if tp_type == "to_player":
+            server.execute(f'tp {src.player} {tp_data.player}')
+            src.reply(f'§a已传送至玩家 §e{tp_data.player}')
+        elif tp_type == "to_coordinate":
+            server.execute(
+                f'execute in {tp_data.dimension} '
+                f'run tp {src.player} {tp_data.x} {tp_data.y} {tp_data.z}'
+            )
+            human_readable_dim = HUMDIMS[tp_data.dimension]
+            human_readable_pos = ' '.join([
+                str(int(tp_data.x)),
+                str(int(tp_data.y)),
+                str(int(tp_data.z))
+            ])
+            src.reply(
+                f'§a传送至§e{human_readable_dim}§a，坐标 §e{human_readable_pos}'
+            )
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
@@ -411,7 +479,7 @@ def on_load(server: PluginServerInterface, old):
         # back to previous position
         back_dim = data[src.player]['back']['dim']
         back_pos = [str(x) for x in data[src.player]['back']['pos']]
-        current_dim =DIMENSIONS[
+        current_dim = DIMENSIONS[
             str(minecraft_data_api.get_player_dimension(src.player))
         ]
         current_pos = minecraft_data_api.get_player_coordinate(src.player)
