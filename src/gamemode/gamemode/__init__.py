@@ -355,9 +355,11 @@ def on_load(server: PluginServerInterface, old):
             # not a dimension, validate if it's an online player name
             if not has_dimension(params[0]):
                 player = params[0]
-                if not online_player_api.is_online(player):
+                try:
+                    player = online_player_api.normalize_player_name(player)
+                except ValueError:
                     src.reply(
-                        f'§c指定的 §e{params[0]} §c既不是维度，也不是一个在线的玩家'
+                        f'§c指定的 §e{player} §c既不是维度，也不是一个在线的玩家'
                     )
                     return
                 else:
