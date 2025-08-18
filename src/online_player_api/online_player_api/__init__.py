@@ -1,6 +1,6 @@
 from typing import List
 
-online_players = []
+online_players: List[str] = []
 
 
 def on_load(server, old):
@@ -24,16 +24,34 @@ def on_player_left(server, player):
         online_players.remove(player)
 
 
-def is_online(player: str) -> bool:
-    """Check a player is online"""
-    return player in online_players
+def is_online(player: str, case_sensitive: bool = True) -> bool:
+    """Check a player is online."""
+    if case_sensitive:
+        return player in online_players
+    else:
+        player = player.lower()
+        return player in [i.lower() for i in online_players]
 
 
-def check_online(player: str) -> bool:
-    """Check a player is online"""
-    return is_online(player)
+def check_online(player: str, case_sensitive: bool = True) -> bool:
+    """Check a player is online."""
+    return is_online(player, case_sensitive)
 
 
 def get_player_list() -> List[str]:
-    """Get all online player list"""
+    """Get all online players."""
     return online_players.copy()
+
+
+def normalize_player_name(player: str) -> str:
+    """
+    Returns the correctly cased player name given a case-insensitive name.
+    The player has to be online, otherwise it raises a ValueError.
+    :param player: The player name to normalize.
+    :return: The correctly cased player name.
+    :raises ValueError: If the player is not online or the name is invalid.
+    """
+    for p in online_players:
+        if p.lower() == player.lower():
+            return p
+    raise ValueError("Invalid player name")
