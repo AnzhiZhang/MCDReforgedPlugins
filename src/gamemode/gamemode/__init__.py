@@ -138,8 +138,9 @@ CONFIG_VERSION_MAP = {
 config: LatestConfig
 data: dict
 monitor_players: Set[str] = set()
-minecraft_data_api: Optional[Any]
 loop_manager: Optional[LoopManager] = None
+minecraft_data_api: Optional[Any] = None
+online_player_api: Optional[Any] = None
 
 
 def nether_to_overworld(x, z):
@@ -151,7 +152,7 @@ def overworld_to_nether(x, z):
 
 
 def on_load(server: PluginServerInterface, old):
-    global config, data, minecraft_data_api, loop_manager
+    global config, data, loop_manager, minecraft_data_api, online_player_api
     config = load_config(server)
     data = server.load_config_simple(
         DATA_FILE_NAME if config.data_path is None else config.data_path,
@@ -160,6 +161,7 @@ def on_load(server: PluginServerInterface, old):
         echo_in_console=False
     )['data']
     minecraft_data_api = server.get_plugin_instance('minecraft_data_api')
+    online_player_api = server.get_plugin_instance('online_player_api')
 
     server.register_help_message('!!spec help', 'Gamemode 插件帮助')
 
@@ -205,13 +207,14 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode switch mode')
     def change_mode(src: PlayerCommandSource, ctx: CommandContext):
-        player = src.player
-        # is spec_other (!!spec Steve)
-        if not ctx == {}:
-            # Check if the player exists and correct the capitalization of the player name
-            player = check_player_online_and_get_player_correct_name(ctx['player'])
-            if (player == False):
-                return src.reply(f'§c指定的玩家 §d{ctx['player']}§c 不在线或不存在')
+        player = src.player if ctx == {} else ctx['player']
+
+        # check player is online if changing other's mode
+        if ctx != {} and not online_player_api.is_online(player):
+            src.reply(f'§c指定的玩家 §e{ctx['player']} §c不在线')
+            return
+
+        # change mode
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
@@ -267,14 +270,15 @@ def on_load(server: PluginServerInterface, old):
 
         if len(params) == 1:  # only dimension, or player name: e.g. !!tp the_end / !!tp Steve
             if params[0] not in DIMENSIONS.keys():
-                # Not a dimension, may be a player
-                player = check_player_online_and_get_player_correct_name(params[0])
-                if (player == False):
-                    # Not a dimension, and not a player
-                    return src.reply(f'§c指定的 §d{params[0]}§c 既不是维度，也不是一个在线的玩家')
-                # is player
-                tp_type = "to_player"
-                to_player = player
+                # not a dimension, validate if it's an online player name
+                player = params[0]
+                if not online_player_api.is_online(player):
+                    return src.reply(
+                        f'§c指定的 §e{params[0]} §c既不是维度，也不是一个在线的玩家'
+                    )
+                else:
+                    tp_type = "to_player"
+                    to_player = player
             elif DIMENSIONS[params[0]] == player_original_dim:
                 # player is already in the target dimension
                 return src.reply('§c您正在此维度！')
@@ -480,23 +484,6 @@ def spec_to_sur(server, player):
     server.execute(f'gamemode survival {player}')
     del data[player]
     save_data(server)
-
-
-def check_player_online_and_get_player_correct_name(player):
-    """
-    Check if a player with the given name (case-insensitive) is online,
-    returning the correctly-cased name if online, otherwise `False`.
-
-    :param minecraft_data_api: Minecraft data api
-    :param player: Case-insensitive player name
-    
-    :return: Correctly-cased player name if online, False if offline
-    """
-    all_online_players = minecraft_data_api.get_server_player_list()[2]
-    for a_online_player in all_online_players:
-        if player.lower() == a_online_player.lower():
-            return a_online_player
-    return False
 
 
 def load_config(server: PluginServerInterface) -> "LatestConfig":
