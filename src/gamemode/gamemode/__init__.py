@@ -31,7 +31,11 @@ class LoopManager:
         # If a thread is already running, stop it before starting a new one
         if self.thread is not None and self.thread.is_alive():
             self.stop()
-        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread = threading.Thread(
+            target=loop,
+            name='Gamemode-LoopManager',
+            daemon=True
+        )
         self.thread.start()
 
     def stop(self):
