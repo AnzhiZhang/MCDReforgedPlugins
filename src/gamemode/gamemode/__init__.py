@@ -2,10 +2,11 @@
 import os
 import json
 import time
+import typing
 import threading
 from math import ceil, floor
 from dataclasses import dataclass
-from typing import Optional, Any, Literal, Text, Set, List, Callable
+from typing import Optional, Any, Text, Set, List, Callable
 
 from mcdreforged.api.types import PluginServerInterface, CommandSource, \
     PlayerCommandSource
@@ -305,7 +306,7 @@ def on_load(server: PluginServerInterface, old):
     def tp(src: CommandSource, ctx: CommandContext):
         @dataclass
         class TeleportData:
-            tp_type: Literal["to_player", "to_coordinate"]
+            tp_type: typing.Literal["to_player", "to_coordinate"] = 'to_coordinate'
             player: str = ''
             dimension: str = ''
             x: str | int | float = 0
