@@ -1,6 +1,6 @@
 from typing import List
 
-online_players = []
+online_players: List[str] = []
 
 
 def on_load(server, old):
@@ -24,14 +24,18 @@ def on_player_left(server, player):
         online_players.remove(player)
 
 
-def is_online(player: str) -> bool:
+def is_online(player: str, case_sensitive: bool = True) -> bool:
     """Check a player is online."""
-    return player in online_players
+    if case_sensitive:
+        return player in online_players
+    else:
+        player = player.lower()
+        return player in [i.lower() for i in online_players]
 
 
-def check_online(player: str) -> bool:
+def check_online(player: str, case_sensitive: bool = True) -> bool:
     """Check a player is online."""
-    return is_online(player)
+    return is_online(player, case_sensitive)
 
 
 def get_player_list() -> List[str]:
