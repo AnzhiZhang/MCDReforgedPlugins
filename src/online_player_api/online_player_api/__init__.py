@@ -25,15 +25,15 @@ def on_player_left(server, player):
 
 
 def is_online(player: str) -> bool:
-    """Check a player is online"""
+    """Check a player is online."""
     return player in online_players
 
 
 def check_online(player: str) -> bool:
-    """Check a player is online"""
+    """Check a player is online."""
     return is_online(player)
 
 
 def get_player_list() -> List[str]:
-    """Get all online player list"""
+    """Get all online players."""
     return online_players.copy()
