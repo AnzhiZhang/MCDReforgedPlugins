@@ -144,12 +144,39 @@ online_player_api: Optional[Any] = None
 
 
 def nether_to_overworld(x, z):
+    """Convert nether coordinates to overworld coordinates."""
     return int(float(x)) * 8, int(float(z)) * 8
 
 
 def overworld_to_nether(x, z):
+    """Convert overworld coordinates to nether coordinates."""
     return floor(float(x) / 8 + 0.5), floor(float(z) / 8 + 0.5)
 
+
+def is_coord_valid(coord: str):
+    """Check if a coordinate is valid."""
+    # ~
+    if coord == '~':
+        return True
+
+    # invalid formats
+    if (
+            coord.startswith('.') or
+            coord.endswith('.') or
+            coord.count('.') > 1 or
+            coord.count('-') > 1 or
+            (coord.count('-') > 0 and not coord.startswith('-'))
+    ):
+        return False
+
+    # remove non-digit characters and check if it's a digit
+    coord = coord.replace('-', '')
+    coord = coord.replace('.', '')
+    if coord.isdigit():
+        return True
+
+    # fall back to false
+    return False
 
 def on_load(server: PluginServerInterface, old):
     global config, data, loop_manager, minecraft_data_api, online_player_api
@@ -229,23 +256,6 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx: CommandContext):
-        def is_coord_valid(coord: str):
-            if coord == '~':
-                return True
-            if (
-                    coord.startswith('.') or
-                    coord.endswith('.') or
-                    coord.count('.') > 1 or
-                    coord.count('-') > 1 or
-                    (coord.count('-') > 0 and not coord.startswith('-'))
-            ):
-                return False
-            coord = coord.replace('-', '')
-            coord = coord.replace('.', '')
-            if coord.isdigit():
-                return True
-            return False
-
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
 
