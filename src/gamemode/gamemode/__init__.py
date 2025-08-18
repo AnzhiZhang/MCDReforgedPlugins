@@ -258,6 +258,7 @@ def on_load(server: PluginServerInterface, old):
     def tp(src: PlayerCommandSource, ctx: CommandContext):
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
+            return
 
         params = []
 
