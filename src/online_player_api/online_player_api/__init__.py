@@ -41,3 +41,17 @@ def check_online(player: str, case_sensitive: bool = True) -> bool:
 def get_player_list() -> List[str]:
     """Get all online players."""
     return online_players.copy()
+
+
+def normalize_player_name(player: str) -> str:
+    """
+    Returns the correctly cased player name given a case-insensitive name.
+    The player has to be online, otherwise it raises a ValueError.
+    :param player: The player name to normalize.
+    :return: The correctly cased player name.
+    :raises ValueError: If the player is not online or the name is invalid.
+    """
+    for p in online_players:
+        if p.lower() == player.lower():
+            return p
+    raise ValueError("Invalid player name")
