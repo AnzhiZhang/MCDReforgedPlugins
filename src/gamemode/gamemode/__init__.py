@@ -274,10 +274,13 @@ def on_load(server: PluginServerInterface, old):
     def change_mode(src: PlayerCommandSource, ctx: CommandContext):
         player = src.player if ctx == {} else ctx['player']
 
-        # check player is online if changing other's mode
-        if ctx != {} and not online_player_api.is_online(player):
-            src.reply(f'§c指定的玩家 §e{ctx['player']} §c不在线')
-            return
+        # if changing other's mode, check player is online and normalize name
+        if ctx != {}:
+            try:
+                player = online_player_api.normalize_player_name(player)
+            except ValueError:
+                src.reply(f'§c指定的玩家 §e{ctx['player']} §c不在线')
+                return
 
         # change mode
         if player not in data.keys():

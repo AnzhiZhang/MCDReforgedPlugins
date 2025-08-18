@@ -11,6 +11,6 @@
   "dependencies": {
     "mcdreforged": "^2.7.0",
     "minecraft_data_api": "^1.4.0",
-    "online_player_api": "^1.1.0"
+    "online_player_api": "^1.2.0"
   }
 }
