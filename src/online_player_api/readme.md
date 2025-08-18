@@ -4,16 +4,24 @@
 
 ## API
 
-`is_online(player)`
+### is_online(player: str, case_sensitive: bool = True)
 
-如果玩家在线, 返回 `True`
+如果玩家在线, 返回 `True`。
 
-如果玩家不在线, 返回 `False`
+如果玩家不在线, 返回 `False`。
 
-`check_online(player)`
+`case_sensitive` 是否忽略大小写。
 
-与 `is_online(player)` 相同
+### check_online(player: str, case_sensitive: bool = True)
 
-`get_player_list()`
+与 `is_online(player)` 相同。
 
-返回一个在线玩家的 list
+### get_player_list()
+
+返回所有在线玩家的列表。
+
+### normalize_player_name(player: str)
+
+返回给定玩家名称的正确大小写形式。
+
+如果玩家不在线，则引发 ValueError。
