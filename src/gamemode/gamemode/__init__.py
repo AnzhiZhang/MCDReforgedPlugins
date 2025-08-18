@@ -169,13 +169,16 @@ def is_coord_valid(coord: str):
 
 
 def has_dimension(dim: str):
+    """Check if a dimension exists."""
     return dim in DIMENSIONS.keys()
 
 
 def normalize_dimension(dim: str):
-    if (dim not in DIMENSIONS.keys()):
-        raise ValueError(f"dimension {dim} not exist")
-    return DIMENSIONS[dim]
+    """Normalize a dimension string to a standard format."""
+    if dim in DIMENSIONS.keys():
+        return DIMENSIONS[dim]
+    else:
+        raise ValueError(f'dimension {dim} not exist')
 
 
 def load_config(server: PluginServerInterface) -> 'LatestConfig':
@@ -633,7 +636,9 @@ def save_data(server: PluginServerInterface):
 
 
 def sur_to_spec(server, player):
-    dim = normalize_dimension(str(minecraft_data_api.get_player_dimension(player)))
+    dim = normalize_dimension(
+        str(minecraft_data_api.get_player_dimension(player))
+    )
     pos = minecraft_data_api.get_player_coordinate(player)
     rotation = minecraft_data_api.get_player_info(player, 'Rotation')
     data[player] = {
