@@ -222,7 +222,8 @@ def on_load(server: PluginServerInterface, old):
                     coord.count('-') > 1 or
                     coord.count('.') > 1 or
                     coord.startswith('.') or
-                    coord.endswith('.')
+                    coord.endswith('.') or
+                    (coord.count('-') > 0 and not coord.startswith('-'))
             ):
                 return False
             coord = coord.replace('-', '')
