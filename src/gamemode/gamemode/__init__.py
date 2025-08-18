@@ -290,7 +290,10 @@ def on_load(server: PluginServerInterface, old):
     def tp(src: CommandSource, ctx: CommandContext):
         @dataclass
         class TeleportData:
-            tp_type: typing.Literal['to_player', 'to_coordinate'] = 'to_coordinate'
+            tp_type: typing.Literal[
+                'to_player',
+                'to_coordinate'
+            ] = 'to_coordinate'
             player: str = ''
             dimension: str = ''
             x: str | int | float = 0
