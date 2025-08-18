@@ -7,7 +7,8 @@ from math import ceil, floor
 from dataclasses import dataclass
 from typing import Optional, Any, Literal, Text, Set, List, Callable
 
-from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
+from mcdreforged.api.types import PluginServerInterface, CommandSource, \
+    PlayerCommandSource
 from mcdreforged.api.command import *
 from mcdreforged.api.decorator import new_thread
 from mcdreforged.api.utils import Serializable
@@ -271,7 +272,12 @@ def on_load(server: PluginServerInterface, old):
                 )
 
     @new_thread('Gamemode switch mode')
-    def change_mode(src: PlayerCommandSource, ctx: CommandContext):
+    def change_mode(src: CommandSource, ctx: CommandContext):
+        # assert src is a PlayerCommandSource
+        if not isinstance(src, PlayerCommandSource):
+            raise TypeError("Not a PlayerCommandSource")
+
+        # get player name
         player = src.player if ctx == {} else ctx['player']
 
         # if changing other's mode, check player is online and normalize name
@@ -296,7 +302,7 @@ def on_load(server: PluginServerInterface, old):
                 monitor_players.discard(player)
 
     @new_thread('Gamemode tp')
-    def tp(src: PlayerCommandSource, ctx: CommandContext):
+    def tp(src: CommandSource, ctx: CommandContext):
         @dataclass
         class TeleportData:
             tp_type: Literal["to_player", "to_coordinate"]
@@ -305,6 +311,10 @@ def on_load(server: PluginServerInterface, old):
             x: str | int | float = 0
             y: str | int | float = 0
             z: str | int | float = 0
+
+        # assert src is a PlayerCommandSource
+        if not isinstance(src, PlayerCommandSource):
+            raise TypeError("Not a PlayerCommandSource")
 
         # spec mode only
         if src.player not in data.keys():
@@ -473,7 +483,11 @@ def on_load(server: PluginServerInterface, old):
             )
 
     @new_thread('Gamemode back')
-    def back(src: PlayerCommandSource):
+    def back(src: CommandSource):
+        # assert src is a PlayerCommandSource
+        if not isinstance(src, PlayerCommandSource):
+            raise TypeError("Not a PlayerCommandSource")
+
         # spec mode only
         if src.player not in data.keys():
             src.reply('§c您只能在旁观模式下传送')
