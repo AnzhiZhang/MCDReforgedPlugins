@@ -233,10 +233,11 @@ def on_load(server: PluginServerInterface, old):
             if coord == '~':
                 return True
             if (
+                    coord.count('-') > 1 or
+                    coord.count('.') > 1 or
                     coord.startswith('.') or
                     coord.endswith('.') or
-                    coord.count('.') > 1 or
-                    (coord.count('-') >= 1 and not coord.startswith('-'))
+                    (coord.count('-') > 0 and not coord.startswith('-'))
             ):
                 return False
             coord = coord.replace('-', '')
