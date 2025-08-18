@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+import json
 import time
 import threading
 from math import ceil, floor
-from typing import Optional, Any, Literal, Text, Set, Callable
 from dataclasses import dataclass
-from os import path
-import json
+from typing import Optional, Any, Literal, Text, Set, Callable
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
