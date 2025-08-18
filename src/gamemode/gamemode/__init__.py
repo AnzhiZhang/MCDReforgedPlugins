@@ -59,7 +59,6 @@ HUMDIMS = {
     'minecraft:the_end': '末地'
 }
 
-
 HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
 §6!!spec <player> §7切换他人模式
 §6!!tp <player> §7传送至指定玩家
@@ -73,6 +72,7 @@ HELP_MESSAGE_WITH_SHORT_COMMAND = '''§6!!spec §7或§6 {0} §7切换旁观/生
 §6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
 §6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
 §6!!back §7返回上个地点'''
+
 
 class ConfigV1(Serializable):
     short_command: bool = True
@@ -92,15 +92,18 @@ class ConfigV1(Serializable):
         config_v2.permissions.back = self.back
         return config_v2
 
+
 class ConfigV2(Serializable):
     class Permissions(Serializable):
         spec: int = 1
         spec_other: int = 2
         tp: int = 1
         back: int = 1
+
     class ShortCommand(Serializable):
         enabled: bool = False
         command: str = "!s"
+
     class RangeLimit(Serializable):
         check_interval: int = 0
         x: int = 50
@@ -113,11 +116,13 @@ class ConfigV2(Serializable):
     data_save_path: str = ''
     range_limit: RangeLimit = RangeLimit()
 
+
 @dataclass
 class Coordinate:
     x: float = 0
     y: float = 0
     z: float = 0
+
 
 config: ConfigV2
 data: dict
@@ -211,13 +216,14 @@ def on_load(server: PluginServerInterface, old):
     @new_thread('Gamemode tp')
     def tp(src: PlayerCommandSource, ctx: CommandContext):
         def is_coord_valid(coord: str):
-            """
-            Check if the given coordinate is valid
-            """
             if coord == '~':
                 return True
-            if coord.count('-') > 1 or coord.count('.') > 1 or coord.startswith(
-                    '.') or coord.endswith('.'):
+            if (
+                    coord.count('-') > 1 or
+                    coord.count('.') > 1 or
+                    coord.startswith('.') or
+                    coord.endswith('.')
+            ):
                 return False
             coord = coord.replace('-', '')
             coord = coord.replace('.', '')
@@ -477,7 +483,6 @@ def check_player_online_and_get_player_correct_name(player):
         if player.lower() == a_online_player.lower():
             return a_online_player
     return False
-
 
 
 def load_config(server: PluginServerInterface) -> "ConfigV2":
