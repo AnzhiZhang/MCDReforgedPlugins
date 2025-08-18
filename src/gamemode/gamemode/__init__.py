@@ -109,7 +109,7 @@ DIMENSIONS = {
     'minecraft:the_end': 'minecraft:the_end'
 }
 
-HUMDIMS = {
+HUMAN_READABLE_DIMENSIONS = {
     'minecraft:overworld': '主世界',
     'minecraft:the_nether': '下界',
     'minecraft:the_end': '末地'
@@ -457,7 +457,7 @@ def on_load(server: PluginServerInterface, old):
                 f'execute in {tp_data.dimension} '
                 f'run tp {src.player} {tp_data.x} {tp_data.y} {tp_data.z}'
             )
-            human_readable_dim = HUMDIMS[tp_data.dimension]
+            human_readable_dim = HUMAN_READABLE_DIMENSIONS[tp_data.dimension]
             human_readable_pos = ' '.join([
                 str(int(tp_data.x)),
                 str(int(tp_data.y)),
@@ -512,9 +512,9 @@ def on_load(server: PluginServerInterface, old):
         loop_manager.start()
 
         # load monitored players
-        for player in data.keys():
-            if server.get_permission_level(player) < config.permissions.tp:
-                monitor_players.add(player)
+        for p in data.keys():
+            if server.get_permission_level(p) < config.permissions.tp:
+                monitor_players.add(p)
 
     # spec literals
     spec_literals = ['!!spec']
