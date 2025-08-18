@@ -496,11 +496,9 @@ def sur_to_spec(server, player):
 def spec_to_sur(server, player):
     dim = data[player]['dim']
     pos = [str(x) for x in data[player]['pos']]
-    server.execute(
-        'execute in {} run tp {} {}'.format(dim, player, ' '.join(pos)))
-    if 'rotation' in data[player]:
-        rotation = data[player]['rotation']
-        server.execute(f'rotate {player} {str(rotation[0])} {str(rotation[1])}')
+    rotation = data[player].get('rotation', [0, 0])
+    server.execute(f'execute in {dim} run tp {player} {" ".join(pos)}')
+    server.execute(f'rotate {player} {rotation[0]} {rotation[1]}')
     server.execute(f'gamemode survival {player}')
     del data[player]
     save_data(server)
