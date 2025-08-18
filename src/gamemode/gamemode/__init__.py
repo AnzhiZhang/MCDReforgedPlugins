@@ -95,24 +95,28 @@ class ConfigV2(BaseConfig):
 
 LatestConfig = ConfigV2
 
+OVERWORLD = 'minecraft:overworld'
+THE_NETHER = 'minecraft:the_nether'
+THE_END = 'minecraft:the_end'
+
 DIMENSIONS = {
-    '0': 'minecraft:overworld',
-    '-1': 'minecraft:the_nether',
-    '1': 'minecraft:the_end',
-    'overworld': 'minecraft:overworld',
-    'the_nether': 'minecraft:the_nether',
-    'the_end': 'minecraft:the_end',
-    'nether': 'minecraft:the_nether',
-    'end': 'minecraft:the_end',
-    'minecraft:overworld': 'minecraft:overworld',
-    'minecraft:the_nether': 'minecraft:the_nether',
-    'minecraft:the_end': 'minecraft:the_end'
+    '0': OVERWORLD,
+    '-1': THE_NETHER,
+    '1': THE_END,
+    'overworld': OVERWORLD,
+    'the_nether': THE_NETHER,
+    'the_end': THE_END,
+    'nether': THE_NETHER,
+    'end': THE_END,
+    'minecraft:overworld': OVERWORLD,
+    'minecraft:the_nether': THE_NETHER,
+    'minecraft:the_end': THE_END
 }
 
 HUMAN_READABLE_DIMENSIONS = {
-    'minecraft:overworld': '主世界',
-    'minecraft:the_nether': '下界',
-    'minecraft:the_end': '末地'
+    OVERWORLD: '主世界',
+    THE_NETHER: '下界',
+    THE_END: '末地'
 }
 
 HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
@@ -158,6 +162,16 @@ def is_coord_valid(coord: str):
     # number
     pattern = re.compile(r'^-?(?:\d+(\.\d*)?|\.\d+)$')
     return pattern.match(coord) is not None
+
+
+def has_dimension(dim: str):
+    return dim in DIMENSIONS.keys()
+
+
+def normalize_dimension(dim: str):
+    if (dim not in DIMENSIONS.keys()):
+        raise ValueError(f"dimension {dim} not exist")
+    return DIMENSIONS[dim]
 
 
 def load_config(server: PluginServerInterface) -> 'LatestConfig':
@@ -331,15 +345,15 @@ def on_load(server: PluginServerInterface, old):
         current_pos = minecraft_data_api.get_player_coordinate(
             src.player
         )
-        current_dim = DIMENSIONS[
+        current_dim = normalize_dimension(
             str(minecraft_data_api.get_player_dimension(src.player))
-        ]
+        )
 
         # only dimension, or player name
         # e.g. !!tp the_end / !!tp Steve
         if len(params) == 1:
             # not a dimension, validate if it's an online player name
-            if params[0] not in DIMENSIONS.keys():
+            if not has_dimension(params[0]):
                 player = params[0]
                 if not online_player_api.is_online(player):
                     src.reply(
@@ -350,16 +364,16 @@ def on_load(server: PluginServerInterface, old):
                     tp_data.tp_type = 'to_player'
                     tp_data.player = player
             # player is already in the target dimension
-            elif DIMENSIONS[params[0]] == current_dim:
+            elif normalize_dimension(params[0]) == current_dim:
                 src.reply('§c您正在此维度！')
                 return
             # The player is in the Overworld and wishes to tp to the corresponding coordinates in the Nether
             elif (
-                    DIMENSIONS[params[0]] == 'minecraft:the_nether' and
-                    current_dim == 'minecraft:overworld'
+                    normalize_dimension(params[0]) == THE_NETHER and
+                    current_dim == OVERWORLD
             ):
                 tp_data.tp_type = 'to_coordinate'
-                tp_data.dimension = DIMENSIONS[params[0]]
+                tp_data.dimension = normalize_dimension(params[0])
                 nether_x, nether_z = overworld_to_nether(
                     current_pos.x, current_pos.z
                 )
@@ -368,11 +382,11 @@ def on_load(server: PluginServerInterface, old):
                 tp_data.z = nether_z
             # The player is in the Nether and wishes to tp to the corresponding coordinates in the Overworld
             elif (
-                    DIMENSIONS[params[0]] == 'minecraft:overworld' and
-                    current_dim == 'minecraft:the_nether'
+                    normalize_dimension(params[0]) == OVERWORLD and
+                    current_dim == THE_NETHER
             ):
                 tp_data.tp_type = 'to_coordinate'
-                tp_data.dimension = DIMENSIONS[params[0]]
+                tp_data.dimension = normalize_dimension(params[0])
                 overworld_x, overworld_z = nether_to_overworld(
                     current_pos.x, current_pos.z
                 )
@@ -382,7 +396,7 @@ def on_load(server: PluginServerInterface, old):
             # default position in the target dimension
             else:
                 tp_data.tp_type = 'to_coordinate'
-                tp_data.dimension = DIMENSIONS[params[0]]
+                tp_data.dimension = normalize_dimension(params[0])
                 tp_data.x = 0
                 tp_data.y = 80
                 tp_data.z = 0
@@ -413,7 +427,7 @@ def on_load(server: PluginServerInterface, old):
         # dimension + position: e.g. !!tp the_end x y z
         elif len(params) == 4:
             # invalid dimension
-            if params[0] not in DIMENSIONS.keys():
+            if not has_dimension(params[0]):
                 src.reply('§c没有此维度')
                 return
 
@@ -428,7 +442,7 @@ def on_load(server: PluginServerInterface, old):
 
             # current position
             if (
-                    current_dim == DIMENSIONS[params[0]] and
+                    current_dim == normalize_dimension(params[0]) and
                     params[0] == '~' and params[1] == '~' and params[2] == '~'
             ):
                 src.reply('§c原地 tp 是吧 (doge)')
@@ -436,7 +450,7 @@ def on_load(server: PluginServerInterface, old):
 
             # convert to coordinate
             tp_data.tp_type = 'to_coordinate'
-            tp_data.dimension = DIMENSIONS[params[0]]
+            tp_data.dimension = normalize_dimension(params[0])
             tp_data.x = float(params[1] if params[1] != '~' else current_pos.x)
             tp_data.y = float(params[2] if params[2] != '~' else current_pos.y)
             tp_data.z = float(params[3] if params[3] != '~' else current_pos.z)
@@ -481,9 +495,9 @@ def on_load(server: PluginServerInterface, old):
         # back to previous position
         back_dim = data[src.player]['back']['dim']
         back_pos = [str(x) for x in data[src.player]['back']['pos']]
-        current_dim = DIMENSIONS[
+        current_dim = normalize_dimension(
             str(minecraft_data_api.get_player_dimension(src.player))
-        ]
+        )
         current_pos = minecraft_data_api.get_player_coordinate(src.player)
         data[src.player]['back'] = {
             'dim': current_dim,
@@ -610,7 +624,7 @@ def save_data(server: PluginServerInterface):
 
 
 def sur_to_spec(server, player):
-    dim = DIMENSIONS[str(minecraft_data_api.get_player_dimension(player))]
+    dim = normalize_dimension(str(minecraft_data_api.get_player_dimension(player)))
     pos = minecraft_data_api.get_player_coordinate(player)
     rotation = minecraft_data_api.get_player_info(player, 'Rotation')
     data[player] = {
