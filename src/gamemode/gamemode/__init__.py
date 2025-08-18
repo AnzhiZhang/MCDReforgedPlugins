@@ -45,7 +45,7 @@ class LoopManager:
 class BaseConfig(Serializable):
     version: int
 
-    def migrate(self) -> "BaseConfig":
+    def migrate(self) -> 'BaseConfig':
         """
         Migrate the config to the latest version.
         This method should be overridden in subclasses.
@@ -62,7 +62,7 @@ class ConfigV1(BaseConfig):
     tp: int = 1
     back: int = 1
 
-    def migrate(self) -> "ConfigV2":
+    def migrate(self) -> 'ConfigV2':
         config_v2 = ConfigV2()
         config_v2.short_commands = ['!s'] if self.short_command else []
         config_v2.permissions.spec = self.spec
@@ -160,7 +160,7 @@ def is_coord_valid(coord: str):
     return pattern.match(coord) is not None
 
 
-def load_config(server: PluginServerInterface) -> "LatestConfig":
+def load_config(server: PluginServerInterface) -> 'LatestConfig':
     """Load config file with migration."""
     # create a config file if none exists
     config_file_path = os.path.join(server.get_data_folder(), CONFIG_FILE_NAME)
@@ -174,7 +174,7 @@ def load_config(server: PluginServerInterface) -> "LatestConfig":
         with open(config_file_path, 'r', encoding='utf-8') as f:
             raw_data = json.load(f)
     except Exception as e:
-        server.logger.exception("配置文件读取失败")
+        server.logger.exception('配置文件读取失败')
         raise e
 
     # get the config version
@@ -189,8 +189,8 @@ def load_config(server: PluginServerInterface) -> "LatestConfig":
     # load config based on the version
     target_class = CONFIG_VERSION_MAP.get(version, None)
     if target_class is None:
-        server.logger.error(f"未知配置文件版本：{version}")
-        raise RuntimeError(f"Unknown config version: {version}")
+        server.logger.error(f'未知配置文件版本：{version}')
+        raise RuntimeError(f'Unknown config version: {version}')
     current_config = server.load_config_simple(
         CONFIG_FILE_NAME, target_class=target_class
     )
@@ -260,7 +260,7 @@ def on_load(server: PluginServerInterface, old):
     def change_mode(src: CommandSource, ctx: CommandContext):
         # assert src is a PlayerCommandSource
         if not isinstance(src, PlayerCommandSource):
-            raise TypeError("Not a PlayerCommandSource")
+            raise TypeError('Not a PlayerCommandSource')
 
         # get player name
         player = src.player if ctx == {} else ctx['player']
@@ -290,7 +290,7 @@ def on_load(server: PluginServerInterface, old):
     def tp(src: CommandSource, ctx: CommandContext):
         @dataclass
         class TeleportData:
-            tp_type: typing.Literal["to_player", "to_coordinate"] = 'to_coordinate'
+            tp_type: typing.Literal['to_player', 'to_coordinate'] = 'to_coordinate'
             player: str = ''
             dimension: str = ''
             x: str | int | float = 0
@@ -299,7 +299,7 @@ def on_load(server: PluginServerInterface, old):
 
         # assert src is a PlayerCommandSource
         if not isinstance(src, PlayerCommandSource):
-            raise TypeError("Not a PlayerCommandSource")
+            raise TypeError('Not a PlayerCommandSource')
 
         # spec mode only
         if src.player not in data.keys():
@@ -347,7 +347,7 @@ def on_load(server: PluginServerInterface, old):
                     )
                     return
                 else:
-                    tp_data.tp_type = "to_player"
+                    tp_data.tp_type = 'to_player'
                     tp_data.player = player
             # player is already in the target dimension
             elif DIMENSIONS[params[0]] == current_dim:
@@ -358,7 +358,7 @@ def on_load(server: PluginServerInterface, old):
                     DIMENSIONS[params[0]] == 'minecraft:the_nether' and
                     current_dim == 'minecraft:overworld'
             ):
-                tp_data.tp_type = "to_coordinate"
+                tp_data.tp_type = 'to_coordinate'
                 tp_data.dimension = DIMENSIONS[params[0]]
                 nether_x, nether_z = overworld_to_nether(
                     current_pos.x, current_pos.z
@@ -371,7 +371,7 @@ def on_load(server: PluginServerInterface, old):
                     DIMENSIONS[params[0]] == 'minecraft:overworld' and
                     current_dim == 'minecraft:the_nether'
             ):
-                tp_data.tp_type = "to_coordinate"
+                tp_data.tp_type = 'to_coordinate'
                 tp_data.dimension = DIMENSIONS[params[0]]
                 overworld_x, overworld_z = nether_to_overworld(
                     current_pos.x, current_pos.z
@@ -381,7 +381,7 @@ def on_load(server: PluginServerInterface, old):
                 tp_data.z = overworld_z
             # default position in the target dimension
             else:
-                tp_data.tp_type = "to_coordinate"
+                tp_data.tp_type = 'to_coordinate'
                 tp_data.dimension = DIMENSIONS[params[0]]
                 tp_data.x = 0
                 tp_data.y = 80
@@ -404,7 +404,7 @@ def on_load(server: PluginServerInterface, old):
                 return
 
             # convert to coordinate
-            tp_data.tp_type = "to_coordinate"
+            tp_data.tp_type = 'to_coordinate'
             tp_data.dimension = current_dim
             tp_data.x = float(params[0] if params[0] != '~' else current_pos.x)
             tp_data.y = float(params[1] if params[1] != '~' else current_pos.y)
@@ -435,7 +435,7 @@ def on_load(server: PluginServerInterface, old):
                 return
 
             # convert to coordinate
-            tp_data.tp_type = "to_coordinate"
+            tp_data.tp_type = 'to_coordinate'
             tp_data.dimension = DIMENSIONS[params[0]]
             tp_data.x = float(params[1] if params[1] != '~' else current_pos.x)
             tp_data.y = float(params[2] if params[2] != '~' else current_pos.y)
@@ -449,10 +449,10 @@ def on_load(server: PluginServerInterface, old):
         save_data(server)
 
         # teleport the player
-        if tp_data.tp_type == "to_player":
+        if tp_data.tp_type == 'to_player':
             server.execute(f'tp {src.player} {tp_data.player}')
             src.reply(f'§a已传送至玩家 §e{tp_data.player}')
-        elif tp_data.tp_type == "to_coordinate":
+        elif tp_data.tp_type == 'to_coordinate':
             server.execute(
                 f'execute in {tp_data.dimension} '
                 f'run tp {src.player} {tp_data.x} {tp_data.y} {tp_data.z}'
@@ -471,7 +471,7 @@ def on_load(server: PluginServerInterface, old):
     def back(src: CommandSource):
         # assert src is a PlayerCommandSource
         if not isinstance(src, PlayerCommandSource):
-            raise TypeError("Not a PlayerCommandSource")
+            raise TypeError('Not a PlayerCommandSource')
 
         # spec mode only
         if src.player not in data.keys():
