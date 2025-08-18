@@ -5,7 +5,7 @@ import time
 import threading
 from math import ceil, floor
 from dataclasses import dataclass
-from typing import Optional, Any, Literal, Text, Set, Callable
+from typing import Optional, Any, Literal, Text, Set, List, Callable
 
 from mcdreforged.api.types import PluginServerInterface, PlayerCommandSource
 from mcdreforged.api.command import *
@@ -39,6 +39,66 @@ class LoopManager:
             self._stop_event.clear()
 
 
+@dataclass
+class Coordinate:
+    x: float = 0
+    y: float = 0
+    z: float = 0
+
+
+class BaseConfig(Serializable):
+    version: int
+
+    def migrate(self) -> "BaseConfig":
+        """
+        Migrate the config to the latest version.
+        This method should be overridden in subclasses.
+        """
+        raise NotImplementedError
+
+
+class ConfigV1(BaseConfig):
+    version: int = 1
+
+    short_command: bool = True
+    spec: int = 1
+    spec_other: int = 2
+    tp: int = 1
+    back: int = 1
+
+    def migrate(self) -> "ConfigV2":
+        config_v2 = ConfigV2()
+        config_v2.short_commands = ['!s'] if self.short_command else []
+        config_v2.permissions.spec = self.spec
+        config_v2.permissions.spec_other = self.spec_other
+        config_v2.permissions.tp = self.tp
+        config_v2.permissions.back = self.back
+        return config_v2
+
+
+class ConfigV2(BaseConfig):
+    class Permissions(Serializable):
+        spec: int = 1
+        spec_other: int = 2
+        tp: int = 1
+        back: int = 1
+
+    class RangeLimit(Serializable):
+        check_interval: int = 0
+        x: int = 50
+        y: int = 50
+        z: int = 50
+
+    version: int = 2
+
+    data_path: Optional[str] = None
+    short_commands: List[str] = ['!s']
+    permissions: Permissions = Permissions()
+    range_limit: RangeLimit = RangeLimit()
+
+
+LatestConfig = ConfigV2
+
 DIMENSIONS = {
     '0': 'minecraft:overworld',
     '-1': 'minecraft:the_nether',
@@ -66,65 +126,16 @@ HELP_MESSAGE = '''§6!!spec §7切换旁观/生存
 §6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
 §6!!back §7返回上个地点'''
 
-HELP_MESSAGE_WITH_SHORT_COMMAND = '''§6!!spec §7或§6 {0} §7切换旁观/生存
-§6!!spec <player> §7或§6 {0} <player> §7切换他人模式
-§6!!tp <player> §7传送至指定玩家
-§6!!tp <dimension> §7传送至指定维度（主世界与下界自动换算坐标）
-§6!!tp [dimension] <x> <y> <z> §7传送至（指定维度的）指定坐标
-§6!!back §7返回上个地点'''
+CONFIG_FILE_NAME = 'config.json'
+DATA_FILE_NAME = 'data.json'
 
+CONFIG_LATEST_VERSION = 2
+CONFIG_VERSION_MAP = {
+    1: ConfigV1,
+    2: ConfigV2,
+}
 
-class ConfigV1(Serializable):
-    short_command: bool = True
-    spec: int = 1
-    spec_other: int = 2
-    tp: int = 1
-    back: int = 1
-
-    config_version: int = 1
-
-    def migrate_to_config_v2(self) -> "ConfigV2":
-        config_v2 = ConfigV2()
-        config_v2.short_command.enabled = self.short_command
-        config_v2.permissions.spec = self.spec
-        config_v2.permissions.spec_other = self.spec_other
-        config_v2.permissions.tp = self.tp
-        config_v2.permissions.back = self.back
-        return config_v2
-
-
-class ConfigV2(Serializable):
-    class Permissions(Serializable):
-        spec: int = 1
-        spec_other: int = 2
-        tp: int = 1
-        back: int = 1
-
-    class ShortCommand(Serializable):
-        enabled: bool = False
-        command: str = "!s"
-
-    class RangeLimit(Serializable):
-        check_interval: int = 0
-        x: int = 50
-        y: int = 50
-        z: int = 50
-
-    config_version: int = 2
-    permissions: Permissions = Permissions()
-    short_command: ShortCommand = ShortCommand()
-    data_save_path: str = ''
-    range_limit: RangeLimit = RangeLimit()
-
-
-@dataclass
-class Coordinate:
-    x: float = 0
-    y: float = 0
-    z: float = 0
-
-
-config: ConfigV2
+config: LatestConfig
 data: dict
 monitor_players: Set[str] = set()
 minecraft_data_api: Optional[Any]
@@ -143,9 +154,9 @@ def on_load(server: PluginServerInterface, old):
     global config, data, minecraft_data_api, loop_manager
     config = load_config(server)
     data = server.load_config_simple(
-        'data.json' if config.data_save_path == '' else config.data_save_path,
-        in_data_folder=(config.data_save_path == ''),
+        DATA_FILE_NAME if config.data_path is None else config.data_path,
         default_config={'data': {}},
+        in_data_folder=(config.data_path is None),
         echo_in_console=False
     )['data']
     minecraft_data_api = server.get_plugin_instance('minecraft_data_api')
@@ -369,9 +380,10 @@ def on_load(server: PluginServerInterface, old):
 
     # spec literals
     spec_literals = ['!!spec']
-
-    if config.short_command.enabled:
-        spec_literals.append(config.short_command.command)
+    help_message = HELP_MESSAGE
+    if len(config.short_commands) > 0:
+        spec_literals.extend(config.short_commands)
+        help_message += f'\n§6!!spec §7可以使用下列简写替代: §6{", ".join(config.short_commands)}'
 
     # register
     server.register_command(
@@ -384,7 +396,7 @@ def on_load(server: PluginServerInterface, old):
         .runs(change_mode)
         .then(
             Literal('help')
-            .runs(lambda src: src.reply(HELP_MESSAGE_WITH_SHORT_COMMAND.format(config.short_command.command) if config.short_command.enabled else HELP_MESSAGE))
+            .runs(lambda src: src.reply(help_message))
         )
         .then(
             Text('player')
@@ -432,9 +444,10 @@ def on_load(server: PluginServerInterface, old):
 
 
 def save_data(server: PluginServerInterface):
-    server.save_config_simple({'data': data},
-        'data.json' if config.data_save_path == '' else config.data_save_path,
-        in_data_folder=(config.data_save_path == '') 
+    server.save_config_simple(
+        {'data': data},
+        DATA_FILE_NAME if config.data_path is None else config.data_path,
+        in_data_folder=(config.data_path is None)
     )
 
 
@@ -486,48 +499,48 @@ def check_player_online_and_get_player_correct_name(player):
     return False
 
 
-def load_config(server: PluginServerInterface) -> "ConfigV2":
+def load_config(server: PluginServerInterface) -> "LatestConfig":
     """
-    Load config file with automatic version migration
+    Load config file with migration.
     """
-    # Did not use PluginServerInterface.load_config_simple due to its excessive limitations,
-    # and instead implemented manual reading. After extensive testing, version migration 
-    # couldn't be achieved through the API (not unusable but would require double file
-    # reading, wasting I/O resources).
-    #
-    # Key limitations encountered:
-    # - Either `default_config` or `target_class` must be provided (both cannot be None)
-    # - Automatically deletes keys present in config file but missing in `default_config`,
-    #   making it impossible to pass `default_config={}` for pure file reading
-    # - Certain edge cases cause file overwriting even when `data_processor` returns False,
-    #   leading to potential config loss
-
-    config_file_path = path.join(server.get_data_folder(), 'config.json')
     # create a config file if none exists
-    if not path.isfile(config_file_path):
-        config_v2 = ConfigV2()
-        server.save_config_simple(config_v2, 'config.json')
-        return config_v2
-    # try to read config file
+    config_file_path = os.path.join(server.get_data_folder(), CONFIG_FILE_NAME)
+    if not os.path.isfile(config_file_path):
+        return server.load_config_simple(
+            CONFIG_FILE_NAME, target_class=LatestConfig
+        )
+
+    # read the config file
     try:
         with open(config_file_path, 'r', encoding='utf-8') as f:
             raw_data = json.load(f)
     except Exception as e:
-        server.logger.error(f"配置文件读取失败: {e}，正在使用默认配置 (不会覆盖保存原有配置, 以免丢失配置. 请修复或删除 {config_file_path})")
-        return ConfigV2()
-    # get config file version, `v1` if none
-    config_version = raw_data.get('config_version', 1)
-    if config_version == 1:
-        # migrate to v2
-        config_v1 = ConfigV1.deserialize(raw_data)
-        config_v2 = config_v1.migrate_to_config_v2()
-        server.save_config_simple(config_v2, 'config.json')
-        return config_v2
-    elif config_version == 2:
-        return ConfigV2.deserialize(raw_data)
-    else:
-        server.logger.warning(f"未知配置版本 {config_version}，正在使用默认配置")
-        return ConfigV2()
+        server.logger.exception("配置文件读取失败")
+        raise e
+
+    # get the config version
+    version = raw_data.get('version', 1)
+
+    # latest config version
+    if version == CONFIG_LATEST_VERSION:
+        return server.load_config_simple(
+            CONFIG_FILE_NAME, target_class=LatestConfig
+        )
+
+    # load config based on the version
+    target_class = CONFIG_VERSION_MAP.get(version, None)
+    if target_class is None:
+        server.logger.error(f"未知配置文件版本：{version}")
+        raise RuntimeError(f"Unknown config version: {version}")
+    current_config = server.load_config_simple(
+        CONFIG_FILE_NAME, target_class=target_class
+    )
+
+    # migrate
+    while current_config.version < CONFIG_LATEST_VERSION:
+        current_config = current_config.migrate()
+    server.save_config_simple(current_config, CONFIG_FILE_NAME)
+    return current_config
 
 
 def on_player_joined(server: PluginServerInterface, player, info):
