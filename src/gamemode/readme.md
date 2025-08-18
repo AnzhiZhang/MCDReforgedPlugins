@@ -1,6 +1,6 @@
 # Gamemode
 
-> 高级版灵魂出窍 (切旁观, 切回生存传送回原位置)
+> 高级版灵魂出窍（切旁观, 切回生存传送回原位置）
 
 感谢 [方块君](https://github.com/Squaregentleman) 的 [gamemode](https://github.com/Squaregentleman/MCDR-plugins) 插件
 
