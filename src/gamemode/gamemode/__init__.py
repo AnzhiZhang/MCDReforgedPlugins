@@ -31,7 +31,11 @@ class LoopManager:
         # If a thread is already running, stop it before starting a new one
         if self.thread is not None and self.thread.is_alive():
             self.stop()
-        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread = threading.Thread(
+            target=loop,
+            name='Gamemode-LoopManager',
+            daemon=True
+        )
         self.thread.start()
 
     def stop(self):
@@ -304,7 +308,10 @@ def on_load(server: PluginServerInterface, old):
     def tp(src: CommandSource, ctx: CommandContext):
         @dataclass
         class TeleportData:
-            tp_type: typing.Literal['to_player', 'to_coordinate'] = 'to_coordinate'
+            tp_type: typing.Literal[
+                'to_player',
+                'to_coordinate'
+            ] = 'to_coordinate'
             player: str = ''
             dimension: str = ''
             x: str | int | float = 0
