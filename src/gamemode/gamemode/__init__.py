@@ -415,13 +415,14 @@ def on_load(server: PluginServerInterface, old):
             lambda: '§c权限不足'
         )
         .then(
+            # !!tp <dimension | player> -- param1 = dimension or player name
             Text('param1')
-            .runs(tp).  # !!tp <dimension | player> -- param1 = dimension or player name
+            .runs(tp).
             then(
                 Text('param2')
                 .then(
-                    Text('param3')
                     # !!tp <x> <y> <z> -- param1 = x, param2 = y, param3 = z
+                    Text('param3')
                     .runs(tp)
                     .then(
                         # !!tp <dimension> <x> <y> <z> -- param1 = dimension, param2 = x, param3 = y, param4 = z
