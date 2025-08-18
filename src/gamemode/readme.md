@@ -1,6 +1,6 @@
 # Gamemode
 
-> 高级版灵魂出窍（切旁观, 切回生存传送回原位置）
+> 高级版灵魂出窍（切旁观，切回生存传送回原位置）
 
 感谢 [方块君](https://github.com/Squaregentleman) 的 [gamemode](https://github.com/Squaregentleman/MCDR-plugins) 插件
 
@@ -22,7 +22,7 @@
 
 `!!back` 返回上个地点
 
-若启用了 `short_command`, 可使用配置的短命令 (如: `!s`) 实现与 `!!spec` 相同的效果
+若启用了 `short_commands`，可使用配置的短命令（如: `!s`）替代 `!!spec`
 
 ## 配置
 
@@ -30,24 +30,37 @@
 
 ```json
 {
-    "config_version": 2,
+    "version": 2,
+    "data_path": null,
+    "short_commands": [
+        "!s"
+    ],
     "permissions": {
         "spec": 1,
         "spec_other": 2,
         "tp": 1,
         "back": 1
     },
-    "short_command": {
-        "enabled": false,
-        "command": "!s"
-    },
-    "data_save_path": ""
+    "range_limit": {
+        "check_interval": 0,
+        "x": 50,
+        "y": 50,
+        "z": 50
+    }
 }
 ```
 
-### `config_version`
+### `version`
 
-配置文件版本, 请不要更改
+配置文件版本，请不要更改
+
+### `data_path`
+
+默认值: `null`
+
+用于设置存储正处于旁观模式的玩家的信息（如: 他们生存切旁观时的位置）等数据的文件的位置，默认（`null`）存储于插件配置文件夹中。
+
+如果你同时安装了其他备份插件（如 Prime Backup），则建议将此项设置为存档内的文件，防止回档后玩家的 "旁观" 没有回档，例如 `server/world/mcdr-plugin-config/gamemode/data.json`。
 
 ### `permissions`
 
@@ -77,31 +90,11 @@
 
 使用 `!!back` 的最低权限
 
-### `short_command`
+### `short_commands`
 
-短命令相关
+默认值: `["!s"]`
 
-#### `enabled`
-
-默认值: `false`
-
-是否启用短命令
-
-#### `command`
-
-默认值: `!s`
-
-`!!spec` 命令的别名. 运行此命令的权限要求与 `!!spec` 相同
-
-### `data_save_path`
-
-默认值: (空)
-
-用于设置存储正处于旁观模式的玩家的信息 (如: 他们生存切旁观时的位置) 等数据的文件的位置.
-
-为空 (默认) 时存储于 `config/gamemode/config.json`
-
-如果你同时安装了其他备份插件 (如 Prime Backup), 则建议将此文件放置于存档内而不是默认的存档外, 防止回档后玩家的 "旁观" 没有回档. 例如: `server/world/mcdr-plugin-config/gamemode/data.json`.
+短命令列表，`!!spec` 的别名，运行此命令的权限要求与 `!!spec` 相同。
 
 ### `range_limit`
 
