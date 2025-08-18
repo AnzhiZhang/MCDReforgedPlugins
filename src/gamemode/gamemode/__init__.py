@@ -358,17 +358,25 @@ def on_load(server: PluginServerInterface, old):
 
     @new_thread('Gamemode back')
     def back(src: PlayerCommandSource):
+        # spec mode only
         if src.player not in data.keys():
-            return src.reply('§c您只能在旁观模式下传送')
-        back_to_dim = data[src.player]['back']['dim']
-        back_to_pos = [str(x) for x in data[src.player]['back']['pos']]
+            src.reply('§c您只能在旁观模式下传送')
+            return
+
+        # back to previous position
+        back_dim = data[src.player]['back']['dim']
+        back_pos = [str(x) for x in data[src.player]['back']['pos']]
+        current_dim =DIMENSIONS[
+            str(minecraft_data_api.get_player_dimension(src.player))
+        ]
+        current_pos = minecraft_data_api.get_player_coordinate(src.player)
         data[src.player]['back'] = {
-            'dim': DIMENSIONS[str(minecraft_data_api.get_player_dimension(src.player))],
-            'pos': minecraft_data_api.get_player_coordinate(src.player)
+            'dim': current_dim,
+            'pos': current_pos,
         }
         save_data(server)
         server.execute(
-            f'execute in {back_to_dim} run tp {src.player} {" ".join(back_to_pos)}'
+            f'execute in {back_dim} run tp {src.player} {" ".join(back_pos)}'
         )
         src.reply('§a已将您传送至上个地点')
 
