@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.4.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.3.0...gamemode-v1.4.0) (2025-08-19)
+
+
+### Features
+
+* **gamemode:** allow teleport to players ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** features and bux fixes ([#282](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/282)) ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** rotate player to initial angle when switching from spectator to survival mode ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** support configurable data.json save path ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** support configurable short_commands ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** support tilde(`~`) in `tp` command ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** update config file ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** update help message ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** validate player param online using online_player_api ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+
+
+### Bug Fixes
+
+* **gamemode:** fix `!!spec <player>` exception when player doesn't exist ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** improve coordinate validation using regex ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** initialize loop_manager to None ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+* **gamemode:** normalize player name when using another player's name ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+
+
+### Performance Improvements
+
+* **gamemode:** remove duplicate player position queries; Optimize player position queries ([f289890](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/f2898902adc430256973450843da42ee2be5bebd))
+
 ## [1.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.2.0...gamemode-v1.3.0) (2025-08-17)
 
 
