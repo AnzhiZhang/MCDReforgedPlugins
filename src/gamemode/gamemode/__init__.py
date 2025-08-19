@@ -169,17 +169,14 @@ def is_coord_valid(coord: str):
 
 
 def is_coord_in_range(x: str | float, y: str | float, z: str | float):
-    """Check if coordinates are in range"""
-    # Destinated position's <x> or <z> exceeds the range of
-    # [-30000000, 30000000), or <y> exceeds the range of
-    # [-20000000, 20000000) will cause tp to fail
-    if (x != '~' and (float(x) >= 30000000 or float(x) < -30000000)):
-        return False
-    if (y != '~' and (float(y) >= 20000000 or float(y) < -20000000)):
-        return False
-    if (z != '~' and (float(z) >= 30000000 or float(z) < -30000000)):
-        return False
-    return True
+    """Check if coordinates are in range."""
+    # <x> or <z> exceeds the range of [-30,000,000, 30,000,000)
+    # or <y> exceeds the range of [-20,000,000, 20,000,000)
+    return (
+            (x == '~' or -30000000 <= float(x) < 30000000) and
+            (y == '~' or -20000000 <= float(y) < 20000000) and
+            (z == '~' or -30000000 <= float(z) < 30000000)
+    )
 
 
 def has_dimension(dim: str):
