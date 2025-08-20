@@ -72,6 +72,11 @@ def read_registered_commands(server: PluginServerInterface):
 
 
 def register(server: PluginServerInterface):
+    # check if server is startup
+    if not server.is_server_startup():
+        return
+
+    # register commands
     data = read_registered_commands(server)
     server.logger.debug(
         f'Register commands to minecraft, tree:'
