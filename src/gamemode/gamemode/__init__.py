@@ -141,7 +141,6 @@ CONFIG_VERSION_MAP = {
 
 config: LatestConfig
 data: dict
-monitor_players: Set[str] = set()
 loop_manager: Optional[LoopManager] = None
 minecraft_data_api: Optional[Any] = None
 online_player_api: Optional[Any] = None
@@ -254,7 +253,15 @@ def on_load(server: PluginServerInterface, old):
             config.range_limit.y,
             config.range_limit.z
         ]
-        for player in monitor_players.copy():
+
+        for player in data.keys():
+            # return if player has tp permission or offline
+            if server.get_permission_level(player) >= config.permissions.tp:
+                continue
+            elif not online_player_api.is_online(player):
+                continue
+
+            # get position
             center = [x for x in data[player]['pos']]
             pos = minecraft_data_api.get_player_info(player, 'Pos')
             if pos is None:
@@ -263,13 +270,13 @@ def on_load(server: PluginServerInterface, old):
                 )
                 continue
 
+            # verify position
             valid_ranges = [
                 (center[i] - radius[i], center[i] + radius[i])
                 if radius[i] > 0
                 else None
                 for i in range(3)
             ]
-
             need_teleport = False
             for i in range(3):
                 if valid_ranges[i] is None:
@@ -281,6 +288,7 @@ def on_load(server: PluginServerInterface, old):
                     need_teleport = True
                     pos[i] = valid_ranges[i][1] - 0.5
 
+            # teleport if out of range
             if need_teleport:
                 dimension = data[player]['dim']
                 server.execute(
@@ -313,14 +321,10 @@ def on_load(server: PluginServerInterface, old):
         if player not in data.keys():
             server.tell(player, '§a已切换至旁观模式')
             sur_to_spec(server, player)
-            if not src.has_permission(config.permissions.tp):
-                monitor_players.add(player)
         elif player in data.keys():
             use_time = ceil((time.time() - data[player]['time']) / 60)
             server.tell(player, f'§a您使用了§e{use_time}min')
             spec_to_sur(server, player)
-            if player in monitor_players:
-                monitor_players.discard(player)
 
     @new_thread('Gamemode tp')
     def tp(src: CommandSource, ctx: CommandContext):
@@ -554,11 +558,6 @@ def on_load(server: PluginServerInterface, old):
         )
         loop_manager.start()
 
-        # load monitored players
-        for p in data.keys():
-            if server.get_permission_level(p) < config.permissions.tp:
-                monitor_players.add(p)
-
     # spec literals
     spec_literals = ['!!spec']
     help_message = HELP_MESSAGE
@@ -628,13 +627,6 @@ def on_load(server: PluginServerInterface, old):
 def on_player_joined(server: PluginServerInterface, player, info):
     if player in data.keys():
         server.execute(f'gamemode spectator {player}')
-        if server.get_permission_level(player) < config.permissions.tp:
-            monitor_players.add(player)
-
-
-def on_player_left(server: PluginServerInterface, player):
-    if player in data.keys():
-        monitor_players.discard(player)
 
 
 def on_unload(server: PluginServerInterface):
