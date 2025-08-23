@@ -8,7 +8,7 @@ import cpuinfo
 from mcdreforged.api.types import ServerInterface, PluginServerInterface
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
-from mcdreforged.api.utils import Serializable
+from mcdreforged.api.utils import Serializable, new_thread
 
 
 class Config(Serializable):
@@ -38,7 +38,8 @@ def on_load(server: PluginServerInterface, prev_module):
 
 def get_server_info(server: ServerInterface) -> RTextList:
     def get_cpu_use():
-        return f'{average(*psutil.cpu_percent(percpu=True))}%'
+        result = psutil.cpu_percent(percpu=True, interval=1)
+        return f'{average(*result)}%'
 
     def get_cpu_brand():
         return cpuinfo.get_cpu_info().get('brand_raw', 'N/A')
