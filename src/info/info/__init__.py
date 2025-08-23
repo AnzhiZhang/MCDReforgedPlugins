@@ -8,7 +8,7 @@ import cpuinfo
 from mcdreforged.api.types import ServerInterface, PluginServerInterface
 from mcdreforged.api.rtext import *
 from mcdreforged.api.command import *
-from mcdreforged.api.utils import Serializable, new_thread
+from mcdreforged.api.utils import Serializable
 
 
 class Config(Serializable):
