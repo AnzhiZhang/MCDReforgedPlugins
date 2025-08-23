@@ -282,7 +282,11 @@ def on_load(server: PluginServerInterface, old):
                     pos[i] = valid_ranges[i][1] - 0.5
 
             if need_teleport:
-                server.execute(f'tp {player} {pos[0]} {pos[1]} {pos[2]}')
+                dimension = data[player]['dim']
+                server.execute(
+                    f'execute in {dimension} run tp {player} '
+                    f'{pos[0]} {pos[1]} {pos[2]}'
+                )
                 server.tell(
                     player,
                     '§c您已超出活动范围，已被自动传送回活动范围内'
