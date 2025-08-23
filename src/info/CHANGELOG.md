@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.2...info-v0.2.3) (2025-08-23)
+
+
+### Bug Fixes
+
+* **info:** 🐛 update CPU usage calculation ([19d31ab](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/19d31abeb65494074eb7dc8c33f5329386e2d025))
+
 ## [0.2.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.1...info-v0.2.2) (2024-11-18)
 
 
