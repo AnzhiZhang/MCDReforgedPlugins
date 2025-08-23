@@ -35,10 +35,13 @@ def on_load(server: PluginServerInterface, prev_module):
         )
     )
 
+    # call once to load cpu percent
+    psutil.cpu_percent()
+
 
 def get_server_info(server: ServerInterface) -> RTextList:
     def get_cpu_use():
-        return f'{average(*psutil.cpu_percent(percpu=True))}%'
+        return f'{psutil.cpu_percent()}%'
 
     def get_cpu_brand():
         return cpuinfo.get_cpu_info().get('brand_raw', 'N/A')
