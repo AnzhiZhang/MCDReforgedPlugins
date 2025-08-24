@@ -7,7 +7,7 @@
   "src/dict_command_registration": "1.1.0",
   "src/fastapi_mcdr": "2.0.0",
   "src/gamemode": "1.4.0",
-  "src/info": "0.2.3",
+  "src/info": "0.2.4",
   "src/let_me_click_and_send": "1.0.0",
   "src/minecraft_command_register": "2.14.7",
   "src/more_command_nodes": "1.1.2",
