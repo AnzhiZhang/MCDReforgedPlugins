@@ -71,14 +71,28 @@ def get_server_info(server: ServerInterface) -> RTextList:
             size += get_dir_size(i)
         return round_size(size)
 
+    def format_line(
+            translation_key: str,
+            value: str,
+            end: str = '\n'
+    ) -> RTextList:
+        return RTextList(
+            server.rtr(translation_key, color=RColor.gray),
+            RText(': ', color=RColor.gray),
+            RText(value, color=RColor.gold),
+            RText(end)
+        )
+
     return RTextList(
-        f'§7============ §6{server.tr("info.title")} §7============\n',
-        f'§7{server.rtr("info.systemVersion")}:§6 {platform.platform()}\n',
-        f'§7{server.rtr("info.pythonVersion")}:§6 {platform.python_version()}\n',
-        f'§7{server.rtr("info.cpuBrand")}:§6 {get_cpu_brand()}\n',
-        f'§7{server.rtr("info.cpuUsed")}:§6 {get_cpu_use()}\n',
-        f'§7{server.rtr("info.memoryUsed")}:§6 {get_memory_use()}\n',
-        f'§7{server.rtr("info.worldSize")}:§6 {get_world_size()}'
+        RText('============ ', color=RColor.gray),
+        RText(server.tr('info.title'), color=RColor.gold),
+        RText(' ============', color=RColor.gray), '\n',
+        format_line('info.systemVersion', platform.platform()),
+        format_line('info.pythonVersion', platform.python_version()),
+        format_line('info.cpuBrand', get_cpu_brand()),
+        format_line('info.cpuUsed', get_cpu_use()),
+        format_line('info.memoryUsed', get_memory_use()),
+        format_line('info.worldSize', get_world_size(), end='')
     )
 
 
