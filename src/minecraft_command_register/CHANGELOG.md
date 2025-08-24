@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.15.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v2.14.7...minecraft_command_register-v2.15.0) (2025-08-24)
+
+
+### Features
+
+* **minecraft_command_register:** 🔖 2.15.0 ([9a374a0](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/9a374a05e9368b5ac0b24f89203685fe5d7cd966))
+
+
+### Bug Fixes
+
+* **minecraft_command_register:** 🐛 check server is startup in register ([16c0fdf](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/16c0fdf4bafb9c2e20630cee318c15e81df0e05a)), closes [#284](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/284)
+
 ## [2.14.7](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/minecraft_command_register-v2.14.5...minecraft_command_register-v2.14.7) (2025-04-15)
 
 
