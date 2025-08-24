@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.4.0...gamemode-v1.4.1) (2025-08-24)
+
+
+### Bug Fixes
+
+* **on_load:** 🐛 improve teleport command to keep the dimension ([05c4c63](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/05c4c638c6efefd47a3cbff2b0894aea17e387f9))
+
 ## [1.4.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/gamemode-v1.3.0...gamemode-v1.4.0) (2025-08-19)
 
 
