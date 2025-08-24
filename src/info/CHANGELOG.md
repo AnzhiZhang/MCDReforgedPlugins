@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.3...info-v0.2.4) (2025-08-24)
+
+
+### Bug Fixes
+
+* **info:** 🐛 fix info output using RText ([06467e5](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/06467e512cb4d321ffd78d221c578e2f274173d4))
+
 ## [0.2.3](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.2...info-v0.2.3) (2025-08-23)
 
 
