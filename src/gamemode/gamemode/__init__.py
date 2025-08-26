@@ -314,7 +314,7 @@ def on_load(server: PluginServerInterface, old):
             try:
                 player = online_player_api.normalize_player_name(player)
             except ValueError:
-                src.reply(f'§c指定的玩家 §e{ctx['player']} §c不在线')
+                src.reply(f'§c指定的玩家 §e{ctx["player"]} §c不在线')
                 return
 
         # change mode
