@@ -14,5 +14,6 @@
   "src/online_player_api": "1.2.0",
   "src/qq_api": "1.4.0",
   "src/qq_chat": "3.0.2",
-  "src/uuid_api": "1.0.0"
+  "src/uuid_api": "1.0.0",
+  "src/mcdr_command_http_api": "1.0.0"
 }
