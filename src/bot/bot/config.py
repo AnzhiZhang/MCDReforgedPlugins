@@ -9,6 +9,7 @@ class Config(Serializable):
     name_prefix: str = 'bot_'
     name_suffix: str = ''
     post_join_delay: int = 0
+    spawn_timeout: float = 30.0
     permissions: Dict[str, int] = {
         'list': 1,
         'spawn': 1,

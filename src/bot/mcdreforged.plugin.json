@@ -9,7 +9,7 @@
   "author": "Andy Zhang",
   "link": "https://github.com/AnzhiZhang/MCDReforgedPlugins/tree/master/src/bot",
   "dependencies": {
-    "mcdreforged": "^2.6.0",
+    "mcdreforged": "^2.12.0",
     "minecraft_data_api": "^1.4.1",
     "more_command_nodes": "^1.1.0"
   },

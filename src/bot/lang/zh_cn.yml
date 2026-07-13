@@ -6,7 +6,7 @@ bot.help.content: |
   §6!!bot list [--index <index>] [filters]§7显示假人列表
   §6!!bot spawn <name> §7上线假人
   §6!!bot kill <name> §7下线假人
-  §6!!bot action <name> [index] §7执行假人动作
+  §6!!bot action <name> [index|carpet action] §7执行已保存或一次性 Carpet 动作
   §6!!bot tags §7查看可用标签
   §6!!bot tags <tag> spawn/kill §7上线/下线具有标签的假人
   §6!!bot info <name> §7查看假人信息
@@ -25,13 +25,13 @@ bot.error.botOnline: §c假人 §6{0} §c已在线！
 bot.error.botOffline: §c假人 §6{0} §c不在线！
 bot.error.botAlreadySaved: §c假人 §6{0} §c已保存！
 bot.error.botNotSaved: §c假人 §6{0} §c未保存！
-bot.command.spawned: §a假人 §6{0} §a已上线
+bot.command.spawned: §a已发送假人 §6{0} §a的上线请求
 bot.command.killed: §a假人 §6{0} §a已下线
 bot.command.action: §a假人 §6{0} §a已执行指令
 bot.command.tag.spawnButton: §a点击上线所有假人
 bot.command.tag.killButton: §e点击下线所有假人
 bot.command.tag.listButton: §7点击显示所有假人
-bot.command.tag.spawn: §6{0} §a个具有标签 §6{1} §a的假人已上线
+bot.command.tag.spawn: §a已发送 §6{0} §a个具有标签 §6{1} §a的假人上线请求
 bot.command.tag.kill: §6{0} §a个具有标签 §6{1} §a的假人已下线
 bot.command.info.configButtonHover: §7点击配置
 bot.command.info.name: '§7名称：§3{0}'

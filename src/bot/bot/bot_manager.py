@@ -2,8 +2,6 @@ import math
 import datetime
 from typing import TYPE_CHECKING, Dict, List, Tuple
 
-from mcdreforged.api.decorator import new_thread
-
 from bot.bot import Bot
 from bot.exceptions import *
 from bot.location import Location
@@ -18,15 +16,23 @@ class BotManager:
         self.__plugin: 'Plugin' = plugin
         self.__bots: Dict[str, Bot] = {}
 
-        self.__load_data(prev_module)
+        # Persistent and previous runtime data must be available before
+        # commands and HTTP routes are registered, so an early save can never
+        # overwrite an empty or half-loaded bot list.
+        self.__load_saved_data()
+        if prev_module is not None:
+            self.__restore_previous_state(prev_module)
+
+        self.__plugin.server.logger.debug(f'Loaded {len(self.bots)} bots:')
+        for bot in self.__bots.values():
+            self.__plugin.server.logger.debug(f'  - {bot}')
 
     @property
     def bots(self) -> Dict[str, Bot]:
         return self.__bots
 
-    @new_thread('loadBot')
-    def __load_data(self, prev_module) -> None:
-        # saved bots
+    def __load_saved_data(self) -> None:
+        """Synchronously load all persistent bot records."""
         file_data = self.__plugin.server.load_config_simple(
             DATA_FILE_NAME,
             default_config={'botList': []},
@@ -34,13 +40,14 @@ class BotManager:
         )['botList']
         for bot_data in file_data:
             name = bot_data['name']
-            self.__bots[name] = self.new_bot(
+            location = Location.from_dict(bot_data.get('location', {
+                'position': [0.0, 0.0, 0.0],
+                'facing': [0.0, 0.0],
+                'dimension': 0
+            }))
+            bot = self.new_bot(
                 name,
-                Location.from_dict(bot_data.get('location', {
-                    'position': [0.0, 0.0, 0.0],
-                    'facing': [0.0, 0.0],
-                    'dimension': 0
-                })),
+                location,
                 bot_data.get('comment', ''),
                 bot_data.get('actions', []),
                 bot_data.get('tags', []),
@@ -48,22 +55,38 @@ class BotManager:
                 bot_data.get('autoRunActions', False),
                 bot_data.get('autoUpdate', False)
             )
-            self.__bots[name].set_saved(True)
+            bot.set_saved(True)
 
-        # old bots
-        if prev_module is not None:
-            old_self: 'BotManager' = prev_module.plugin.bot_manager
-            api = self.__plugin.minecraft_data_api
-            online_list = api.get_server_player_list()[2]
-            for name in online_list:
-                name = self.__plugin.parse_name(name)
-                if old_self.is_in_list(name):
-                    self.__bots[name] = old_self.get_bot(name)
-                    self.__bots[name].set_online(True)
+    def __restore_previous_state(self, prev_module) -> None:
+        """Synchronously copy runtime state into fresh Bot objects."""
+        old_self: 'BotManager' = prev_module.plugin.bot_manager
+        for old_bot in list(old_self.bots.values()):
+            online = old_bot.online
+            spawning = getattr(old_bot, 'spawning', False)
+            if not online and not spawning:
+                continue
 
-        self.__plugin.server.logger.debug(f'Loaded {len(self.bots)} bots:')
-        for i in self.__bots.values():
-            self.__plugin.server.logger.debug(f'  - {i}')
+            name = old_bot.name
+            if self.is_in_list(name):
+                bot = self.get_bot(name)
+            else:
+                data = old_bot.saving_data
+                bot = self.new_bot(
+                    name,
+                    Location.from_dict(data['location']),
+                    data['comment'],
+                    data['actions'],
+                    data['tags'],
+                    data['autoLogin'],
+                    data['autoRunActions'],
+                    data['autoUpdate']
+                )
+            bot.restore_runtime_state(
+                old_bot.mc_name or name,
+                online,
+                spawning,
+                getattr(old_bot, 'pending_spawn_name', None)
+            )
 
     def save_data(self) -> None:
         self.__plugin.server.save_config_simple(
@@ -103,7 +126,7 @@ class BotManager:
         self.__bots = {
             bot.name: bot
             for bot in self.bots.values()
-            if bot.online or bot.saved
+            if bot.online or bot.saved or bot.spawning
         }
 
     def get_bots_by_tag(self, tag: str) -> List[Bot]:
@@ -261,6 +284,16 @@ class BotManager:
                 raise BotOfflineException(name)
         else:
             raise BotNotExistsException(name)
+
+    def direct_action(self, name: str, action: str) -> Bot:
+        """Run a one-off Carpet action on an online bot."""
+        if self.is_in_list(name):
+            bot = self.get_bot(name)
+            if bot.online:
+                bot.run_action(action)
+                return bot
+            raise BotOfflineException(name)
+        raise BotNotExistsException(name)
 
     def save(
             self,

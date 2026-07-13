@@ -8,7 +8,11 @@ from mcdreforged.api.decorator import new_thread
 from more_command_nodes import Position, Facing, EnumeratedText
 
 from bot.exceptions import *
-from bot.constants import DIMENSION
+from bot.constants import (
+    DIMENSION,
+    CARPET_ACTIONS,
+    CARPET_ACTIONS_WITHOUT_ARGUMENTS,
+)
 from bot.location import Location
 
 if TYPE_CHECKING:
@@ -25,7 +29,11 @@ class CommandHandler:
             return lambda: [
                 name for name, bot in
                 self.__plugin.bot_manager.bots.items()
-                if online is None or bot.online == online
+                if (
+                    online is None or
+                    (online and bot.online) or
+                    (not online and not bot.online and not bot.spawning)
+                )
             ]
 
         def create_subcommand(literal: str) -> Literal:
@@ -77,15 +85,37 @@ class CommandHandler:
 
         def make_action_command() -> Literal:
             action_literal = create_subcommand('action')
-            action_literal.then(
+            name_node = (
                 Text('name')
                 .runs(self.__command_action)
                 .suggests(bot_list(True))
-                .then(
-                    Integer('index')
-                    .runs(self.__command_action)
-                )
             )
+            name_node.then(
+                Integer('index')
+                .runs(self.__command_action)
+            )
+
+            # Keep the existing saved-action/index syntax and add the current
+            # Carpet action roots as literal branches.  Literal nodes are
+            # matched before the Integer index node by MCDR, so old numeric
+            # invocations remain unambiguous.
+            for action, suggestions in CARPET_ACTIONS.items():
+                carpet_action = Literal(action)
+                if action in CARPET_ACTIONS_WITHOUT_ARGUMENTS:
+                    carpet_action.runs(
+                        self.__make_direct_action_callback(action)
+                    )
+                if suggestions:
+                    carpet_action.then(
+                        GreedyText('carpetActionArguments')
+                        .suggests(
+                            self.__make_suggestion_callback(suggestions)
+                        )
+                        .runs(self.__make_direct_action_callback(action))
+                    )
+                name_node.then(carpet_action)
+
+            action_literal.then(name_node)
             return action_literal
 
         def make_tags_command() -> Literal:
@@ -467,6 +497,34 @@ class CommandHandler:
                 'bot.error.illegalActionIndex', e.index
             ))
 
+    @staticmethod
+    def __make_suggestion_callback(suggestions):
+        def callback():
+            return suggestions
+        return callback
+
+    def __make_direct_action_callback(self, action: str):
+        def callback(src: CommandSource, ctx: CommandContext):
+            arguments = ctx.get('carpetActionArguments')
+            command = action if arguments is None else f'{action} {arguments}'
+            self.__command_direct_action(src, ctx, command)
+        return callback
+
+    def __command_direct_action(
+            self,
+            src: CommandSource,
+            ctx: CommandContext,
+            action: str
+    ):
+        name = self.__plugin.parse_name(ctx['name'])
+        try:
+            self.__plugin.bot_manager.direct_action(name, action)
+            src.reply(RTextMCDRTranslation('bot.command.action', name))
+        except BotNotExistsException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botNotExists', e.name))
+        except BotOfflineException as e:
+            src.reply(RTextMCDRTranslation('bot.error.botOffline', e.name))
+
     def __command_tag_list(self, src: CommandSource):
         # header
         message = RTextList('-------- List --------')
@@ -513,7 +571,7 @@ class CommandHandler:
             # spawn
             counter = 0
             for bot in self.__plugin.bot_manager.get_bots_by_tag(tag):
-                if not bot.online:
+                if not bot.online and not bot.spawning:
                     bot.spawn()
                     counter += 1
 

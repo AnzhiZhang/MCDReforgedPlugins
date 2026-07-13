@@ -6,8 +6,14 @@
 
 ## Dependencies
 
+- [MCDReforged](https://github.com/MCDReforged/MCDReforged) 2.12.0 or newer
+- [Carpet](https://github.com/gnembon/fabric-carpet) 1.4.48 or newer
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
 - [MoreCommandNodes](../more_command_nodes)
+
+The action tree and spawn syntax are aligned with the latest stable Carpet
+[v26.2](https://github.com/gnembon/fabric-carpet/releases/tag/v26.2).
+The relevant command syntax in `v26.3-beta-2` is unchanged from v26.2.
 
 ## Usage
 
@@ -19,7 +25,7 @@
 
 `!!bot kill <name>` Kill bot
 
-`!!bot action <name> [index]` Execute bot action(s)
+`!!bot action <name> [index|carpet action]` Run saved actions or a one-off Carpet action
 
 `!!bot tags` View available tags
 
@@ -82,7 +88,26 @@ Kill bot
 
 ### action
 
-Execute bot action(s)
+Run bot actions. All existing forms remain available:
+
+- `!!bot action <name>` runs every saved action
+- `!!bot action <name> <index>` runs one saved action by index
+- `!!bot action <name> <carpet action>` runs a one-off Carpet action without saving it
+
+Examples:
+
+```text
+!!bot action bot_alex use once
+!!bot action bot_alex attack interval 12
+!!bot action bot_alex look north
+!!bot action bot_alex move forward
+```
+
+The direct form supports the Carpet v26.2 controls `stop`, `use`, `jump`,
+`attack`, `drop`, `dropStack`, `swapHands`, `hotbar`, `mount`, `dismount`,
+`sneak`/`unsneak`, `sprint`/`unsprint`, `look`, `turn`, and `move`.
+Spawning and killing still use `!!bot spawn` and `!!bot kill` so the plugin's
+runtime state remains synchronized.
 
 When `index` is specified, execute specific action(s) instead of all actions
 
@@ -152,6 +177,7 @@ flowchart LR
     start --> action(action)
     action --> action_name("&lt;name&gt;")
     action_name --> action_name_index["&lt;index&gt;"]
+    action_name --> action_name_carpet["&lt;carpet action&gt;"]
 
     start --> tags(tags)
     tags --> tags_tag["&lt;tag&gt;"]
@@ -228,9 +254,23 @@ Default: `0`
 
 Delay time (seconds) for processing after bot joined. If you are using a non-vanilla server, you may need to adjust this value.
 
+### spawn_timeout
+
+Default: `30`
+
+Maximum time in seconds to wait for Carpet's asynchronous fake-player spawn.
+After a timeout the spawn may be retried. Set it to `0` to disable the timeout.
+
 ### permissions
 
 Minimum permission to use corresponding command
+
+## Carpet configuration
+
+The plugin controls fake players through Carpet's official `/player` command.
+Make sure the `commandPlayer` rule is not disabled. On authenticated servers,
+spawning non-existent `bot_*` names also requires `allowSpawningOfflinePlayers`
+to remain `true` (Carpet's default).
 
 ## FastAPI MCDR
 
