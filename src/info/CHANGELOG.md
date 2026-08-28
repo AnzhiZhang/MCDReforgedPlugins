@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.4...info-v0.3.0) (2026-08-28)
+
+
+### Features
+
+* **info:** add java version ([#315](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/315)) ([b67175c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/b67175cd0d3711cd6c9026083ec0f60cd6fd8ed9))
+
 ## [0.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.3...info-v0.2.4) (2025-08-24)
 
 
