@@ -1,11 +1,5 @@
 # Changelog
 
-## [0.3.0] (2026-07-06)
-
-### Features
-
-* **info:** ✨ add Java version display from running server process
-
 ## [0.2.4](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/info-v0.2.3...info-v0.2.4) (2025-08-24)
 
 
