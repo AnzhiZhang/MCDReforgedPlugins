@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import platform
+import subprocess
 from typing import List
 
 import psutil
@@ -16,11 +17,31 @@ class Config(Serializable):
 
 
 config: Config
+java_version = 'N/A'
+
+
+def get_java_version(server: ServerInterface) -> str:
+    try:
+        for pid in server.get_server_pid_all():
+            try:
+                proc = psutil.Process(pid)
+                if proc.name() in ('java', 'java.exe'):
+                    result = subprocess.run(
+                        [proc.exe(), '-version'],
+                        capture_output=True, text=True, timeout=3
+                    )
+                    return result.stderr.splitlines()[0].strip()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+    except Exception:
+        pass
+    return 'N/A'
 
 
 def on_load(server: PluginServerInterface, prev_module):
-    global config
+    global config, java_version
     config = server.load_config_simple(target_class=Config)
+    java_version = get_java_version(server)
     server.register_help_message(
         '!!info',
         {
@@ -89,6 +110,7 @@ def get_server_info(server: ServerInterface) -> RTextList:
         RText(' ============', color=RColor.gray), '\n',
         format_line('info.systemVersion', platform.platform()),
         format_line('info.pythonVersion', platform.python_version()),
+        format_line('info.javaVersion', java_version),
         format_line('info.cpuBrand', get_cpu_brand()),
         format_line('info.cpuUsed', get_cpu_use()),
         format_line('info.memoryUsed', get_memory_use()),
