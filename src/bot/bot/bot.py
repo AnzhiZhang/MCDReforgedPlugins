@@ -48,6 +48,8 @@ class Bot:
         self.__mc_name: str = ''
         self.__online: bool = False
         self.__saved: bool = False
+        self.__spawning_since = None
+        self.__spawn_target_name = None
 
     @property
     def name(self):
@@ -92,6 +94,27 @@ class Bot:
     @property
     def online(self):
         return self.__online
+
+    @property
+    def spawning(self) -> bool:
+        """Whether Carpet is still resolving and spawning this fake player."""
+        if self.__spawning_since is None:
+            return False
+
+        timeout = self.__plugin.config.spawn_timeout
+        if timeout > 0 and time.monotonic() - self.__spawning_since >= timeout:
+            self.__spawning_since = None
+            self.__spawn_target_name = None
+            self.__server.logger.warning(
+                f'Timed out waiting for bot "{self.name}" to join'
+            )
+            return False
+        return True
+
+    @property
+    def pending_spawn_name(self):
+        """The exact Minecraft name requested in the current spawn."""
+        return self.__spawn_target_name if self.spawning else None
 
     @property
     def saved(self):
@@ -180,6 +203,44 @@ class Bot:
         :param online: A bool.
         """
         self.__online = online
+        self.__spawning_since = None
+        self.__spawn_target_name = None
+
+    def set_spawning(
+            self,
+            spawning: bool,
+            target_name: str = None
+    ) -> None:
+        """Set the transient state used while Carpet resolves a profile."""
+        if spawning:
+            self.__spawning_since = time.monotonic()
+            self.__spawn_target_name = target_name or self.name
+        else:
+            self.__spawning_since = None
+            self.__spawn_target_name = None
+
+    def matches_pending_spawn(self, mc_name: str) -> bool:
+        """Match a join against the exact name sent to Carpet."""
+        pending_name = self.pending_spawn_name
+        return (
+            pending_name is not None and
+            pending_name.lower() == mc_name.lower()
+        )
+
+    def restore_runtime_state(
+            self,
+            mc_name: str,
+            online: bool,
+            spawning: bool = False,
+            pending_spawn_name: str = None
+    ) -> None:
+        """Restore non-persistent state after a hot reload."""
+        self.__mc_name = mc_name
+        self.__online = online
+        self.set_spawning(
+            spawning and not online,
+            pending_spawn_name or self.name
+        )
 
     def set_saved(self, saved: bool) -> None:
         """
@@ -192,15 +253,27 @@ class Bot:
         """
         Spawn the bot.
         """
-        if not self.__online:
-            self.__server.execute(
-                'player {} spawn at {} facing {} in {}'.format(
-                    self.name,
-                    ' '.join(map(str, self.location.position)),
-                    ' '.join(map(str, self.location.facing)),
-                    self.location.str_dimension
-                )
+        if not self.__online and not self.spawning:
+            command = 'player {} spawn at {} facing {} in {}'.format(
+                self.name,
+                ' '.join(map(str, self.location.position)),
+                ' '.join(map(str, self.location.facing)),
+                self.location.str_dimension
             )
+
+            # Carpet uses creative mode when a spawn command comes from the
+            # console.  Passing the mode as part of the spawn command avoids
+            # the asynchronous join/gamemode race while preserving the old
+            # behaviour for unsaved temporary bots.
+            if self.saved or self.__plugin.config.force_gamemode:
+                command += f' in {self.__plugin.config.gamemode}'
+
+            self.set_spawning(True, self.name)
+            try:
+                self.__server.execute(command)
+            except Exception:
+                self.set_spawning(False)
+                raise
         else:
             raise BotOnlineException(self.name)
 
@@ -236,12 +309,24 @@ class Bot:
         if self.__online:
             # auto update location
             if self.auto_update:
-                self.set_location(self.__plugin.get_location(self.mc_name))
-                self.__plugin.bot_manager.save_data()
+                previous_location = self.location
+                try:
+                    self.set_location(self.__plugin.get_location(self.mc_name))
+                    self.__plugin.bot_manager.save_data()
+                except Exception:
+                    # A data query failure must not make a fake player
+                    # impossible to remove.  Keep the last saved location and
+                    # continue with Carpet's kill command.
+                    self.set_location(previous_location)
+                    self.__server.logger.warning(
+                        f'Failed to update location for bot "{self.name}" '
+                        'before killing it; keeping the previous location',
+                        exc_info=True
+                    )
 
             # kill
+            self.__server.execute(f'player {self.mc_name or self.name} kill')
             self.set_online(False)
-            self.__server.execute(f'player {self.mc_name} kill')
         else:
             raise BotOfflineException(self.name)
 
@@ -262,13 +347,20 @@ class Bot:
 
         # Run actions
         for action in run_actions:
-            self.__server.execute(f'player {self.mc_name} {action}')
+            self.run_action(action)
+
+    def run_action(self, action: str) -> None:
+        """Run one Carpet action without modifying the saved action list."""
+        self.__server.execute(
+            f'player {self.mc_name or self.name} {action}'
+        )
 
     def __str__(self):
         return (
                 self.__class__.__name__ +
                 dict(**self.saving_data, **{
                     'online': self.online,
+                    'spawning': self.spawning,
                     'saved': self.saved
                 }).__str__()
         )

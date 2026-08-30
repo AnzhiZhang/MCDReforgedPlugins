@@ -135,5 +135,35 @@ class Plugin:
         """
         api = self.minecraft_data_api
         info = api.get_player_info(name)
-        dimension = DIMENSION.INT_TRANSLATION.get(info['Dimension'])
-        return Location(info['Pos'], info['Rotation'], dimension)
+        if info is None:
+            raise ValueError(f'Failed to query location for player "{name}"')
+
+        try:
+            position = info['Pos']
+            facing = info['Rotation']
+            raw_dimension = info['Dimension']
+        except (KeyError, TypeError) as e:
+            raise ValueError(
+                f'Incomplete location data for player "{name}": {info!r}'
+            ) from e
+
+        dimension = None
+        if isinstance(raw_dimension, int):
+            if raw_dimension in DIMENSION.STR_TRANSLATION:
+                dimension = raw_dimension
+        else:
+            dimension = DIMENSION.INT_TRANSLATION.get(str(raw_dimension))
+        if dimension is None:
+            raise ValueError(
+                f'Unsupported dimension {raw_dimension!r} for player "{name}"'
+            )
+        if (
+                not isinstance(position, (list, tuple)) or
+                not isinstance(facing, (list, tuple)) or
+                len(position) != 3 or
+                len(facing) != 2
+        ):
+            raise ValueError(
+                f'Invalid location data for player "{name}": {info!r}'
+            )
+        return Location(position, facing, dimension)

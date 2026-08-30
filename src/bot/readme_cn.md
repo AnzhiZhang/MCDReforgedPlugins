@@ -6,8 +6,14 @@
 
 ## 依赖
 
+- [MCDReforged](https://github.com/MCDReforged/MCDReforged) 2.12.0 或更高版本
+- [Carpet](https://github.com/gnembon/fabric-carpet) 1.4.48 或更高版本
 - [MinecraftDataAPI](https://github.com/MCDReforged/MinecraftDataAPI)
 - [MoreCommandNodes](../more_command_nodes)
+
+当前动作树与生成语法已按 Carpet 最新稳定版
+[v26.2](https://github.com/gnembon/fabric-carpet/releases/tag/v26.2) 更新；
+`v26.3-beta-2` 的相关命令语法与 v26.2 相同。
 
 ## 使用方法
 
@@ -19,7 +25,7 @@
 
 `!!bot kill <name>` 下线假人
 
-`!!bot action <name> [index]` 执行假人动作
+`!!bot action <name> [index|carpet action]` 执行已保存的动作，或直接执行一次 Carpet 动作
 
 `!!bot tags` 查看可用标签
 
@@ -82,7 +88,25 @@ flowchart TD
 
 ### action
 
-执行假人动作
+执行假人动作。原有用法保持不变：
+
+- `!!bot action <name>` 执行全部已保存动作
+- `!!bot action <name> <index>` 执行指定索引的已保存动作
+- `!!bot action <name> <carpet action>` 直接执行一次 Carpet 动作，不修改已保存动作
+
+直接执行示例：
+
+```text
+!!bot action bot_alex use once
+!!bot action bot_alex attack interval 12
+!!bot action bot_alex look north
+!!bot action bot_alex move forward
+```
+
+支持 Carpet v26.2 的 `stop`、`use`、`jump`、`attack`、`drop`、
+`dropStack`、`swapHands`、`hotbar`、`mount`、`dismount`、
+`sneak`/`unsneak`、`sprint`/`unsprint`、`look`、`turn` 和 `move`。
+生成与下线仍使用 `!!bot spawn` 和 `!!bot kill`，以保证插件状态同步。
 
 当指定 `index` 时，执行特定动作而不是全部动作
 
@@ -152,6 +176,7 @@ flowchart LR
     start --> action(action)
     action --> action_name("&lt;name&gt;")
     action_name --> action_name_index["&lt;index&gt;"]
+    action_name --> action_name_carpet["&lt;carpet action&gt;"]
 
     start --> tags(tags)
     tags --> tags_tag["&lt;tag&gt;"]
@@ -228,9 +253,21 @@ flowchart LR
 
 假人上线后延迟处理的时间（秒），如果您使用非原版服务端，可能需要调整该值。
 
+### spawn_timeout
+
+默认值：`30`
+
+等待 Carpet 完成异步假人生成的超时时间（秒）。超时后允许再次尝试生成；设置为 `0` 可禁用超时。
+
 ### permissions
 
 使用对应指令的最低权限
+
+## Carpet 配置
+
+插件通过 Carpet 官方 `/player` 命令控制假人。请确保 `commandPlayer` 未被禁用。
+正版验证服务器若需生成不存在的 `bot_*` 名称，还需要保持
+`allowSpawningOfflinePlayers` 为 `true`（Carpet 默认值）。
 
 ## FastAPI MCDR
 
