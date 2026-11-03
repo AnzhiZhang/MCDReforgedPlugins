@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/uuid_api-v1.0.0...uuid_api-v1.0.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* **uuid_api:** set a timeout on API lookups ([#320](https://github.com/AnzhiZhang/MCDReforgedPlugins/issues/320)) ([7f513c3](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/7f513c331b8d18d95106508f2cdfd9574b5ecde2))
+
 ## [1.0.0](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/uuid_api-v0.1.2...uuid_api-v1.0.0) (2025-07-07)
 
 
