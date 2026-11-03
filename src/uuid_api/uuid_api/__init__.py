@@ -133,7 +133,7 @@ def offline_uuid(name) -> UUID | None:
 def get_try(url) -> dict | None:
     for i in range(0, 5):
         try:
-            return requests.get(url).json()
+            return requests.get(url, timeout=10).json()
         except requests.RequestException:
             pass
     return None
