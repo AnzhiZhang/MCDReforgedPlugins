@@ -90,6 +90,11 @@ def on_load(server: PluginServerInterface, old):
                 .set_color(RColor.red)
             )
 
+    server.register_help_message(
+        "!!letmeclickandsend",
+        "显示或关闭 1.19 点击发送提示"
+    )
+
     server.register_command(
         Literal("!!letmeclickandsend")
         .requires(Requirements.is_player())
