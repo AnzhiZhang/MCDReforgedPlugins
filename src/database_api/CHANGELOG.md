@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/database_api-v0.1.1...database_api-v0.1.2) (2026-11-10)
+
+
+### Documentation
+
+* **database_api:** correct the vault reference ([3e7fa8b](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/3e7fa8bbe14aaeced8fc4d4ed96960fa6b4430e9))
+
 ## [0.1.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/database_api-v0.1.0...database_api-v0.1.1) (2022-06-30)
 
 
