@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.3.1...advanced_calculator-v0.3.2) (2026-11-10)
+
+
+### Documentation
+
+* **advanced_calculator:** fix the hex conversion wording ([e745e2c](https://github.com/AnzhiZhang/MCDReforgedPlugins/commit/e745e2cda76103e2f44e592691e26383e27b1b74))
+
 ## [0.3.1](https://github.com/AnzhiZhang/MCDReforgedPlugins/compare/advanced_calculator-v0.3.0...advanced_calculator-v0.3.1) (2023-01-19)
 
 
