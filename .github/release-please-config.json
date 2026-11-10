@@ -1,5 +1,6 @@
 {
   "release-type": "simple",
+  "commit-batch-size": 50,
   "pull-request-title-pattern": "chore${scope}: 🔖 release${component} ${version}",
   "extra-files": [
     {
