@@ -12,6 +12,8 @@ HELP_MSG = '''§7!!bingo team <num> §6按在线玩家随机分组
 
 
 def on_load(server: PluginServerInterface, old):
+    server.register_help_message('!!bingo', '§6Bingo 游戏实用工具')
+
     server.register_command(
         Literal('!!bingo').
             runs(lambda src: src.reply(HELP_MSG)).
