@@ -26,9 +26,6 @@
     "src/database_api": {
       "package-name": "database_api"
     },
-    "src/dict_command_registration": {
-      "package-name": "dict_command_registration"
-    },
     "src/fastapi_mcdr": {
       "package-name": "fastapi_mcdr"
     },
