@@ -12,4 +12,4 @@
 | !!calc item \<count/expression> | 物品数转换堆叠数 | !!calc item 1794 | 1794个物品为1盒2组3个 |
 | !!calc item \<box> \<stack> \<single> | 堆叠数转换物品数 | !!calc item 1 10 32 | 1盒10组32个为2400个物品 |
 | !!calc color \<red> \<green> \<blue> | 10进制RGB转16进制 | !!calc color 255 0 255 | (255, 0, 255) -> #FF00FF |
-| !!calc color \<#HEX> | 16 进制 RGB 转 10 进制 | !!calc color #00FF00 | #00FF00 -> (0, 255, 0) |
+| !!calc color \<#HEX> | 16进制RGB转10进制 | !!calc color #00FF00 | #00FF00 -> (0, 255, 0) |
