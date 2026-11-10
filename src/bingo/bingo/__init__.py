@@ -39,11 +39,7 @@ def team(src: CommandSource, ctx):
     team_num = ctx.get('num', 4)
 
     # Make random team
-    response = src.get_server().rcon_query('list')
-    if response is None or ': ' not in response:
-        src.reply('§c无法获取在线玩家列表')
-        return
-    player_list = response.split(': ', 1)[1].split(', ')
+    player_list = src.get_server().rcon_query('list').split(': ')[1].split(', ')
     random.shuffle(player_list)
     max_player = math.ceil(len(player_list) / team_num)
     result = []
